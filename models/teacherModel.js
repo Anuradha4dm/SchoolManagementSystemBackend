@@ -1,7 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../util/databaseConnection');
 
-const serquelize = require('../util/databaseConnection');
 
 const Teacher = sequelize.define("teacher", {
     teacherid: {
@@ -34,12 +33,18 @@ const Teacher = sequelize.define("teacher", {
         type: DataTypes.STRING,
         allowNull: true
     },
+    startyear: {
+        type: DataTypes.INTEGER
+    },
     age: {
         type: DataTypes.INTEGER
     },
     role: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    subjects: {
+        type: DataTypes.STRING
     },
     timetablepath: {
         type: DataTypes.STRING,
@@ -52,7 +57,11 @@ const Teacher = sequelize.define("teacher", {
     description: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    mobile: {
+        type: DataTypes.STRING
+    },
+
 
 
 })

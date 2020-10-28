@@ -1,6 +1,8 @@
 const Student = require('../models/studentModel');
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
+const Subject = require('../models/subjectModel');
+const Teacher = require('../models/teacherModel');
 
 
 
@@ -95,4 +97,40 @@ exports.postEditStudentProfile = (req, res, next) => {
         })
 
 
+}
+
+
+exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the student click on the subject selection then subject related data will be apper
+
+    responseData = {
+        subjectName: '',
+        subjectDes: '',
+        teacherName: '',
+        imagePath: ''
+    }
+
+    Subject.findOne(
+        {
+            where: {
+                subjectname: req.params.subject,
+                grade: req.params.grade
+            }
+        }
+    )
+        .then(subjectInfo => {
+            responseData.subjectName = subjectInfo.subjectname;
+            responseData.subjectDes = subjectInfo.subjectinfo;
+            return Teacher.findByPk(subjectInfo.dataValues.teacherid);
+        })
+        .then(teacherInfo => {
+            responseData.teacherName = teacherInfo.firstname + " " + teacherInfo.lastname;
+            responseData.imagePath = teacherInfo.imagepath;
+            res.status(200).json(responseData)
+        })
+        .catch(error => {
+            if (!error.statusCode) {
+                error.statusCode = 401
+            }
+            next(error);
+        })
 }

@@ -36,6 +36,7 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 
 exports.postAuthentication = (req, res, next) => {
 
+    console.log(req.body);
     const _id = req.body._id;
     const password = req.body.password;
     var userid;

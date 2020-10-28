@@ -13,11 +13,14 @@ const sequelize = require('./util/databaseConnection');
 const adminRouter = require('./routes/adminRoute');
 const authenticationRouter = require('./routes/authenticationRoute');
 
+//database modules
 const Student = require('./models/studentModel');
 const Teacher = require('./models/teacherModel');
 const Admin = require('./models/adminModel');
 const NonAcademic = require('./models/nonAcademicModel');
-
+const Subject = require('./models/subjectModel');
+const SUbjectWrapper = require('./models/subjectWrapper');
+const SubjectWrapper = require('./models/subjectWrapper');
 
 //resolving CORS errors
 app.use((req, res, next) => {
@@ -73,9 +76,28 @@ app.use((error, req, res, next) => {
         message: message
     })
 })
+//M:N realation
+Student.belongsToMany(Subject, {
+    through: 'SubjectWrapper',
+    foreignKey: 'studentid',
+    otherKey: 'subjectid'
+
+})
+
+Subject.belongsToMany(Student, {
+    through: 'SubjectWrapper',
+    otherKey: 'studentid',
+    foreignKey: 'subjectid'
+
+})
+//1:1 
+// Subject.belongsTo(Teacher);
+// Teacher.hasMany(Subject, { foreignKey: 'teacher_id', targetKey: 'id' });
 
 
-sequelize.sync({ force: true })
+sequelize
+    // .sync({ force: true })
+    .sync()
     .then(result => {
         console.log("Connection success");
 
@@ -105,10 +127,26 @@ sequelize.sync({ force: true })
 
         // Teacher.create({
         //     teacherid: "AC_1",
-        //     surname: "Damith",
-
+        //     surname: "Ruwan",
+        //     firstname: "Ranaweera",
+        //     lastname: "De silve",
+        //     username: "@_Ranweer",
         //     password: "$2a$12$uSJ54j06KEDFbQ1QIouOzOx.nqeTi3dJ/iTeA9byBN.zKkym74n9W",
-        //     email: "damith@gamil.com",
+        //     email: "ranweer@gamil.com",
+        //     age: 43,
+        //     startyear: 1999,
+        //     imagepath: "image/ST_1.jpg",
+        //     role: "teacher",
+        //     grades: 'Grade A ',
+        //     subjects: "mathematices",
+        //     birthdate: "2020-10-21 00:00:00",
+        //     gender: "male",
+        //     addressline1: "5D 53",
+        //     description: "I am the best mathematics teacher",
+        //     addressline2: "Natianal housing scheme",
+        //     addressline3: "raddolugama",
+        //     city: "seeduwa",
+        //     mobile: "0771346601",
 
         // }).then(re => {
         //     console.log('teacher success')
@@ -141,6 +179,7 @@ sequelize.sync({ force: true })
         // }).catch(error => {
         //     console.log(error)
         // })
+
 
 
         app.listen(3000);

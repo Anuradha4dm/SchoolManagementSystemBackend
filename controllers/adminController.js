@@ -4,9 +4,11 @@ const bcrypt = require('bcryptjs');
 
 const Student = require('../models/studentModel');
 const DataModel = require("../models/dataModule");
+const Teacher = require('../models/teacherModel');
 
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
+const Subject = require('../models/subjectModel');
 
 
 const transporter = nodemailer.createTransport(sendGridTransport({
@@ -29,6 +31,20 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 //         .catch(err => {
 //             console.log(err)
 //         })
+
+
+exports.getTest = (req, res, next) => {
+
+
+
+    Subject.create({
+        subjectname: 'Mathemetices',
+        grade: '6_d',
+        subjectinfo: 'This is the world most famous subject',
+        teacherid: 'AC_1'
+    })
+
+}
 
 
 exports.postNewStudentProfile = (req, res, next) => {
