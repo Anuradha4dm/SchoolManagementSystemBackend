@@ -194,3 +194,33 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
 
 
 }
+
+
+exports.getRegisteredSubjectList = async (req, res, next) => {
+
+    try {
+
+        const datalist = await Student.findAll({
+            where: { _id: 'ST_1' },
+            include: [Subject]
+        })
+
+        const listOfSubjects = datalist[0].subjects.map(element => {
+            return { subjectname: element.dataValues.subjectname, teacherid: element.dataValues.teacherid };
+        })
+
+        res.status(200).json({
+            quaery: true,
+            dataArray: listOfSubjects
+        })
+
+        // console.log(datalist[0].subjects[0].toJSON());
+
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+
+}

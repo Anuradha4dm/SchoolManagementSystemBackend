@@ -19,6 +19,9 @@ router.get('/getsubjectinfo/:subject/:grade', studentController.getGetSubjectDat
 //POST=> /student/addsubjectprimary
 router.post('/addsubjectprimary', studentController.postAddSubjectPrimary);
 
+//GET=> /student/get-subject-list/:studentid
+router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjectList);
+
 module.exports = router;
 
 

@@ -95,27 +95,27 @@ Subject.belongsToMany(Student, {
 
 })
 //1:1 
-// Subject.belongsTo(Teacher);
+Subject.belongsTo(Teacher);
 // Teacher.hasMany(Subject, { foreignKey: 'teacher_id', targetKey: 'id' });
 
 
 sequelize
-    .sync({ force: true })
-    // .sync()
+    // .sync({ force: true })
+    .sync()
     .then(result => {
         console.log("Connection success");
 
-        Student.bulkCreate(studentDumy.getData).then(re => {
-            console.log("Student Data Added");
-        }).catch(error => {
-            console.log(error)
-        })
+        // Student.bulkCreate(studentDumy.getData).then(re => {
+        //     console.log("Student Data Added");
+        // }).catch(error => {
+        //     console.log(error)
+        // })
 
-        Teacher.bulkCreate(teacherDumy.getData).then(re => {
-            console.log('teacher success')
-        }).catch(error => {
-            console.log(error)
-        })
+        // Teacher.bulkCreate(teacherDumy.getData).then(re => {
+        //     console.log('teacher success')
+        // }).catch(error => {
+        //     console.log(error)
+        // })
 
         // Admin.create({
         //     adminid: "AD_1",
