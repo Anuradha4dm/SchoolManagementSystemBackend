@@ -35,14 +35,27 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 
 exports.getTest = (req, res, next) => {
 
+    var student;
+
+    Student.findByPk("ST_1")
+        .then(re => {
+            student = re;
+        }).catch(error => {
+            console.log(error)
+        })
 
 
-    Subject.create({
-        subjectname: 'Mathemetices',
-        grade: '6_d',
-        subjectinfo: 'This is the world most famous subject',
-        teacherid: 'AC_1'
-    })
+    Subject.findByPk(1)
+        .then(re => {
+            return re.addStudent(student);
+        })
+        .then(re => {
+            console.log(re);
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
 
 }
 

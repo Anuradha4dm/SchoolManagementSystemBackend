@@ -1,8 +1,10 @@
 const Student = require('../models/studentModel');
+const { Op } = require("sequelize");
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Subject = require('../models/subjectModel');
 const Teacher = require('../models/teacherModel');
+
 
 
 
@@ -103,6 +105,7 @@ exports.postEditStudentProfile = (req, res, next) => {
 exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the student click on the subject selection then subject related data will be apper
 
     responseData = {
+
         subjectName: '',
         subjectDes: '',
         teacherName: '',
@@ -118,6 +121,7 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
         }
     )
         .then(subjectInfo => {
+            responseData.subjectId = subjectInfo.subjectid;
             responseData.subjectName = subjectInfo.subjectname;
             responseData.subjectDes = subjectInfo.subjectinfo;
             return Teacher.findByPk(subjectInfo.dataValues.teacherid);
@@ -133,4 +137,60 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
             }
             next(error);
         })
+}
+
+exports.postAddSubjectPrimary = async (req, res, next) => {
+
+    var studentid = req.body.studentid;
+    var grade = req.body.grade;
+    var studentRef;
+
+    try {
+        const student = await Student.findByPk(studentid);
+        if (!student) {
+            var error = new Error("User Can Not Find");
+            error.statusCode = 501;
+            return error;
+        }
+
+
+        const addSubjectArr = await Subject.findAll({
+            where: {
+                [Op.or]: [
+                    { grade: grade, mandatory: true },
+                    { subjectid: 9, mandatory: false }
+                ]
+            }
+        });
+
+        if (addSubjectArr.length == 0) {
+            var error = new Error("Subjects are not foundable");
+            error.statusCode = 501;
+            return error;
+        }
+
+        const re = await addSubjectArr.forEach(element => {
+            element.addStudent(student);
+        });
+
+        console.log(re);
+
+        res.status(200).json({
+            insertion: true,
+            studentId: studentid,
+
+        })
+
+
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
+
+
 }

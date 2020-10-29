@@ -20,6 +20,10 @@ const Subject = sequelize.define('subject', {
     },
     teacherid: {
         type: DataTypes.STRING
+    },
+    mandatory: {
+        type: DataTypes.BOOLEAN,
+        allowNnull: false
     }
 
 

@@ -20,7 +20,11 @@ const Admin = require('./models/adminModel');
 const NonAcademic = require('./models/nonAcademicModel');
 const Subject = require('./models/subjectModel');
 const SUbjectWrapper = require('./models/subjectWrapper');
-const SubjectWrapper = require('./models/subjectWrapper');
+
+//data dumy
+const studentDumy = require('./test/studentDumy');
+const teacherDumy = require('./test/teacherDumy');
+const subjectDumy = require('./test/subjectDataDummy');
 
 //resolving CORS errors
 app.use((req, res, next) => {
@@ -78,14 +82,14 @@ app.use((error, req, res, next) => {
 })
 //M:N realation
 Student.belongsToMany(Subject, {
-    through: 'SubjectWrapper',
+    through: 'subjectwrapper',
     foreignKey: 'studentid',
     otherKey: 'subjectid'
 
 })
 
 Subject.belongsToMany(Student, {
-    through: 'SubjectWrapper',
+    through: 'subjectwrapper',
     otherKey: 'studentid',
     foreignKey: 'subjectid'
 
@@ -96,63 +100,22 @@ Subject.belongsToMany(Student, {
 
 
 sequelize
-    // .sync({ force: true })
-    .sync()
+    .sync({ force: true })
+    // .sync()
     .then(result => {
         console.log("Connection success");
 
-        // Student.create({
-        //     _id: "ST_1",
-        //     surname: "Damith",
-        //     firstname: "Anuradha",
-        //     lastname: "Amarasena",
-        //     username: "@_Damith",
-        //     password: "$2a$12$uSJ54j06KEDFbQ1QIouOzOx.nqeTi3dJ/iTeA9byBN.zKkym74n9W",
-        //     email: "damith@gamil.com",
-        //     age: 23,
-        //     startyear: 2000,
-        //     imagepath: "image\ST_1.jpg",
-        //     birthdate: "2020-10-21 00:00:00",
-        //     gender: "male",
-        //     addressline1: "5D 53",
-        //     addressline2: "Natianal housing scheme",
-        //     addressline3: "raddolugama",
-        //     city: "seeduwa",
-        //     mobile: "0771346601",
-        // }).then(re => {
-        //     console.log('student success')
-        // }).catch(error => {
-        //     console.log(error)
-        // })
+        Student.bulkCreate(studentDumy.getData).then(re => {
+            console.log("Student Data Added");
+        }).catch(error => {
+            console.log(error)
+        })
 
-        // Teacher.create({
-        //     teacherid: "AC_1",
-        //     surname: "Ruwan",
-        //     firstname: "Ranaweera",
-        //     lastname: "De silve",
-        //     username: "@_Ranweer",
-        //     password: "$2a$12$uSJ54j06KEDFbQ1QIouOzOx.nqeTi3dJ/iTeA9byBN.zKkym74n9W",
-        //     email: "ranweer@gamil.com",
-        //     age: 43,
-        //     startyear: 1999,
-        //     imagepath: "image/ST_1.jpg",
-        //     role: "teacher",
-        //     grades: 'Grade A ',
-        //     subjects: "mathematices",
-        //     birthdate: "2020-10-21 00:00:00",
-        //     gender: "male",
-        //     addressline1: "5D 53",
-        //     description: "I am the best mathematics teacher",
-        //     addressline2: "Natianal housing scheme",
-        //     addressline3: "raddolugama",
-        //     city: "seeduwa",
-        //     mobile: "0771346601",
-
-        // }).then(re => {
-        //     console.log('teacher success')
-        // }).catch(error => {
-        //     console.log(error)
-        // })
+        Teacher.bulkCreate(teacherDumy.getData).then(re => {
+            console.log('teacher success')
+        }).catch(error => {
+            console.log(error)
+        })
 
         // Admin.create({
         //     adminid: "AD_1",
@@ -179,6 +142,13 @@ sequelize
         // }).catch(error => {
         //     console.log(error)
         // })
+
+        Subject.bulkCreate(subjectDumy.getData)
+            .then(re => {
+                console.log("subject added");
+            }).catch(erro => {
+                console.log(error);
+            })
 
 
 

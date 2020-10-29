@@ -16,6 +16,8 @@ router.post('/edit-profile/:id', studentController.postEditStudentProfile);
 //POST=> /student/getSubjectInfo/:subject/:grade
 router.get('/getsubjectinfo/:subject/:grade', studentController.getGetSubjectData);
 
+//POST=> /student/addsubjectprimary
+router.post('/addsubjectprimary', studentController.postAddSubjectPrimary);
 
 module.exports = router;
 
