@@ -1,9 +1,10 @@
 const express = require('express');
 
+
 //import modules
 const studentController = require('../controllers/studentController');
 const authenticationValidation = require('../validators/authenticationValidation');
-const { route } = require('./adminRoute');
+
 
 const router = express.Router();
 
@@ -21,6 +22,9 @@ router.post('/addsubjectprimary', studentController.postAddSubjectPrimary);
 
 //GET=> /student/get-subject-list/:studentid
 router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjectList);
+
+//POST=> /student/add-subject-ordinaty-level
+router.post('/add-subject-ordinaty-level', studentController.postAddSubjectOrdinaryLevel);
 
 module.exports = router;
 

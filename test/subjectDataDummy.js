@@ -43,7 +43,7 @@ exports.getData = [
         "mandatory": true           //mandotory
     },
     {
-        "subjectname": "citizen education",
+        "subjectname": "citizen_education",
         "grade": "8_D",
         "subjectinfo": "This is the best buddhist",
         "mandatory": true           //mandotory
@@ -91,7 +91,60 @@ exports.getData = [
         "subjectinfo": "This is the best roman_cathalic",
         "mandatory": false             //mandotory
     },
-
+    {
+        "subjectname": "mathematics",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true             //mandotory
+    },
+    {
+        "subjectname": "sinhala",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true             //mandotory
+    },
+    {
+        "subjectname": "science",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true             //mandotory
+    },
+    {
+        "subjectname": "history",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true            //mandotory
+    },
+    {
+        "subjectname": "english",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true           //mandotory
+    },
+    {
+        "subjectname": "religion",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": true             //mandotory
+    },
+    {
+        "subjectname": "commnerce",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": false             //mandotory
+    },
+    {
+        "subjectname": "drama",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": false             //mandotory
+    },
+    {
+        "subjectname": "IT",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": false             //mandotory
+    },
 
 
 
