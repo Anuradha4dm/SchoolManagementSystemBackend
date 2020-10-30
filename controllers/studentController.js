@@ -116,7 +116,7 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
         {
             where: {
                 subjectname: req.params.subject,
-                grade: req.params.grade
+                grade: "8_D"
             }
         }
     )
@@ -124,7 +124,7 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
             responseData.subjectId = subjectInfo.subjectid;
             responseData.subjectName = subjectInfo.subjectname;
             responseData.subjectDes = subjectInfo.subjectinfo;
-            return Teacher.findByPk(subjectInfo.dataValues.teacherid);
+            return Teacher.findByPk(subjectInfo.dataValues.teacherTeacherid);
         })
         .then(teacherInfo => {
             responseData.teacherName = teacherInfo.firstname + " " + teacherInfo.lastname;
@@ -141,24 +141,39 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
 
 exports.postAddSubjectPrimary = async (req, res, next) => {
 
-    var studentid = req.body.studentid;
+    var studentid = req.body.studentid;    //get the student id for find the student
+    var opSubjectname = req.body.optional1;  //in primary case there is only one option to take the subject id we get subject name
     var grade = req.body.grade;
-    var studentRef;
+
 
     try {
-        const student = await Student.findByPk(studentid);
+        const student = await Student.findOne({                             //find the student there check is already submit the registration
+            where: {
+                _id: studentid,
+                subjectRegistrationDone: false
+
+            }
+        });
         if (!student) {
-            var error = new Error("User Can Not Find");
+            var error = new Error("User Can Not Find OR Have already Registered");
             error.statusCode = 501;
-            return error;
+            throw error;
         }
+
+        const subjectid = await Subject.findOne({               //get the optional subject id
+            attributes: ['subjectid'],
+            where: {
+                subjectname: opSubjectname
+            }
+        })
+
 
 
         const addSubjectArr = await Subject.findAll({
             where: {
                 [Op.or]: [
                     { grade: grade, mandatory: true },
-                    { subjectid: 9, mandatory: false }
+                    { subjectid: subjectid.dataValues.subjectid, mandatory: false }
                 ]
             }
         });
@@ -166,14 +181,17 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
         if (addSubjectArr.length == 0) {
             var error = new Error("Subjects are not foundable");
             error.statusCode = 501;
-            return error;
+            throw error;
         }
 
         const re = await addSubjectArr.forEach(element => {
             element.addStudent(student);
         });
 
-        console.log(re);
+        student.subjectRegistrationDone = true;    //make the student only submit the registration onece this means that student is registered success
+
+        await student.save();
+
 
         res.status(200).json({
             insertion: true,
@@ -198,29 +216,57 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
 
 exports.getRegisteredSubjectList = async (req, res, next) => {
 
+
+
+    teacherArray = [];
+
     try {
 
-        const datalist = await Student.findAll({
-            where: { _id: 'ST_1' },
+        const datalist = await Student.findOne({
+            where: { _id: req.params.studentid },
             include: [Subject]
         })
 
-        const listOfSubjects = datalist[0].subjects.map(element => {
-            return { subjectname: element.dataValues.subjectname, teacherid: element.dataValues.teacherid };
-        })
+        if (!datalist) {
+            var error = new Error("No relavalt data found");
+            error.statusCode = 501;
+            throw (error);
+        }
+
+
+        var teacherData;
+
+        const subjectDetailFull = await Promise.all(datalist.subjects.map(async (element) => {
+            teacherData = await element.getTeacher();
+            if (!teacherData) {
+                var error = new Error("No teacher has assign for sum of the subjects try later");
+                error.statusCode = 501;
+                throw (error);
+            }
+
+            return {
+                subjectid: element.subjectid,
+                subjectname: element.subjectname,
+                teacherid: teacherData.teacherid,
+                teachername: teacherData.firstname + " " + teacherData.lastname,
+                teacheremail: teacherData.email
+            };
+        }))
+
+
 
         res.status(200).json({
             quaery: true,
-            dataArray: listOfSubjects
+            dataArray: subjectDetailFull
         })
-
-        // console.log(datalist[0].subjects[0].toJSON());
-
-
 
 
     } catch (error) {
-        console.log(error)
+        if (!error.statusCode) {
+            error.statusCode = 501;
+
+        }
+        next(error);
     }
 
 }

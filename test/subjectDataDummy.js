@@ -3,28 +3,24 @@ exports.getData = [
         "subjectname": "mathematics",
         "grade": "8_D",
         "subjectinfo": "This is the best mathemetics",
-        "teacherid": "AC_1",
         "mandatory": true             //mandotory,    
     },
     {
         "subjectname": "sinhala",
         "grade": "8_D",
         "subjectinfo": "This is the best sinhala",
-        "teacherid": "AC_1",
         "mandatory": true             //mandotory,
     },
     {
         "subjectname": "science",
         "grade": "8_D",
         "subjectinfo": "This is the best science",
-        "teacherid": "AC_1",
         "mandatory": true             //mandotory,
     },
     {
         "subjectname": "history",
         "grade": "8_D",
         "subjectinfo": "This is the best history",
-        "teacherid": "AC_1",
         "mandatory": true             //mandotory,
     },
 
@@ -32,63 +28,67 @@ exports.getData = [
         "subjectname": "english",
         "grade": "8_D",
         "subjectinfo": "This is the best english",
-        "teacherid": "AC_1",
         "mandatory": true             //mandotory,
     },
     {
-        "subjectname": "buddhist",
+        "subjectname": "tamil",
         "grade": "8_D",
         "subjectinfo": "This is the best buddhist",
-        "teacherid": "AC_1",
-        "mandatory": false            //mandotory
+        "mandatory": true          //mandotory
     },
     {
-        "subjectname": "catalic",
+        "subjectname": "geography",
         "grade": "8_D",
-        "subjectinfo": "This is the best catalic",
-        "teacherid": "AC_1",
+        "subjectinfo": "This is the best buddhist",
+        "mandatory": true           //mandotory
+    },
+    {
+        "subjectname": "citizen education",
+        "grade": "8_D",
+        "subjectinfo": "This is the best buddhist",
+        "mandatory": true           //mandotory
+    },
+    {
+        "subjectname": "health education",
+        "grade": "8_D",
+        "subjectinfo": "This is the best buddhist",
+        "mandatory": true           //mandotory
+    },
+    {
+        "subjectname": "pts",
+        "grade": "8_D",
+        "subjectinfo": "This is the best buddhist",
+        "mandatory": true           //mandotory
+    },
+    {
+        "subjectname": "religion",
+        "grade": "8_D",
+        "subjectinfo": "This is the best buddhist",
+        "mandatory": true           //mandotory
+    },
+
+    {
+        "subjectname": "estern_music",
+        "grade": "8_D",
+        "subjectinfo": "This is the best roman_cathalic",
         "mandatory": false             //mandotory
     },
     {
-        "subjectname": "roman_cathalic",
+        "subjectname": "western_music",
         "grade": "8_D",
         "subjectinfo": "This is the best roman_cathalic",
-        "teacherid": "AC_1",
-        "mandatory": false            //mandotory
-    },
-    {
-        "subjectname": "esten_music",
-        "grade": "8_D",
-        "subjectinfo": "This is the best roman_cathalic",
-        "teacherid": "AC_1",
-        "mandatory": false             //mandotory
-    },
-    {
-        "subjectname": "wester_music",
-        "grade": "8_D",
-        "subjectinfo": "This is the best roman_cathalic",
-        "teacherid": "AC_1",
         "mandatory": false             //mandotory
     },
     {
         "subjectname": "art",
         "grade": "8_D",
         "subjectinfo": "This is the best roman_cathalic",
-        "teacherid": "AC_1",
         "mandatory": false             //mandotory
     },
     {
-        "subjectname": "danding",
+        "subjectname": "dancing",
         "grade": "8_D",
         "subjectinfo": "This is the best roman_cathalic",
-        "teacherid": "AC_1",
-        "mandatory": false             //mandotory
-    },
-    {
-        "subjectname": "islam",
-        "grade": "8_D",
-        "subjectinfo": "This is the best islam",
-        "teacherid": "AC_1",
         "mandatory": false             //mandotory
     },
 

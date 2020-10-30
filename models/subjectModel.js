@@ -18,9 +18,7 @@ const Subject = sequelize.define('subject', {
     subjectinfo: {
         type: DataTypes.STRING
     },
-    teacherid: {
-        type: DataTypes.STRING
-    },
+
     mandatory: {
         type: DataTypes.BOOLEAN,
         allowNnull: false

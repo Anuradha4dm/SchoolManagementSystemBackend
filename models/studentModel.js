@@ -72,6 +72,11 @@ const Student = sequelize.define('student', {
         type: DataTypes.DATE,
         allowNull: false
     },
+    subjectRegistrationDone: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    }
 
 
 })
