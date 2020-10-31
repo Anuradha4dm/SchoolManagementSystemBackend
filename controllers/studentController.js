@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Subject = require('../models/subjectModel');
 const Teacher = require('../models/teacherModel');
-
+const Class = require("../models/classModel");
 
 
 
@@ -16,44 +16,55 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 }))
 
 
-exports.getStudentProfile = (req, res, next) => {
+exports.getStudentProfile = async (req, res, next) => {
 
     const _id = req.params.id;
 
-    Student.findOne({
+    const studentData = await Student.findOne(
+        {
+            where:
+                { _id: _id },
+            include: {
+                model: Class,
+                attributes: ['grade', 'classid'],
+
+            }
+        })
+
+
+    const teachername = await Teacher.findOne({
         where: {
-            _id: _id
+            classClassid: studentData.class.classid,
+        },
+        attributes: ['firstname', 'lastname']
+    })
+
+
+
+    res.status(200).json({
+        fetch: true,
+        studentData: {
+            _id: studentData._id,
+            surname: studentData.surname,
+            firstName: studentData.firstname,
+            lastName: studentData.lastname,
+            email: studentData.email,
+            username: studentData.username,
+            age: studentData.age,
+            imagePath: studentData.imagepath.replace("\\", "/"),
+            gender: studentData.gender,
+            grade: studentData.class.grade,
+            classTeacher: teachername.firstname + " " + teachername.lastname,
+            startYear: studentData.startyear,
+            birthDate: studentData.birthdate,
+            addressLine1: studentData.addressline1,
+            addressLine2: studentData.addressline2,
+            addressLine3: studentData.addressline3,
+            city: studentData.city,
+            mobile: studentData.mobile
+
         }
     })
-        .then(result => {
-            const imagePathGeneral = result.imagepath.replace("\\", "/");
-            res.status(200).json({
-                fetch: true,
-                studentData: {
-                    _id: result._id,
-                    surname: result.surname,
-                    firstName: result.firstname,
-                    lastName: result.lastname,
-                    email: result.email,
-                    username: result.username,
-                    age: result.age,
-                    imagePath: imagePathGeneral,
-                    gender: result.gender,
-                    startYear: result.startyear,
-                    birthDate: result.birthdate,
-                    addressLine1: result.addressline1,
-                    addressLine2: result.addressline2,
-                    addressLine3: result.addressline3,
-                    city: result.city,
-                    mobile: result.mobile
-                }
-            })
-        })
-        .catch(error => {
-            console.log(error);
-
-        })
-
 
 }
 
