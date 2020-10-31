@@ -20,12 +20,14 @@ const Admin = require('./models/adminModel');
 const NonAcademic = require('./models/nonAcademicModel');
 const Subject = require('./models/subjectModel');
 const SUbjectWrapper = require('./models/subjectWrapper');
-
+const Class = require("./models/classModel");
+const result = require('./models/resultModel');
 //data dumy
 const studentDumy = require('./test/studentDumy');
 const teacherDumy = require('./test/teacherDumy');
 const subjectDumy = require('./test/subjectDataDummy');
-
+const classDumy = require('./test/classDumy');
+const Result = require('./models/resultModel');
 //resolving CORS errors
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '* ');
@@ -96,16 +98,18 @@ Subject.belongsToMany(Student, {
 })
 //1:1 
 Subject.belongsTo(Teacher);
+Student.belongsTo(Class);
+Teacher.belongsTo(Class)
+Result.belongsTo(Subject);
+Student.belongsTo(Result);
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
 sequelize
-    // .sync({ force: true })
-    .sync()
+    .sync({ force: true })
+    // .sync()
     .then(result => {
         console.log("Connection success");
-
-
 
         // Student.bulkCreate(studentDumy.getData).then(re => {
         //     console.log("Student Data Added");
@@ -125,6 +129,7 @@ sequelize
         //     }).catch(erro => {
         //         console.log(error);
         //     })
+        // Class.bulkCreate(classDumy.getData);
         // Admin.create({
         //     adminid: "AD_1",
         //     surname: "Damith",
