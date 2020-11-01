@@ -5,6 +5,7 @@ const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Subject = require('../models/subjectModel');
 const Teacher = require('../models/teacherModel');
 const Class = require("../models/classModel");
+const Result = require('../models/resultModel');
 
 
 
@@ -157,6 +158,7 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
     var grade = req.body.grade;
 
 
+
     try {
         const student = await Student.findOne({                             //find the student there check is already submit the registration
             where: {
@@ -281,6 +283,8 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
     const optional2 = req.body.optional2;
     const optional3 = req.body.optional3;
 
+    console.log(req.body);
+
     try {
 
         const student = await Student.findOne({
@@ -336,3 +340,64 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
 
 }
 
+exports.getGetResultOfSpecificStudent = async (req, res, next) => {
+
+    var resultArray = []
+
+    try {
+
+        const resultList = await Result.findAll({
+            where: {
+                grade: req.body.class,
+                term: req.body.term,
+                year: req.body.year
+            }
+            ,
+            include: [Subject]
+        })
+
+
+
+        var resObj = {};
+        var sum;
+        var count;
+        resultList.forEach(result => {
+
+
+            resObj.marks = result.marks;
+            resObj.subject = result.subject.subjectname;
+
+            if (resObj.marks >= 75) {
+                resObj.grade = "A";
+            } else if (resObj.marks >= 55 && resObj.marks <= 74) {
+                resObj.grade = "B";
+            } else if (resObj.marks >= 35 && resObj.marks <= 54) {
+                resObj.grade = "C";
+            }
+            else {
+                resObj.grade = "F";
+            }
+            resultArray.push(resObj);
+
+            resObj = {};
+
+        });
+
+        if (resultArray.length == 0) {
+            var error = new Error("No Results Are Found");
+            error.statusCode = 500;
+            throw error;
+        }
+
+
+        res.status(200).json({
+            resultarray: resultArray
+        })
+
+    } catch (error) {
+
+        console.log(error);
+    }
+
+
+}

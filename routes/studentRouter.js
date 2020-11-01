@@ -26,6 +26,10 @@ router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjec
 //POST=> /student/add-subject-ordinaty-level
 router.post('/add-subject-ordinaty-level', studentController.postAddSubjectOrdinaryLevel);
 
+//GET
+
+router.post('/view-result', studentController.getGetResultOfSpecificStudent);
+
 module.exports = router;
 
 

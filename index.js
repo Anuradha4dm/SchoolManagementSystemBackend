@@ -12,6 +12,7 @@ const studentRoute = require('./routes/studentRouter');
 const sequelize = require('./util/databaseConnection');
 const adminRouter = require('./routes/adminRoute');
 const authenticationRouter = require('./routes/authenticationRoute');
+const socketHandler = require('./socketHandler');
 
 //database modules
 const Student = require('./models/studentModel');
@@ -21,16 +22,16 @@ const NonAcademic = require('./models/nonAcademicModel');
 const Subject = require('./models/subjectModel');
 const SUbjectWrapper = require('./models/subjectWrapper');
 const Class = require("./models/classModel");
-const result = require('./models/resultModel');
+const Result = require('./models/resultModel');
 //data dumy
 const studentDumy = require('./test/studentDumy');
 const teacherDumy = require('./test/teacherDumy');
 const subjectDumy = require('./test/subjectDataDummy');
 const classDumy = require('./test/classDumy');
-const Result = require('./models/resultModel');
+const resultDumy = require('./test/resultDumy');
 //resolving CORS errors
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '* ');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Method', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
     next();
@@ -101,7 +102,7 @@ Subject.belongsTo(Teacher);
 Student.belongsTo(Class);
 Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
-Student.belongsTo(Result);
+Student.hasMany(Result, { foreignKey: '_id' })
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
@@ -109,27 +110,60 @@ sequelize
     .sync({ force: true })
     // .sync()
     .then(result => {
+
+
+
+        const server = app.listen(3000);
+
+        const io = require('./webSocket').init(server);
+
+        io.on('connection', socket => {
+            console.log('client connected');
+
+            socket.on("getYear", data => {
+                socketHandler.getYear(data);
+            })
+
+            socket.on("getGrades", data => {
+                socketHandler.getClass(data);
+            })
+        })
+
+
+
         console.log("Connection success");
 
-        // Student.bulkCreate(studentDumy.getData).then(re => {
-        //     console.log("Student Data Added");
-        // }).catch(error => {
-        //     console.log(error)
-        // })
 
-        // Teacher.bulkCreate(teacherDumy.getData).then(re => {
-        //     console.log('teacher success')
-        // }).catch(error => {
-        //     console.log(error)
-        // })
 
-        // Subject.bulkCreate(subjectDumy.getData)
-        //     .then(re => {
-        //         console.log("subject added");
-        //     }).catch(erro => {
-        //         console.log(error);
-        //     })
-        // Class.bulkCreate(classDumy.getData);
+        Result.create(resultDumy.getData[0])
+            .then(re => {
+                console.log("success");
+            })
+            .catch(err => {
+                console.log("err", err)
+
+            })
+
+
+        Student.bulkCreate(studentDumy.getData).then(re => {
+            console.log("Student Data Added");
+        }).catch(error => {
+            console.log(error)
+        })
+
+        Teacher.bulkCreate(teacherDumy.getData).then(re => {
+            console.log('teacher success')
+        }).catch(error => {
+            console.log(error)
+        })
+
+        Subject.bulkCreate(subjectDumy.getData)
+            .then(re => {
+                console.log("subject added");
+            }).catch(erro => {
+                console.log(error);
+            })
+        Class.bulkCreate(classDumy.getData);
         // Admin.create({
         //     adminid: "AD_1",
         //     surname: "Damith",
@@ -159,7 +193,6 @@ sequelize
 
 
 
-        app.listen(3000);
     })
     .catch(error => {
         console.log(error)

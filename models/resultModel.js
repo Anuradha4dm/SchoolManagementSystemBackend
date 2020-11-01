@@ -5,16 +5,17 @@ const sequelize = require('../util/databaseConnection');
 
 const Result = sequelize.define('result', {
     resultid: {
-        type: DataTypes.STRING,
-        autoIncreament: true,
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
     year: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        allowNull: false
     },
     term: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        allowNull: false
     },
     grade: {
         type: DataTypes.STRING
