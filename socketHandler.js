@@ -1,4 +1,5 @@
 const Result = require('./models/resultModel');
+const Subject = require('./models/subjectModel');
 const io = require('./webSocket');
 
 
@@ -57,12 +58,33 @@ exports.getClass = async (data) => {
         console.log(error)
     }
 
-
-
-
-
 }
 
+
+exports.getSubjectForChart1 = async (data) => {
+
+    try {
+
+        const subjects = await Result.findAll({
+            where: {
+                _id: data.studentid
+            },
+            include: [Subject],
+
+        });
+
+        const subjectArr = subjects.map(element => {
+            return element.subject.subjectname;
+        })
+
+
+        io.getIo().emit("subectArr", { subjectArray: removeDuplicates(subjectArr) })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
 
 
 function removeDuplicates(data) {

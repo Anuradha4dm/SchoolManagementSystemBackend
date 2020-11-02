@@ -133,6 +133,9 @@ sequelize
             socket.on("getGrades", data => {
                 socketHandler.getClass(data);
             })
+            socket.on("getSubjects", data => {          //get subject for chart1
+                socketHandler.getSubjectForChart1(data);
+            })
         })
 
 

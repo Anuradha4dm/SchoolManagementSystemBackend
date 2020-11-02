@@ -7,6 +7,7 @@ const Teacher = require('../models/teacherModel');
 const Class = require("../models/classModel");
 const Result = require('../models/resultModel');
 const ResultSummary = require('../models/resultSummaryModel');
+const { postAddNewStudentValidators } = require('../validators/adminRouteValidator');
 
 
 
@@ -430,7 +431,54 @@ exports.getGetDataForDashboardAverage = async (req, res, next) => {
     } catch (error) {
         console.log(error)
     }
+}
+
+exports.postGetChar1Data = async (req, res, next) => {
+
+    const studentid = req.body.studentid;
+    const subjectname = req.body.subjectname;
+
+    try {
+
+        const student = await Student.findOne({
+            _id: studentid
+        });
+
+        const subjects = await student.getSubjects({
+            where: {
+                subjectname: subjectname
+            },
+            attributes: ['subjectid']
+        });
+
+        const subjectidArr = subjects.map(value => {
+            return value.subjectid;
+        })
 
 
+
+        const resultarray = await Result.findAll({
+            where: {
+                _id: studentid,
+                subjectSubjectid: {
+                    [Op.in]: subjectidArr
+
+                }
+            },
+            attributes: ['year', 'term', 'marks'],
+            order: [['year', 'DESC'], ['term', 'DESC']],
+            limit: 7
+        })
+
+
+
+        res.status(200).json({
+            data: resultarray
+        })
+
+
+    } catch (error) {
+        console.log(error)
+    }
 
 }
