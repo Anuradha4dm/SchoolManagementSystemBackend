@@ -27,8 +27,12 @@ router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjec
 router.post('/add-subject-ordinaty-level', studentController.postAddSubjectOrdinaryLevel);
 
 //GET
-
 router.post('/view-result', studentController.getGetResultOfSpecificStudent);
+
+
+//GET /student/dashboard
+router.get('/dashboard/:id', studentController.getGetDataForDashboardAverage);
+
 
 module.exports = router;
 

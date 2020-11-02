@@ -13,6 +13,7 @@ const sequelize = require('./util/databaseConnection');
 const adminRouter = require('./routes/adminRoute');
 const authenticationRouter = require('./routes/authenticationRoute');
 const socketHandler = require('./socketHandler');
+const teacherRouter = require('./routes/teacherRoutes');
 
 //database modules
 const Student = require('./models/studentModel');
@@ -23,12 +24,15 @@ const Subject = require('./models/subjectModel');
 const SUbjectWrapper = require('./models/subjectWrapper');
 const Class = require("./models/classModel");
 const Result = require('./models/resultModel');
+const resultSummaty = require("./models/resultSummaryModel");
+
 //data dumy
 const studentDumy = require('./test/studentDumy');
 const teacherDumy = require('./test/teacherDumy');
 const subjectDumy = require('./test/subjectDataDummy');
 const classDumy = require('./test/classDumy');
 const resultDumy = require('./test/resultDumy');
+const ResultSummary = require('./models/resultSummaryModel');
 //resolving CORS errors
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -71,7 +75,8 @@ app.use(bodyParser.json());
 
 app.use('/student', studentRoute);
 app.use('/admin', adminRouter);
-app.use('/auth', authenticationRouter)
+app.use('/teacher', teacherRouter);
+app.use('/auth', authenticationRouter);
 
 
 app.use((error, req, res, next) => {
@@ -102,13 +107,14 @@ Subject.belongsTo(Teacher);
 Student.belongsTo(Class);
 Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
-Student.hasMany(Result, { foreignKey: '_id' })
+Student.hasMany(Result, { foreignKey: '_id' });
+ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
 sequelize
-    .sync({ force: true })
-    // .sync()
+    // .sync({ force: true })
+    .sync()
     .then(result => {
 
 
@@ -135,35 +141,38 @@ sequelize
 
 
 
-        Result.create(resultDumy.getData[0])
-            .then(re => {
-                console.log("success");
-            })
-            .catch(err => {
-                console.log("err", err)
+        // Result.bulkCreate(resultDumy.getData)
+        //     .then(re => {
+        //         console.log("success");
+        //     })
+        //     .catch(err => {
+        //         console.log("err", err)
 
-            })
+        //     })
 
 
-        Student.bulkCreate(studentDumy.getData).then(re => {
-            console.log("Student Data Added");
-        }).catch(error => {
-            console.log(error)
-        })
+        // Student.bulkCreate(studentDumy.getData).then(re => {
+        //     console.log("Student Data Added");
+        // }).catch(error => {
+        //     console.log(error)
+        // })
 
-        Teacher.bulkCreate(teacherDumy.getData).then(re => {
-            console.log('teacher success')
-        }).catch(error => {
-            console.log(error)
-        })
+        // Teacher.bulkCreate(teacherDumy.getData).then(re => {
+        //     console.log('teacher success')
+        // }).catch(error => {
+        //     console.log(error)
+        // })
 
-        Subject.bulkCreate(subjectDumy.getData)
-            .then(re => {
-                console.log("subject added");
-            }).catch(erro => {
-                console.log(error);
-            })
-        Class.bulkCreate(classDumy.getData);
+        // Subject.bulkCreate(subjectDumy.getData)
+        //     .then(re => {
+        //         console.log("subject added");
+        //     }).catch(erro => {
+        //         console.log(error);
+        //     })
+        // Class.bulkCreate(classDumy.getData);
+
+
+
         // Admin.create({
         //     adminid: "AD_1",
         //     surname: "Damith",

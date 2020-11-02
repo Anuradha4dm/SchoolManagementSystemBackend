@@ -441,8 +441,6 @@ exports.getData =
             "mobile": "0773456701",
         },
 
-
-
         {
             "teacherid": "AC_19",                        //mandatory
             "surname": "kamal",

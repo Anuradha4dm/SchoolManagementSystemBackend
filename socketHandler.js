@@ -4,7 +4,7 @@ const io = require('./webSocket');
 
 exports.getYear = async (studentObj) => {
 
-    console.log(studentObj)
+
     const studentid = studentObj.id;
 
     try {
@@ -18,7 +18,6 @@ exports.getYear = async (studentObj) => {
             return elemt.year;
         })
 
-        console.log(removeDuplicates(yearArray))
 
         io.getIo().emit('years', { years: removeDuplicates(yearArray) });
 

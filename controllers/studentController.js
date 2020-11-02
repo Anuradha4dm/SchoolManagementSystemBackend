@@ -6,6 +6,7 @@ const Subject = require('../models/subjectModel');
 const Teacher = require('../models/teacherModel');
 const Class = require("../models/classModel");
 const Result = require('../models/resultModel');
+const ResultSummary = require('../models/resultSummaryModel');
 
 
 
@@ -20,6 +21,7 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 exports.getStudentProfile = async (req, res, next) => {
 
     const _id = req.params.id;
+    var teachername;
 
     const studentData = await Student.findOne(
         {
@@ -32,13 +34,18 @@ exports.getStudentProfile = async (req, res, next) => {
             }
         })
 
+    if (studentData.class) {
 
-    const teachername = await Teacher.findOne({
-        where: {
-            classClassid: studentData.class.classid,
-        },
-        attributes: ['firstname', 'lastname']
-    })
+        teachername = await Teacher.findOne({
+            where: {
+                classClassid: studentData.class.classid,
+            },
+            attributes: ['firstname', 'lastname']
+        })
+    }
+
+
+
 
 
 
@@ -54,8 +61,8 @@ exports.getStudentProfile = async (req, res, next) => {
             age: studentData.age,
             imagePath: studentData.imagepath.replace("\\", "/"),
             gender: studentData.gender,
-            grade: studentData.class.grade,
-            classTeacher: teachername.firstname + " " + teachername.lastname,
+            grade: (studentData.class) ? studentData.class.grade : "No Class Is Assign ",
+            classTeacher: (teachername) ? teachername.firstname + " " + teachername.lastname : "no teacher is assign",
             startYear: studentData.startyear,
             birthDate: studentData.birthdate,
             addressLine1: studentData.addressline1,
@@ -283,6 +290,7 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
     const optional2 = req.body.optional2;
     const optional3 = req.body.optional3;
 
+    console.log("here is ht")
     console.log(req.body);
 
     try {
@@ -325,9 +333,8 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
 
         res.status(200).json({
             insertion: true,
-            studentid: studentid
+            studentid: studentid,
         })
-
 
 
     } catch (error) {
@@ -359,11 +366,12 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
 
         var resObj = {};
-        var sum;
+        var sum = 0;
         var count;
         resultList.forEach(result => {
 
-
+            sum += result.marks;
+            count++;
             resObj.marks = result.marks;
             resObj.subject = result.subject.subjectname;
 
@@ -398,6 +406,31 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
         console.log(error);
     }
+
+
+}
+
+exports.getGetDataForDashboardAverage = async (req, res, next) => {
+
+    const studentid = req.params.id;
+
+
+    try {
+        const averageArray = await ResultSummary.findAll({
+            where: {
+                _id: studentid
+            },
+            attributes: ['year', 'term', 'average']
+        })
+
+        res.status(200).json({
+            averageData: averageArray
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+
 
 
 }

@@ -453,7 +453,18 @@ exports.getData = [
         "subjectinfo": "This is the best roman_cathalic",
         "mandatory": false             //mandotory
     },
-
+    {
+        "subjectname": "geography",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": false             //mandotory
+    },
+    {
+        "subjectname": "estern_music",
+        "grade": "11_D",
+        "subjectinfo": "This is the best roman_cathalic",
+        "mandatory": false             //mandotory
+    },
 
 
 
