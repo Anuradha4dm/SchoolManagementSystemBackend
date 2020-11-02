@@ -1,5 +1,5 @@
 const Student = require('../models/studentModel');
-const { Op } = require("sequelize");
+const { Op, } = require("sequelize");
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Subject = require('../models/subjectModel');
@@ -160,20 +160,11 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
             throw error;
         }
 
-        const subjectid = await Subject.findOne({               //get the optional subject id
-            attributes: ['subjectid'],
-            where: {
-                subjectname: opSubjectname
-            }
-        })
-
-
-
         const addSubjectArr = await Subject.findAll({
             where: {
                 [Op.or]: [
                     { grade: grade, mandatory: true },
-                    { subjectid: subjectid.dataValues.subjectid, mandatory: false }
+                    { subjectname: opSubjectname, mandatory: false }                 //later change this one without check
                 ]
             }
         });
@@ -270,3 +261,67 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
     }
 
 }
+
+exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
+
+    const studentid = req.body.studentid;
+    const grade = req.body.grade;
+    const optional1 = req.body.optional1;
+    const optional2 = req.body.optional2;
+    const optional3 = req.body.optional3;
+
+    try {
+
+        const student = await Student.findOne({
+            where: {
+                _id: studentid,
+                subjectRegistrationDone: false
+            }
+        });
+
+        if (!student) {
+            var error = new Error("Not user found or You have Already Submited");
+            error.statusCode = 401;
+            throw error;
+        }
+
+        var subjectidlist = await Subject.findAll({
+            where: {
+
+                [Op.or]: [
+                    { grade: grade, mandatory: true },
+                    {
+                        subjectname: [optional1, optional2, optional3],
+                        grade: grade,
+                        mandatory: false,
+                    }
+                ]
+            }
+        })
+
+        subjectidlist.forEach(element => {
+            element.addStudent(student);
+        });
+
+        student.subjectRegistrationDone = true;
+
+        await student.save();
+
+
+        res.status(200).json({
+            insertion: true,
+            studentid: studentid
+        })
+
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 401;
+        }
+        nextt(error)
+    }
+
+
+}
+

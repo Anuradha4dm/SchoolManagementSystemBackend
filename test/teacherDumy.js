@@ -11,8 +11,8 @@ exports.getData =
             "age": 43,
             "startyear": 1999,
             "imagepath": "image/ST_1.jpg",                   //dont cahnge
-            "role": "teacher",
-            "grades": 'Grade A ',
+            "role": "teacher",                  //dont change
+            "grades": 'Grade A',                    //dont change
             "subjects": "mathematices",
             "birthdate": "2020-10-21 00:00:00",
             "gender": "male",
@@ -23,5 +23,6 @@ exports.getData =
             "city": "seeduwa",
             "mobile": "0771346601",
         },
+
 
     ];
