@@ -107,7 +107,7 @@ Subject.belongsTo(Teacher);
 Student.belongsTo(Class);
 Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
-Student.hasMany(Result, { foreignKey: '_id' });
+Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 

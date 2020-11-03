@@ -350,15 +350,21 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
 
 exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
+    const studentid = req.body.studentid;
+    const year = req.body.year;
+    const grade = req.body.class;
+    const term = req.body.term;
+
     var resultArray = []
 
     try {
 
         const resultList = await Result.findAll({
             where: {
-                grade: req.body.class,
-                term: req.body.term,
-                year: req.body.year
+                grade: grade,
+                term: term,
+                year: year,
+                studentId: studentid
             }
             ,
             include: [Subject]
@@ -392,14 +398,31 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
         });
 
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            },
+            attributes: ['firstname', 'lastname']
+
+        })
+
         if (resultArray.length == 0) {
             var error = new Error("No Results Are Found");
             error.statusCode = 500;
             throw error;
         }
 
+        const resultSummary = await ResultSummary.findOne({
+            where: {
+                year: year,
+                term: term,
+                _id: studentid
+            }
+        })
+
 
         res.status(200).json({
+            studentname: studentData.firstname + " " + studentData.lastname,
             resultarray: resultArray
         })
 
@@ -421,7 +444,7 @@ exports.postGetDatForChar2 = async (req, res, next) => {
             where: {
                 term: req.body.term,
                 year: req.body.year,
-                _id: req.body.studentid
+                studentId: req.body.studentid
             }
             ,
             include: [Subject]
@@ -504,7 +527,7 @@ exports.postGetChar1Data = async (req, res, next) => {
 
         const resultarray = await Result.findAll({
             where: {
-                _id: studentid,
+                studentId: studentid,
                 subjectSubjectid: {
                     [Op.in]: subjectidArr
 

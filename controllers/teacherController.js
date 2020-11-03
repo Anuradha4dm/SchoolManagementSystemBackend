@@ -16,7 +16,7 @@ exports.postAddStudentResults = async (req, res, next) => {
             where: {
                 year: year,
                 term: term,
-                _id: studentid,
+                studentId: studentid,
                 grade: grade
             }
         });
@@ -39,7 +39,7 @@ exports.postAddStudentResults = async (req, res, next) => {
 
             resultObj.year = year;
             resultObj.term = term;
-            resultObj._id = studentid;
+            resultObj.studentId = studentid;
             resultObj.grade = grade;
 
             await Result.create(resultObj);
@@ -49,7 +49,7 @@ exports.postAddStudentResults = async (req, res, next) => {
         const summary = {
             year: year,
             term: term,
-            _id: studentid,
+            studentId: studentid,
             average: (sum) / count,
             message: message
         }
