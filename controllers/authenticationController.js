@@ -83,7 +83,8 @@ exports.postAuthentication = (req, res, next) => {
                     authentication: true,
                     token: token,
                     _id: userid,
-                    logInAs: "student"
+                    logInAs: "student",
+                    expirationdata: new Date().getTime() + 3600 * 1000
                 })
             })
             .catch(error => {

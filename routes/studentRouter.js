@@ -26,6 +26,20 @@ router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjec
 //POST=> /student/add-subject-ordinaty-level
 router.post('/add-subject-ordinaty-level', studentController.postAddSubjectOrdinaryLevel);
 
+//GET
+router.post('/view-result', studentController.getGetResultOfSpecificStudent);
+
+
+//GET /student/dashboard
+router.get('/dashboard/:id', studentController.getGetDataForDashboardAverage);
+
+//POST /student/get-chart1-data
+router.post('/get-chart1-data', studentController.postGetChar1Data);
+
+//POST /student/get-chart2-data
+router.post('/get-chart2-data', studentController.postGetDatForChar2);
+
+
 module.exports = router;
 
 
