@@ -411,6 +411,51 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
 }
 
+exports.postGetDatForChar2 = async (req, res, next) => {
+
+    var resultArray = []
+
+    try {
+
+        const resultList = await Result.findAll({
+            where: {
+                term: req.body.term,
+                year: req.body.year,
+                _id: req.body.studentid
+            }
+            ,
+            include: [Subject]
+        })
+
+        var resultsData = { marks: [], subjectname: [] };
+
+        resultList.forEach(result => {
+            resultsData.marks.push(result.marks)
+            resultsData.subjectname.push(result.subject.subjectname);
+
+
+        });
+
+
+        if (resultsData.marks.length == 0) {
+            var error = new Error("No Results Are Found");
+            error.statusCode = 500;
+            throw error;
+        }
+
+
+        res.status(200).json({
+            resultarray: resultsData
+        })
+
+    } catch (error) {
+
+        console.log(error);
+    }
+
+
+}
+
 exports.getGetDataForDashboardAverage = async (req, res, next) => {
 
     const studentid = req.params.id;
