@@ -11,7 +11,7 @@ exports.getYear = async (studentObj) => {
     try {
 
         const yearsData = await Result.findAll({
-            where: { _id: "ST_1" },
+            where: { studentId: "ST_1" },
             attributes: ['year']
         })
 
@@ -41,7 +41,7 @@ exports.getClass = async (data) => {
 
         const getClass = await Result.findOne({
             where: {
-                _id: studentid,
+                StudentId: studentid,
                 term: term,
                 year: year
             },
@@ -67,7 +67,7 @@ exports.getSubjectForChart1 = async (data) => {
 
         const subjects = await Result.findAll({
             where: {
-                _id: data.studentid
+                studentId: data.studentid
             },
             include: [Subject],
 
