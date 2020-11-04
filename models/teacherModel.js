@@ -25,6 +25,9 @@ const Teacher = sequelize.define("teacher", {
         type: DataTypes.STRING,
         allowNull: true
     },
+    username: {
+        type: DataTypes.STRING
+    },
     password: {
         type: DataTypes.STRING,
         allowNull: true

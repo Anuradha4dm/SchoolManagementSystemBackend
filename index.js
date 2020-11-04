@@ -14,6 +14,7 @@ const adminRouter = require('./routes/adminRoute');
 const authenticationRouter = require('./routes/authenticationRoute');
 const socketHandler = require('./socketHandler');
 const teacherRouter = require('./routes/teacherRoutes');
+const commnoRouter = require('./routes/commonRouter');
 
 //database modules
 const Student = require('./models/studentModel');
@@ -25,6 +26,7 @@ const SUbjectWrapper = require('./models/subjectWrapper');
 const Class = require("./models/classModel");
 const Result = require('./models/resultModel');
 const resultSummaty = require("./models/resultSummaryModel");
+const Leave = require('./models/leaveRequest');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -33,6 +35,7 @@ const subjectDumy = require('./test/subjectDataDummy');
 const classDumy = require('./test/classDumy');
 const resultDumy = require('./test/resultDumy');
 const ResultSummary = require('./models/resultSummaryModel');
+
 //resolving CORS errors
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -77,6 +80,8 @@ app.use('/student', studentRoute);
 app.use('/admin', adminRouter);
 app.use('/teacher', teacherRouter);
 app.use('/auth', authenticationRouter);
+app.use('/common', commnoRouter);
+
 
 
 app.use((error, req, res, next) => {
@@ -109,6 +114,8 @@ Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
 Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
+Leave.belongsTo(Teacher)
+NonAcademic.hasMany(Leave);
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
