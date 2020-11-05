@@ -40,6 +40,8 @@ router.post('/get-chart1-data', studentController.postGetChar1Data);
 router.post('/get-chart2-data', studentController.postGetDatForChar2);
 
 
+router.post('/get-attendence-mainchart-data', studentController.postGetAttendenceMainChartData);
+
 module.exports = router;
 
 

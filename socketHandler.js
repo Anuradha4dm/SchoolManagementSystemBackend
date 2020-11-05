@@ -63,6 +63,7 @@ exports.getClass = async (data) => {
 
 exports.getSubjectForChart1 = async (data) => {
 
+
     try {
 
         const subjects = await Result.findAll({
