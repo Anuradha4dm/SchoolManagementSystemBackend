@@ -22,7 +22,7 @@ const ResultSummary = sequelize.define('resultsummary', {
         type: DataTypes.DOUBLE,
     }
     ,
-    palce: {
+    place: {
         type: DataTypes.INTEGER
     },
     message: {

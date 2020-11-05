@@ -258,12 +258,15 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
                 throw (error);
             }
 
+
+
             return {
                 subjectid: element.subjectid,
                 subjectname: element.subjectname,
                 teacherid: teacherData.teacherid,
                 teachername: teacherData.firstname + " " + teacherData.lastname,
-                teacheremail: teacherData.email
+                teacheremail: teacherData.email,
+
             };
         }))
 
@@ -271,7 +274,8 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
 
         res.status(200).json({
             quaery: true,
-            dataArray: subjectDetailFull
+            dataArray: subjectDetailFull,
+            update: new Date()
         })
 
 
@@ -374,6 +378,8 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
 
 
+
+
         var resObj = {};
         var sum = 0;
         var count;
@@ -423,9 +429,14 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
         })
 
 
+
         res.status(200).json({
             studentname: studentData.firstname + " " + studentData.lastname,
-            resultarray: resultArray
+            resultarray: resultArray,
+            average: resultSummary.average,
+            place: resultSummary.place,
+            message: resultSummary.message,
+            update: resultSummary.createdAt
         })
 
     } catch (error) {
