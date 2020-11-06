@@ -115,7 +115,8 @@ Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
 Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
-Leave.belongsTo(Teacher)
+Leave.belongsTo(Teacher);
+Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
 Student.hasMany(StudentAttendence);
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });

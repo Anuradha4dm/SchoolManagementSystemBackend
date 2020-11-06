@@ -10,7 +10,8 @@ exports.getData =
             "email": "ranweer@gamil.com",
             "age": 43,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",                  //dont change
             "grades": 'Grade A',                    //dont change
             "subjects": "mathematices",
@@ -33,7 +34,8 @@ exports.getData =
             "email": "salamal@gamil.com",
             "age": 33,
             "startyear": 1996,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B',
             "subjects": "hindi",
@@ -56,7 +58,8 @@ exports.getData =
             "email": "ranweer@gamil.com",
             "age": 43,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "mathematices",
@@ -82,7 +85,8 @@ exports.getData =
             "email": "guwani@gamil.com",
             "age": 42,
             "startyear": 1998,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B ',
             "subjects": "Science",
@@ -107,7 +111,8 @@ exports.getData =
             "email": "ranwee@gamil.com",
             "age": 33,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "history",
@@ -130,7 +135,8 @@ exports.getData =
             "email": "charmara@gamil.com",
             "age": 40,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "buddhist",
@@ -155,7 +161,8 @@ exports.getData =
             "email": "nadun@gamil.com",
             "age": 53,
             "startyear": 1989,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B ',
             "subjects": "english",
@@ -180,7 +187,8 @@ exports.getData =
             "email": "ranweeraa@gamil.com",
             "age": 43,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "Estern music",
@@ -205,7 +213,8 @@ exports.getData =
             "email": "raweer@gamil.com",
             "age": 39,
             "startyear": 1998,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B ',
             "subjects": "dancing",
@@ -229,7 +238,8 @@ exports.getData =
             "email": "amal@gamil.com",
             "age": 33,
             "startyear": 1989,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B ',
             "subjects": "art",
@@ -253,7 +263,8 @@ exports.getData =
             "email": "kaml@gamil.com",
             "age": 33,
             "startyear": 1996,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade C ',
             "subjects": "drama",
@@ -276,7 +287,8 @@ exports.getData =
             "email": "namal@gamil.com",
             "age": 32,
             "startyear": 1997,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "tamil",
@@ -299,7 +311,8 @@ exports.getData =
             "email": "raml@gamil.com",
             "age": 33,
             "startyear": 1996,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A',
             "subjects": "citizan_education",
@@ -323,7 +336,8 @@ exports.getData =
             "email": "sirimal@gamil.com",
             "age": 33,
             "startyear": 1999,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade B ',
             "subjects": "health",
@@ -347,7 +361,8 @@ exports.getData =
             "email": "vimal@gamil.com",
             "age": 33,
             "startyear": 1992,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "pts",
@@ -372,7 +387,8 @@ exports.getData =
             "email": "nihal@gamil.com",
             "age": 30,
             "startyear": 1995,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "commerce",
@@ -401,7 +417,8 @@ exports.getData =
             "email": "kaml@gamil.com",
             "age": 33,
             "startyear": 1997,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade A ',
             "subjects": "it",
@@ -427,7 +444,8 @@ exports.getData =
             "email": "dumal@gamil.com",
             "age": 34,
             "startyear": 1996,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade C ',
             "subjects": "agricultural",
@@ -451,7 +469,8 @@ exports.getData =
             "email": "kaml@gamil.com",
             "age": 33,
             "startyear": 1996,
-            "imagepath": "image/ST_1.jpg",                   //dont cahnge
+            "imagepath": "image/ST_1.jpg",
+            " numberofleaves": 44.0,                   //dont cahnge
             "role": "teacher",
             "grades": 'Grade C ',
             "subjects": "english literiture",

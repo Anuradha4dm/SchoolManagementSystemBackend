@@ -20,6 +20,10 @@ const Leave = sequelize.define('leaverequest', {
     },
     allow: {
         type: DataTypes.BOOLEAN
+    },
+    leavetype: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 
 

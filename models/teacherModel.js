@@ -64,6 +64,11 @@ const Teacher = sequelize.define("teacher", {
     mobile: {
         type: DataTypes.STRING
     },
+    numberofleaves: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 44.0
+    }
 
 
 
