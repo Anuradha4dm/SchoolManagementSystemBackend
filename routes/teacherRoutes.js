@@ -1,5 +1,6 @@
 const express = require('express');
 
+
 const router = express.Router();
 
 const teacherController = require('../controllers/teacherController');
@@ -11,6 +12,9 @@ router.post('/add-student-result', teacherController.postAddStudentResults);
 router.post('/mark-attendence', teacherController.postMarkStudentAttendence);
 
 //POST
+router.get('/class-student-list/:id', teacherController.getStudentListForSpecificTeacher);
+
+router.post('/get-student-subject', teacherController.getSubjectOfStudent);
 
 
 module.exports = router;

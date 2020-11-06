@@ -1,7 +1,13 @@
 
+const Class = require("../models/classModel");
 const Result = require("../models/resultModel");
 const ResultSummary = require("../models/resultSummaryModel");
 const StudentAttendence = require('../models/studentAttendaceModule');
+const Student = require("../models/studentModel");
+const { Op } = require('sequelize')
+const SubjectWrapper = require("../models/subjectWrapper");
+const Teacher = require("../models/teacherModel");
+const Subject = require("../models/subjectModel");
 
 exports.postAddStudentResults = async (req, res, next) => {
 
@@ -111,6 +117,87 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
         console.log(error)
     }
 
+
+}
+
+
+exports.getStudentListForSpecificTeacher = async (req, res, next) => {
+
+    const id = req.params.id;
+
+    var error;
+
+    try {
+
+        const classid = await Teacher.findOne({
+            where: {
+                teacherid: id,
+            },
+            attribute: ['classClassid'],
+            include: [Class]
+        })
+
+
+
+        if (!classid.classClassid) {
+            error = new Error('You Have No Class...Contact Admin......');
+            error.statusCode = 500;
+            throw error;
+        }
+
+        const studentList = await Student.findAll({
+            where: {
+                classClassid: classid.classClassid
+            },
+            attributes: ['_id', 'firstname', 'lastname']
+        });
+
+        res.status(200).json({
+            grade: classid.class.grade,
+            studentListData: studentList
+        })
+
+
+
+
+
+    } catch (error) {
+
+        console.log(error);
+    }
+
+
+}
+
+exports.getSubjectOfStudent = async (req, res, next) => {
+
+
+    const grade = req.body.grade;
+    const studentid = req.body.studentid;
+
+    const subjectlist = await Subject.findAll({
+        where: {
+            grade: grade
+        },
+        include: {
+            model: Student,
+            where: {
+                _id: studentid,
+
+            },
+
+        },
+        attributes: ['subjectid', 'subjectname']
+    }
+    )
+
+    const subjectArray = subjectlist.map(element => {
+        return { subjectid: element.subjectid, subjectname: element.subjectname }
+    });
+
+    res.status(200).json({
+        subjectlist: subjectArray
+    })
 
 }
 
