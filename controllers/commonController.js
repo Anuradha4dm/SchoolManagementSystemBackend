@@ -146,3 +146,96 @@ exports.postGetPreviousLeavesData = async (req, res, next) => {
 
 
 }
+
+exports.postNewLeaveRequest = async (req, res, next) => {
+
+    const id = req.body.id;
+    const date = req.body.date;
+    const type = req.body.type;
+    const description = req.body.description;
+
+    const roll = id.split('_')[0];
+
+    var result;
+
+    try {
+        if (roll === "AC") {
+            const academicUser = await Teacher.findOne({
+                where: {
+                    teacherid: id
+                }
+            })
+
+            if (!academicUser) {
+                var error = new Error("User Can Not Find");
+                error.statusCode = 500;
+                throw error;
+            }
+
+            var leave = {
+                leavedate: date,
+                description: description,
+                allow: false,
+                leavetype: type,
+            }
+
+            result = await academicUser.createLeaverequest(leave);
+
+            if (!result.leaveid) {
+                throw new Error("Requser Can Not Make Now");
+            }
+
+        }
+
+        if (roll === "NAC") {
+            const nonAcademicUser = await NonAcademic.findOne({
+                where: {
+                    nonacademicid: id
+                }
+            })
+
+            console.log(nonAcademicUser)
+
+            if (!nonAcademicUser) {
+                var error = new Error("User Can Not Find");
+                error.statusCode = 500;
+                throw error;
+            }
+
+            var leave = {
+                leavedate: date,
+                description: description,
+                allow: false,
+                leavetype: type,
+            }
+
+            result = await nonAcademicUser.createLeaverequest(leave);
+
+            if (!result.leaveid) {
+                throw new Error("Requser Can Not Make Now");
+            }
+
+
+        }
+
+
+        res.status(200).json({
+            message: "Leave Request Made Successfully..."
+        })
+
+    } catch (error) {
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
+
+
+
+
+
+}
+
+

@@ -7,7 +7,9 @@ const Teacher = require('../models/teacherModel');
 const Class = require("../models/classModel");
 const Result = require('../models/resultModel');
 const ResultSummary = require('../models/resultSummaryModel');
-const { postAddNewStudentValidators } = require('../validators/adminRouteValidator');
+
+const StudentAttendence = require('../models/studentAttendaceModule');
+
 
 
 
@@ -256,12 +258,15 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
                 throw (error);
             }
 
+
+
             return {
                 subjectid: element.subjectid,
                 subjectname: element.subjectname,
                 teacherid: teacherData.teacherid,
                 teachername: teacherData.firstname + " " + teacherData.lastname,
-                teacheremail: teacherData.email
+                teacheremail: teacherData.email,
+
             };
         }))
 
@@ -269,7 +274,8 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
 
         res.status(200).json({
             quaery: true,
-            dataArray: subjectDetailFull
+            dataArray: subjectDetailFull,
+            update: new Date()
         })
 
 
@@ -372,6 +378,8 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
 
 
+
+
         var resObj = {};
         var sum = 0;
         var count;
@@ -421,9 +429,14 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
         })
 
 
+
         res.status(200).json({
             studentname: studentData.firstname + " " + studentData.lastname,
-            resultarray: resultArray
+            resultarray: resultArray,
+            average: resultSummary.average,
+            place: resultSummary.place,
+            message: resultSummary.message,
+            update: resultSummary.createdAt
         })
 
     } catch (error) {
@@ -547,6 +560,74 @@ exports.postGetChar1Data = async (req, res, next) => {
 
     } catch (error) {
         console.log(error)
+    }
+
+}
+
+
+exports.postGetAttendenceMainChartData = async (req, res, next) => {
+
+
+    const studentid = req.body.studentid;
+    var monthlyPresentCount = [];
+
+    try {
+
+        for (var i = 1; i < 13; i++) {
+
+            const numberOfDaysPresentInMonth = await StudentAttendence.count({
+                where: {
+                    studentId: studentid,
+                    present: true,
+                    month: i,
+                    year: 2020
+
+                }
+            })
+
+            monthlyPresentCount.push(numberOfDaysPresentInMonth);
+
+        }
+
+        const absentDays = await StudentAttendence.findAll({
+            where: {
+                studentId: studentid,
+                present: false,
+                year: 2020,
+
+            },
+            attributes: ['date']
+        })
+
+
+        const totalDaysSchooluntillNow = await StudentAttendence.count({
+            where: {
+                studentid: studentid,
+                year: 2020
+            }
+        })
+
+        const totalPresents = monthlyPresentCount.reduce((a, b) => {
+            return a + b;
+        })
+
+
+
+
+        res.status(200).json({
+            monthattendence: monthlyPresentCount,
+            presentage: ((totalPresents / totalDaysSchooluntillNow) * 100).toFixed(2),
+            totalpresents: totalPresents,
+            absentDates: absentDays
+
+        })
+
+
+
+
+    } catch (error) {
+        console.log("error", error)
+
     }
 
 }

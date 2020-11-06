@@ -22,11 +22,12 @@ const Teacher = require('./models/teacherModel');
 const Admin = require('./models/adminModel');
 const NonAcademic = require('./models/nonAcademicModel');
 const Subject = require('./models/subjectModel');
-const SUbjectWrapper = require('./models/subjectWrapper');
+const SubjectWrapper = require('./models/subjectWrapper');
 const Class = require("./models/classModel");
 const Result = require('./models/resultModel');
-const resultSummaty = require("./models/resultSummaryModel");
+const ResultSummary = require('./models/resultSummaryModel');
 const Leave = require('./models/leaveRequest');
+const StudentAttendence = require('./models/studentAttendaceModule');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -34,7 +35,7 @@ const teacherDumy = require('./test/teacherDumy');
 const subjectDumy = require('./test/subjectDataDummy');
 const classDumy = require('./test/classDumy');
 const resultDumy = require('./test/resultDumy');
-const ResultSummary = require('./models/resultSummaryModel');
+const attendenceDumy = require('./test/attendenceDumy');
 
 //resolving CORS errors
 app.use((req, res, next) => {
@@ -114,8 +115,10 @@ Teacher.belongsTo(Class)
 Result.belongsTo(Subject);
 Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
-Leave.belongsTo(Teacher)
+Leave.belongsTo(Teacher);
+Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
+Student.hasMany(StudentAttendence);
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
@@ -149,7 +152,7 @@ sequelize
 
         console.log("Connection success");
 
-
+        // StudentAttendence.bulkCreate(attendenceDumy.getData);
 
         // Result.bulkCreate(resultDumy.getData)
         //     .then(re => {
