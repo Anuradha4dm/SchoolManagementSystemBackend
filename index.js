@@ -30,6 +30,8 @@ const ResultSummary = require('./models/resultSummaryModel');
 const Leave = require('./models/leaveRequest');
 const StudentAttendence = require('./models/studentAttendaceModule');
 const Notification = require('./models/notification');
+const Sports = require('./models/sportModel');
+const SportsWrapper = require('./models/sportsWrapperModule');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -111,6 +113,21 @@ Subject.belongsToMany(Student, {
     foreignKey: 'subjectid'
 
 })
+
+Student.belongsToMany(Sports, {
+    through: 'sportswrapper',
+    foreignKey: 'studentid',
+    otherKey: 'sportid'
+});
+
+Sports.belongsToMany(Student, {
+
+    through: 'sportswrapper',
+    otherKey: 'studentid',
+    foreignKey: 'sportid'
+})
+
+
 //1:1 
 Subject.belongsTo(Teacher);
 Student.belongsTo(Class);
@@ -132,13 +149,20 @@ sequelize
     .sync()
     .then(result => {
 
-
+        var currentConnetedUser;
 
         const server = app.listen(3000);
 
-        const io = require('./webSocket').init(server);
+        const io = require('./webSocket');
 
-        io.on('connection', socket => {
+
+
+        io.init(server).on('connection', socket => {
+
+            io.useSocket = socket;
+
+
+
             console.log('client connected');
 
             socket.on("getYear", data => {
