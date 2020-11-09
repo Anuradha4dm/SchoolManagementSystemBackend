@@ -15,6 +15,7 @@ const authenticationRouter = require('./routes/authenticationRoute');
 const socketHandler = require('./socketHandler');
 const teacherRouter = require('./routes/teacherRoutes');
 const commnoRouter = require('./routes/commonRouter');
+const nonacademicRouter = require('./routes/nonAccadamicRoute');
 
 //database modules
 const Student = require('./models/studentModel');
@@ -28,6 +29,7 @@ const Result = require('./models/resultModel');
 const ResultSummary = require('./models/resultSummaryModel');
 const Leave = require('./models/leaveRequest');
 const StudentAttendence = require('./models/studentAttendaceModule');
+const Notification = require('./models/notification');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -80,6 +82,7 @@ app.use(bodyParser.json());
 app.use('/student', studentRoute);
 app.use('/admin', adminRouter);
 app.use('/teacher', teacherRouter);
+app.use('/nonacademic', nonacademicRouter);
 app.use('/auth', authenticationRouter);
 app.use('/common', commnoRouter);
 
@@ -119,6 +122,8 @@ Leave.belongsTo(Teacher);
 Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
 Student.hasMany(StudentAttendence);
+
+
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
 
 
@@ -138,6 +143,7 @@ sequelize
 
             socket.on("getYear", data => {
                 socketHandler.getYear(data);
+
             })
 
             socket.on("getGrades", data => {
@@ -211,9 +217,6 @@ sequelize
         // }).catch(error => {
         //     console.log(error)
         // })
-
-
-
 
     })
     .catch(error => {

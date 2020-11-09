@@ -41,8 +41,10 @@ exports.postAddStudentResults = async (req, res, next) => {
 
         resultArray.forEach(async resultObj => {
 
-            sum += resultObj.marks;
+            sum += +resultObj.marks;
             count++;
+
+            console.log(resultObj);
 
             resultObj.year = year;
             resultObj.term = term;
@@ -53,10 +55,12 @@ exports.postAddStudentResults = async (req, res, next) => {
 
         });
 
+        console.log(sum);
+
         const summary = {
             year: year,
             term: term,
-            studentId: studentid,
+            _id: studentid,
             average: (sum) / count,
             message: message
         }

@@ -126,6 +126,9 @@ exports.postEditStudentProfile = (req, res, next) => {
 
 exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the student click on the subject selection then subject related data will be apper
 
+    const subjectname = req.body.subjectname;
+    const grade = req.body.grade;
+
     responseData = {
 
         subjectName: '',
@@ -137,8 +140,8 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
     Subject.findOne(
         {
             where: {
-                subjectname: req.params.subject,
-                grade: "8_D"
+                subjectname: subjectname,
+                grade: grade
             }
         }
     )
@@ -154,8 +157,9 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
             res.status(200).json(responseData)
         })
         .catch(error => {
+            error.message = "Subject is not assign to teacher check later....."
             if (!error.statusCode) {
-                error.statusCode = 401
+                error.statusCode = 500
             }
             next(error);
         })
@@ -270,7 +274,11 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
             };
         }))
 
-
+        if (subjectDetailFull.length == 0) {
+            var error = new Error('You Have Not Register for the subjects');
+            error.statusCode = 500;
+            throw error;
+        }
 
         res.status(200).json({
             quaery: true,
@@ -297,8 +305,6 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
     const optional2 = req.body.optional2;
     const optional3 = req.body.optional3;
 
-    console.log("here is ht")
-    console.log(req.body);
 
     try {
 
@@ -351,6 +357,68 @@ exports.postAddSubjectOrdinaryLevel = async (req, res, nextt) => {
         nextt(error)
     }
 
+
+}
+
+
+exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
+
+    const studentid = req.body.studentid;
+    const grade = req.body.grade;
+    const subject1 = req.body.subject1;
+    const subject2 = req.body.subject2;
+    const subject3 = req.body.subject3;
+
+    try {
+
+
+
+        const student = await Student.findOne({
+            where: {
+                _id: studentid,
+                subjectRegistrationDone: false
+            }
+        });
+
+        if (!student) {
+            var error = new Error("You Have Already Registered....")
+            error.statusCode = 500;
+            throw error;
+        }
+
+
+
+        const subjectList = await Subject.findAll({
+            where: {
+                [Op.and]: {
+                    subjectname: [subject1, subject2, subject3],
+                    grade: grade
+                }
+            }
+        })
+
+        subjectList.forEach(async (subject) => {
+
+            await subject.addStudent(student);
+
+        })
+
+        student.subjectRegistrationDone = true;
+
+        await student.save();
+
+
+        res.status(200).json({
+            update: true
+        })
+
+    } catch (error) {
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
 
 }
 
@@ -486,7 +554,10 @@ exports.postGetDatForChar2 = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
     }
 
 
@@ -563,6 +634,7 @@ exports.postGetChar1Data = async (req, res, next) => {
     }
 
 }
+
 
 
 exports.postGetAttendenceMainChartData = async (req, res, next) => {

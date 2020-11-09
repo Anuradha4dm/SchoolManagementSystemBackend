@@ -137,7 +137,8 @@ exports.postAuthentication = (req, res, next) => {
                     authentication: true,
                     token: token,
                     _id: userid,
-                    logInAs: "teacher"
+                    logInAs: "teacher",
+                    expirationdata: new Date().getTime() + 3600 * 1000
                 })
             })
             .catch(error => {
@@ -190,7 +191,8 @@ exports.postAuthentication = (req, res, next) => {
                     authentication: true,
                     token: token,
                     _id: userid,
-                    logInAs: "admin"
+                    logInAs: "admin",
+                    expirationdata: new Date().getTime() + 3600 * 1000
                 })
             })
             .catch(error => {
@@ -243,7 +245,8 @@ exports.postAuthentication = (req, res, next) => {
                     authentication: true,
                     token: token,
                     _id: userid,
-                    logInAs: "nonacademic"
+                    logInAs: "nonacademic",
+                    expirationdata: new Date().getTime() + 3600 * 1000
                 })
             })
             .catch(error => {

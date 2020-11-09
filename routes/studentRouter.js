@@ -15,10 +15,13 @@ router.get('/profile/:id', studentController.getStudentProfile);
 router.post('/edit-profile/:id', studentController.postEditStudentProfile);
 
 //POST=> /student/getSubjectInfo/:subject/:grade
-router.get('/getsubjectinfo/:subject/:grade', studentController.getGetSubjectData);
+router.post('/getsubjectinfo', studentController.getGetSubjectData);
 
 //POST=> /student/addsubjectprimary
 router.post('/addsubjectprimary', studentController.postAddSubjectPrimary);
+
+//POST 
+router.post('/add-subject-advance-level', studentController.postAddSubjectAdvanceLevel);
 
 //GET=> /student/get-subject-list/:studentid
 router.get('/get-subject-list/:studentid', studentController.getRegisteredSubjectList);

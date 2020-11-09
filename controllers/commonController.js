@@ -2,7 +2,22 @@
 const Teacher = require('../models/teacherModel');
 const NonAcademic = require('../models/nonAcademicModel');
 const LeaveRequest = require('../models/leaveRequest');
-const { Op, DataTypes } = require('sequelize')
+const { Op, DataTypes } = require('sequelize');
+const Notification = require('../models/notification');
+
+
+
+const nodemailer = require('nodemailer');
+const sendGridTransport = require('nodemailer-sendgrid-transport');
+const Student = require('../models/studentModel');
+
+
+const transporter = nodemailer.createTransport(sendGridTransport({
+    auth: {
+
+        api_key: process.env.API_KEY,
+    }
+}))
 
 
 exports.postGetDataForleave = async (req, res, next) => {
@@ -238,4 +253,84 @@ exports.postNewLeaveRequest = async (req, res, next) => {
 
 }
 
+
+exports.getGetNotifications = async (req, res, next) => {
+
+    const id = req.params.id;
+    var notifications = [];
+
+    try {
+
+        var role = id.split('_')[0];
+
+        if (role === "AC") {
+
+
+            notifications = await Notification.findAll({
+                where: {
+                    [Op.or]: {
+                        type: 1,
+                        to: id
+                    }
+                }
+            })
+
+
+        }
+
+        if (role === "ST") {
+            notifications = await Notification.findAll({
+                where: {
+                    [Op.or]: {
+                        type: 3,
+                        to: id
+                    }
+                }
+            })
+
+        }
+
+
+        res.status(200).json({
+            notificationArray: notifications
+        })
+
+    } catch (error) {
+
+        console.log(error);
+    }
+
+}
+
+
+exports.sendEmail = async (req, res, next) => {
+
+
+
+    const receiver = req.body.receiver;
+    const sender = req.body.sender;
+    const subject = req.body.subject;
+
+
+    const user = await Student.findOne({
+        where: {
+            _id: sender
+        }
+    })
+
+    transporter.sendMail({
+        to: receiver,
+        from: "damithanuradha44@gmail.com",
+        subject: subject,
+        html: `<h1>Message from ${user.username} </h1>
+                <p>this is comming from scholl emial</p>
+            `
+    }).then(re => {
+        console.log(re);
+    })
+        .catch(err => {
+            console.log(err)
+        })
+
+}
 
