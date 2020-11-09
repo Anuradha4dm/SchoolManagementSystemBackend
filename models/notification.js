@@ -30,6 +30,9 @@ const Notification = sequelize.define('notification', {
     to: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    title: {
+        type: DataTypes.STRING
     }
 });
 

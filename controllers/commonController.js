@@ -4,7 +4,7 @@ const NonAcademic = require('../models/nonAcademicModel');
 const LeaveRequest = require('../models/leaveRequest');
 const { Op, DataTypes } = require('sequelize');
 const Notification = require('../models/notification');
-
+const sequelize = require('sequelize')
 
 
 const nodemailer = require('nodemailer');
@@ -269,10 +269,16 @@ exports.getGetNotifications = async (req, res, next) => {
             notifications = await Notification.findAll({
                 where: {
                     [Op.or]: {
-                        type: 1,
-                        to: id
-                    }
-                }
+                        type: [0, 1],
+                        [Op.and]: {
+                            type: [2],
+                            to: id
+                        }
+                    },
+                },
+                order: [['createdAt', 'ASC']]
+
+
             })
 
 
@@ -282,10 +288,16 @@ exports.getGetNotifications = async (req, res, next) => {
             notifications = await Notification.findAll({
                 where: {
                     [Op.or]: {
-                        type: 3,
-                        to: id
-                    }
-                }
+                        type: [0, 3],
+                        [Op.and]: {
+                            type: [4],
+                            to: id
+                        }
+                    },
+                },
+                order: [['createdAt', 'ASC']]
+
+
             })
 
         }

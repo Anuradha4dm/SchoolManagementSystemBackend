@@ -149,13 +149,9 @@ sequelize
     .sync()
     .then(result => {
 
-        var currentConnetedUser;
-
         const server = app.listen(3000);
 
         const io = require('./webSocket');
-
-
 
         io.init(server).on('connection', socket => {
 
