@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 require('dotenv').config()
-
+const upload = require('express-fileupload')
 //include the body to the parse
 const app = express();
 
@@ -16,6 +16,8 @@ const socketHandler = require('./socketHandler');
 const teacherRouter = require('./routes/teacherRoutes');
 const commnoRouter = require('./routes/commonRouter');
 const nonacademicRouter = require('./routes/nonAccadamicRoute');
+
+
 
 //database modules
 const Student = require('./models/studentModel');
@@ -41,6 +43,8 @@ const classDumy = require('./test/classDumy');
 const resultDumy = require('./test/resultDumy');
 const attendenceDumy = require('./test/attendenceDumy');
 
+
+
 //resolving CORS errors
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -51,13 +55,19 @@ app.use((req, res, next) => {
 
 //static serving files
 app.use('/image', express.static(path.join(__dirname, 'image')));
+app.use('/timetable', express.static(path.join(__dirname, 'timetable')));
 
 //get the files 
 
 //file storage configurations
 const storageLocation = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, 'image');
+        if (file.fieldname === "timetable") {
+            callback(null, 'timetable')
+        }
+        if (file.fieldname === "imageData") {
+            callback(null, 'image');
+        }
     },
     filename: (req, file, callback) => {
         callback(null, file.originalname);
@@ -68,18 +78,25 @@ const storageLocation = multer.diskStorage({
 //filefilter 
 
 const filters = (req, file, callback) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/jpg" || file.mimetype === "image/png") {
+
+
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/jpg" || file.mimetype === "image/png" || file.mimetype === "application/pdf") {
         callback(null, true);
     } else {
         callback(null, false);
     }
 }
 
-app.use(multer({ fileFilter: filters, storage: storageLocation }).single('imageData'));
 
+//this is for user profile
+// app.use(multer({ fileFilter: filters, storage: storageLocation }).single('imageData'));
+// app.use(multer().single('timetable'));
+app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name: 'timetable', maxCount: 1 }, { name: 'imageData', maxCount: 1 }]));
 
 //include the body parser 
 app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded())
 
 app.use('/student', studentRoute);
 app.use('/admin', adminRouter);
@@ -131,7 +148,8 @@ Sports.belongsToMany(Student, {
 //1:1 
 Subject.belongsTo(Teacher);
 Student.belongsTo(Class);
-Teacher.belongsTo(Class)
+Teacher.belongsTo(Class);
+Class.hasOne(Teacher);
 Result.belongsTo(Subject);
 Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
