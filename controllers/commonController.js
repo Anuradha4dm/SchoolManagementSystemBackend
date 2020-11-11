@@ -317,31 +317,35 @@ exports.getGetNotifications = async (req, res, next) => {
 
 exports.sendEmail = async (req, res, next) => {
 
-
+    console.log("data");
 
     const receiver = req.body.receiver;
     const sender = req.body.sender;
     const subject = req.body.subject;
+    const message = req.body.message;
+    console.log(receiver, sender, subject, message)
 
 
-    const user = await Student.findOne({
-        where: {
-            _id: sender
-        }
-    })
 
     transporter.sendMail({
         to: receiver,
         from: "damithanuradha44@gmail.com",
         subject: subject,
-        html: `<h1>Message from ${user.username} </h1>
-                <p>this is comming from scholl emial</p>
+        html: `<h3>Message from ${sender} </h3>
+                <p>${message}</p>
             `
     }).then(re => {
-        console.log(re);
+
+        res.status(200).json({
+            success: re,
+            send: true
+        })
     })
-        .catch(err => {
-            console.log(err)
+        .catch(error => {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            }
+            next(error)
         })
 
 }
