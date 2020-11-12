@@ -34,6 +34,8 @@ const StudentAttendence = require('./models/studentAttendaceModule');
 const Notification = require('./models/notification');
 const Sports = require('./models/sportModel');
 const SportsWrapper = require('./models/sportsWrapperModule');
+const Winning = require('./models/winningModel');
+
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -157,6 +159,7 @@ Leave.belongsTo(Teacher);
 Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
 Student.hasMany(StudentAttendence);
+Student.hasMany(Winning);
 
 
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });

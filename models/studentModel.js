@@ -76,6 +76,12 @@ const Student = sequelize.define('student', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    resetToken: {
+        type: DataTypes.STRING
+    },
+    resetTokenExpire: {
+        type: DataTypes.DATE
     }
 
 
