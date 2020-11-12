@@ -68,7 +68,14 @@ const Teacher = sequelize.define("teacher", {
         type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 44.0
+    },
+    resetToken: {
+        type: DataTypes.STRING
+    },
+    resetTokenExpire: {
+        type: DataTypes.DATE
     }
+
 
 
 

@@ -594,11 +594,7 @@ exports.postGetChar1Data = async (req, res, next) => {
 
     try {
 
-        const student = await Student.findOne({
-            _id: studentid
-        });
-
-        const subjects = await student.getSubjects({
+        const subjects = await Subject.findAll({
             where: {
                 subjectname: subjectname
             },

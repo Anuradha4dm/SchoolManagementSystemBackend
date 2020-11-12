@@ -11,7 +11,10 @@ route.post('/login', authenticationController.postAuthentication);
 
 
 //POST /auth./reset-password
-route.post('/reset-password', authenticationController.postResetPassword)
+route.post('/reset-password', authenticationController.postResetPassword);
+
+//POST /auth/new-password
+route.post('/new-password', authenticationValidator.authUserChecking, authenticationController.postNewpassword);
 
 
 module.exports = route;

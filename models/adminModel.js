@@ -13,7 +13,15 @@ const Admin = sequelize.define('admin', {
     },
     password: {
         type: DataTypes.STRING
+    },
+    resetToken: {
+        type: DataTypes.STRING
+    },
+    resetTokenExpire: {
+        type: DataTypes.DATE
     }
+
+
 })
 
 
