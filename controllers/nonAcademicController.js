@@ -143,12 +143,11 @@ exports.postAddNotification = async (req, res, next) => {
     const to = req.body.to;
     var path;
 
-    console.log(!!req.files)
 
-    if (!!req.files) {
-        path = req.files.attachment[0].path.replace('\\', '/');
-    } else {
+    if (req.files.attachment == undefined) {
         path = null;
+    } else {
+        path = req.files.attachment[0].path.replace('\\', '/');
     }
 
 
@@ -245,7 +244,7 @@ exports.postAddNotification = async (req, res, next) => {
         }
 
         res.status(200).json({
-            notificatin: true,
+            notification: true,
         })
 
     } catch (error) {
