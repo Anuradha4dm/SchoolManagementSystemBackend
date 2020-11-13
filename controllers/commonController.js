@@ -258,6 +258,12 @@ exports.getGetNotifications = async (req, res, next) => {
 
     const id = req.params.id;
     var notifications = [];
+    //0-all
+    //1-all teachers
+    //2-specific-teacher
+    //3-all students
+    //4-fora student
+    //5-for a grade
 
     try {
 

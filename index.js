@@ -58,17 +58,23 @@ app.use((req, res, next) => {
 //static serving files
 app.use('/image', express.static(path.join(__dirname, 'image')));
 app.use('/timetable', express.static(path.join(__dirname, 'timetable')));
+app.use('/attachment', express.static(path.join(__dirname, 'attachment')));
 
 //get the files 
 
 //file storage configurations
 const storageLocation = multer.diskStorage({
+
     destination: (req, file, callback) => {
         if (file.fieldname === "timetable") {
             callback(null, 'timetable')
         }
         if (file.fieldname === "imageData") {
             callback(null, 'image');
+        }
+        if (file.fieldname === "attachment") {
+
+            callback(null, 'attachment')
         }
     },
     filename: (req, file, callback) => {
@@ -83,6 +89,7 @@ const filters = (req, file, callback) => {
 
 
     if (file.mimetype === "image/jpeg" || file.mimetype === "image/jpg" || file.mimetype === "image/png" || file.mimetype === "application/pdf") {
+
         callback(null, true);
     } else {
         callback(null, false);
@@ -93,7 +100,7 @@ const filters = (req, file, callback) => {
 //this is for user profile
 // app.use(multer({ fileFilter: filters, storage: storageLocation }).single('imageData'));
 // app.use(multer().single('timetable'));
-app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name: 'timetable', maxCount: 1 }, { name: 'imageData', maxCount: 1 }]));
+app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name: 'timetable', maxCount: 1 }, { name: 'imageData', maxCount: 1 }, { name: "attachment", maxCount: 1 }]));
 
 //include the body parser 
 app.use(bodyParser.json());
@@ -160,6 +167,8 @@ Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
 Student.hasMany(StudentAttendence);
 Student.hasMany(Winning);
+Teacher.hasMany(Notification);
+Student.hasMany(Notification);
 
 
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });

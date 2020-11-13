@@ -33,6 +33,9 @@ const Notification = sequelize.define('notification', {
     },
     title: {
         type: DataTypes.STRING
+    },
+    attachmentpath: {
+        type: DataTypes.STRING
     }
 });
 
