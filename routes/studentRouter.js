@@ -42,8 +42,14 @@ router.post('/get-chart1-data', studentController.postGetChar1Data);
 //POST /student/get-chart2-data
 router.post('/get-chart2-data', studentController.postGetDatForChar2);
 
-
+//POST /studnet/get-attendence-mainchart-data
 router.post('/get-attendence-mainchart-data', studentController.postGetAttendenceMainChartData);
+
+//POST /student/add-sports
+router.post('/add-sports', studentController.postAddSportsToStudent);
+
+//GET /student/get-sports
+router.get('/get-sports/:id', studentController.getGetStudentSports);
 
 module.exports = router;
 

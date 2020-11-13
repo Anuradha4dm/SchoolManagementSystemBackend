@@ -1,6 +1,10 @@
+const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
-const Notification = require('../models/notification')
+const NonAcademic = require('../models/nonAcademicModel');
+const Notification = require('../models/notification');
+const Student = require('../models/studentModel');
 const Teacher = require('../models/teacherModel');
+const { getClass } = require('../socketHandler');
 
 exports.getGetPengingRequestList = async (req, res, next) => {
 
@@ -123,29 +127,125 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
 
 exports.postAddNotification = async (req, res, next) => {
 
+    //0-all
+    //1-all teachers
+    //2-specific-teacher
+    //3-all students
+    //4-fora student
+    //5-for a grade
+
     const nonacademicid = req.body.nonacademicid;
     const type = req.body.type;
     const from = req.body.from;
+    const title = req.body.title;
     const expire = req.body.expire;
-    const message = req.body.message;
-    const to = (req.body.teacherid) ? req.body.teacherid : req.body.studentid;
+    const message = req.body.description;
+    const to = req.body.to;
+    var path;
+
+
+    if (req.files.attachment == undefined) {
+        path = null;
+    } else {
+        path = req.files.attachment[0].path.replace('\\', '/');
+    }
+
 
     try {
 
-        const newNotification = await Notification.create({
-            type: type,
-            from: from,
-            message: message,
-            expire: expire,
-            publilsher: nonacademicid,
-            to: to
 
-        });
+        if (parseInt(type) === 0 || parseInt(type) === 1 || parseInt(type) === 3) {
+            const newNotification = await Notification.create({
+                type: type,
+                from: from,
+                title: title,
+                message: message,
+                expire: expire,
+                attachmentpath: path,
+                publilsher: nonacademicid,
+                to: to
+
+            });
+
+
+
+        }
+
+        if (parseInt(type) === 2) {
+            const teacherList = req.body.teacherarray.split(',');
+
+            var teacherData;
+
+            teacherList.forEach(async teacher => {
+
+                teacherData = await Teacher.findOne({
+                    where: {
+                        teacherid: teacher
+                    }
+                })
+
+                if (!teacherData) {
+                    var error = new Error("No Teacher Found");
+                    error.statusCode = 500;
+                    throw error;
+                }
+                await Notification.create({
+                    type: type,
+                    from: from,
+                    title: title,
+                    message: message,
+                    expire: expire,
+                    attachmentpath: path,
+                    publilsher: nonacademicid,
+                    to: teacherData.teacherid,
+                    teacherTeacherid: teacherData.teacherid
+                })
+
+            });
+
+
+        }
+
+        if (parseInt(type) === 4) {
+            const studentList = req.body.studentarray.split(',');
+
+            var studentData;
+
+            studentList.forEach(async student => {
+
+                studentData = await Student.findOne({
+                    where: {
+                        _id: student
+                    }
+                })
+
+                if (!studentData) {
+                    var error = new Error("No Student Found");
+                    error.statusCode = 500;
+                    throw error;
+                }
+
+                await Notification.create({
+                    type: type,
+                    from: from,
+                    title: title,
+                    message: message,
+                    expire: expire,
+                    attachmentpath: path,
+                    publilsher: nonacademicid,
+                    to: studentData._id,
+                    studentId: studentData._id
+
+                })
+
+            });
+
+
+        }
 
         res.status(200).json({
-            notificatin: true,
+            notification: true,
         })
-
 
     } catch (error) {
         if (!error.statusCode) {
@@ -155,5 +255,180 @@ exports.postAddNotification = async (req, res, next) => {
         next(error);
     }
 
+
+
+
+}
+
+
+exports.getGetClassTeacherData = async (req, res, next) => {
+
+    const classname = req.params.class;
+
+    try {
+
+        const classid = await Class.findOne({
+            where: {
+                grade: classname
+            },
+            attributes: ['classid']
+        })
+
+        const teacherinfo = await Teacher.findOne({
+            where: {
+                classClassid: classid.classid
+            }
+        })
+
+        if (!teacherinfo) {
+            var error = new Error("No Teacher Assign Still");
+            error.statusCode = 500;
+            throw error;
+        }
+
+
+
+        res.status(200).json({
+            fullname: teacherinfo.firstname + " " + teacherinfo.lasename,
+            teacherid: teacherinfo.teacherid,
+            year: teacherinfo.startyeat,
+            email: teacherinfo.email,
+            qualifications: teacherinfo.qualifications,
+            image: teacherinfo.imagepath
+
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+
+}
+
+exports.getGetFreeClassTeachers = async (req, res, next) => {
+
+
+    try {
+
+        const teacherList = await Teacher.findAll({
+            where: {
+                classClassid: null
+            },
+            attributes: ['teacherid', 'username']
+        })
+
+        res.status(200).json({
+            teachers: teacherList
+        })
+
+
+    } catch (error) {
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+
+}
+
+
+exports.postUpdateClass = async (req, res, next) => {
+
+    const classname = req.body.classname;
+    const newTeacherid = req.body.newTeacherid;
+    const pastTeacherid = req.body.pastTeacherid;
+
+
+
+    try {
+        if (newTeacherid && pastTeacherid) {
+
+            const pastClassTeacher = await Teacher.findOne({
+
+                where: {
+                    teacherid: pastTeacherid
+                },
+
+            })
+            console.log(pastClassTeacher)
+
+            const classid = pastClassTeacher.classClassid;
+
+            pastClassTeacher.classClassid = null;
+
+            const pastTeacherRemoveClass = await pastClassTeacher.save();
+
+            const newClassTeacher = await Teacher.findOne({
+                where: {
+                    teacherid: newTeacherid
+                }
+            })
+
+            newClassTeacher.classClassid = classid;
+
+            const newTeacherAddData = await newClassTeacher.save();
+
+            if (!newTeacherAddData) {
+                var error = new Error("Update Teacher Fail");
+                error.statusCode = 500;
+                throw error;
+            }
+
+        }
+        if (newTeacherid && !pastTeacherid) {
+
+            const classData = await Class.findOne({
+                where: {
+                    grade: classname
+                },
+
+            })
+
+            const newTeacherData = await Teacher.findOne({
+                where: {
+                    teacherid: newTeacherid
+                }
+            })
+
+            newTeacherData.classClassid = classData.classid;
+            const assignNewTeacher = await newTeacherData.save();
+
+
+
+        }
+
+
+
+        if (req.files) {
+            const getClass = await Class.findOne({
+                where: {
+                    grade: classname,
+                }
+            });
+
+            var setFilePath = req.files.timetable[0].path;
+
+            getClass.timetable = setFilePath.replace('\\', '/');
+
+            await getClass.save();
+
+
+        }
+
+
+
+
+    } catch (error) {
+        console.log(error);
+    }
+
+
+
+    res.status(200).json({
+        success: true
+    })
 
 }

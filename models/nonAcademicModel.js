@@ -40,6 +40,14 @@ const NonAcademic = sequelize.define("nonacademic", {
     description: {
         type: DataTypes.STRING
     }
+    ,
+    resetToken: {
+        type: DataTypes.STRING
+    },
+    resetTokenExpire: {
+        type: DataTypes.DATE
+    }
+
 
 
 })

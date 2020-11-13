@@ -9,6 +9,8 @@ const Result = require('../models/resultModel');
 const ResultSummary = require('../models/resultSummaryModel');
 
 const StudentAttendence = require('../models/studentAttendaceModule');
+const Sports = require('../models/sportModel');
+const webSocket = require('../webSocket');
 
 
 
@@ -592,11 +594,7 @@ exports.postGetChar1Data = async (req, res, next) => {
 
     try {
 
-        const student = await Student.findOne({
-            _id: studentid
-        });
-
-        const subjects = await student.getSubjects({
+        const subjects = await Subject.findAll({
             where: {
                 subjectname: subjectname
             },
@@ -701,5 +699,86 @@ exports.postGetAttendenceMainChartData = async (req, res, next) => {
         console.log("error", error)
 
     }
+
+}
+
+exports.postAddSportsToStudent = async (req, res, next) => {
+
+    const studentid = req.body.studentid;
+    const category = req.body.category;
+    const sports = req.body.sports;
+
+
+    try {
+        const student = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        })
+
+        if (!student._id) {
+            throw new Error("Can Not Find User");
+        }
+
+        const sportsList = await Sports.findAll({
+            where: {
+                sportname: [sports]
+            }
+        })
+
+        sportsList.forEach(async sport => {
+
+            await sport.addStudent(student, {
+                through: {
+                    allow: false,
+                    category: category
+                }
+            })
+
+
+        });
+
+
+        res.status(200).json({
+            update: true
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+
+exports.getGetStudentSports = async (req, res, next) => {
+
+    const studentid = req.params.id;
+
+    try {
+
+        const student = await Student.findOne({
+            where: {
+                _id: studentid
+            },
+
+        })
+
+        const sportsList = await student.getSports();
+
+        var respond = sportsList.map(sport => {
+
+            return { sportname: sport.sportname, allow: sport.sportswrapper.allow }
+        });
+
+        res.status(200).json({
+            sports: respond
+        })
+
+
+    } catch (error) {
+
+        console.log(error)
+    }
+
 
 }

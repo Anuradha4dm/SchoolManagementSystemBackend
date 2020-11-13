@@ -24,12 +24,18 @@ const Notification = sequelize.define('notification', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    publilsher: {
+    publisher: {
         type: DataTypes.STRING,
     },
     to: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    title: {
+        type: DataTypes.STRING
+    },
+    attachmentpath: {
+        type: DataTypes.STRING
     }
 });
 

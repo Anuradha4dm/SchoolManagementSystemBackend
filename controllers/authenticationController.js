@@ -1,6 +1,8 @@
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
+const crypto = require('crypto')
 
 //database models
 const Student = require('../models/studentModel');
@@ -260,10 +262,151 @@ exports.postAuthentication = (req, res, next) => {
 
     }
 
+}
+
+
+exports.postResetPassword = async (req, res, next) => {
+
+    const userid = req.body.userid;
+    const email = req.body.email;
+
+    const user = userid.split('_')[0];
+
+    var token;
+    var expire;
+
+    try {
+        const validator = validationResult(req);
+
+        if (validator.errors.length != 0) {
+            throw new Error(validator.errors[0].msg);
+        }
+
+        crypto.randomBytes(32, (error, buff) => {
+            if (error) {
+                error.statusCode = 500;
+                error.message = "Internal Server Error"
+            }
+
+            token = buff.toString('hex');
+            expire = new Date().getTime() + 3600000;
+
+        })
+
+        if (user === "ST") {
+            const studentData = await Student.findOne({
+                where: {
+                    _id: userid
+                }
+            });
+
+
+            studentData.resetToken = token;
+            studentData.resetTokenExpire = expire;
+
+            await studentData.save();
+
+            const re = await transporter.sendMail({
+                to: email,
+                from: "damithanuradha44@gmail.com",
+                subject: "Reset Password",
+                html: `<p>Password Reset</p>
+                        <p>Click  link <a href="http://localhost:4200/home" >Link</a></p>
+                
+                `
+            })
+            console.log(re)
+
+        }
 
 
 
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 401;
+        }
+        next(error)
 
+    }
+
+}
+
+
+exports.postNewpassword = async (req, res, next) => {
+
+    const userid = req.body.userid;
+    const newPassword = req.body.newPassword;
+
+    const user = userid.split('_')[0];
+    var userData;
+
+
+
+    try {
+        if (req.userId != userid) {
+            var error = new Error("You are not allow to reset password");
+            error.statusCode = 500;
+            throw error;
+        }
+
+        if (user === "ST") {
+
+            userData = await Student.findOne({
+                where: {
+                    _id: userid
+                }
+            });
+        }
+        if (user === "AC") {
+
+            userData = await Teacher.findOne({
+                where: {
+                    teacherid: userid
+                }
+            });
+        }
+        if (user === "NAC") {
+
+            userData = await NonAcademic.findOne({
+                where: {
+                    nonacademicid: userid
+                }
+            });
+        }
+
+        bcrypt.hash(newPassword, 12)
+            .then(hashedpassword => {
+
+                userData.password = hashedpassword;
+
+                return userData.save();
+
+
+            })
+            .then(result => {
+
+                if (result == null) {
+                    var error = new Error("Server Error");
+                    error.statusCode = 500;
+                    return error;
+                }
+
+                res.status(200).json({
+                    update: true
+                })
+            })
+            .catch(error => {
+                throw error;
+            })
+
+    } catch (error) {
+
+        if (!error.statusCode) {
+            error.statusCode = 403;
+        }
+
+        next(error);
+    }
 
 
 }

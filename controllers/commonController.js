@@ -4,7 +4,7 @@ const NonAcademic = require('../models/nonAcademicModel');
 const LeaveRequest = require('../models/leaveRequest');
 const { Op, DataTypes } = require('sequelize');
 const Notification = require('../models/notification');
-
+const sequelize = require('sequelize')
 
 
 const nodemailer = require('nodemailer');
@@ -258,6 +258,12 @@ exports.getGetNotifications = async (req, res, next) => {
 
     const id = req.params.id;
     var notifications = [];
+    //0-all
+    //1-all teachers
+    //2-specific-teacher
+    //3-all students
+    //4-fora student
+    //5-for a grade
 
     try {
 
@@ -269,10 +275,16 @@ exports.getGetNotifications = async (req, res, next) => {
             notifications = await Notification.findAll({
                 where: {
                     [Op.or]: {
-                        type: 1,
-                        to: id
-                    }
-                }
+                        type: [0, 1],
+                        [Op.and]: {
+                            type: [2],
+                            to: id
+                        }
+                    },
+                },
+                order: [['createdAt', 'ASC']]
+
+
             })
 
 
@@ -282,10 +294,16 @@ exports.getGetNotifications = async (req, res, next) => {
             notifications = await Notification.findAll({
                 where: {
                     [Op.or]: {
-                        type: 3,
-                        to: id
-                    }
-                }
+                        type: [0, 3],
+                        [Op.and]: {
+                            type: [4],
+                            to: id
+                        }
+                    },
+                },
+                order: [['createdAt', 'ASC']]
+
+
             })
 
         }
@@ -305,31 +323,35 @@ exports.getGetNotifications = async (req, res, next) => {
 
 exports.sendEmail = async (req, res, next) => {
 
-
+    console.log("data");
 
     const receiver = req.body.receiver;
     const sender = req.body.sender;
     const subject = req.body.subject;
+    const message = req.body.message;
+    console.log(receiver, sender, subject, message)
 
 
-    const user = await Student.findOne({
-        where: {
-            _id: sender
-        }
-    })
 
     transporter.sendMail({
         to: receiver,
         from: "damithanuradha44@gmail.com",
         subject: subject,
-        html: `<h1>Message from ${user.username} </h1>
-                <p>this is comming from scholl emial</p>
+        html: `<h3>Message from ${sender} </h3>
+                <p>${message}</p>
             `
     }).then(re => {
-        console.log(re);
+
+        res.status(200).json({
+            success: re,
+            send: true
+        })
     })
-        .catch(err => {
-            console.log(err)
+        .catch(error => {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            }
+            next(error)
         })
 
 }
