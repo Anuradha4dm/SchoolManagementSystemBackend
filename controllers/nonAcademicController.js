@@ -335,7 +335,7 @@ exports.getGetFreeClassTeachers = async (req, res, next) => {
 }
 
 
-exports.postUpdateClass = async (req, res, next) => {
+exports.postUpdateClassHandler = async (req, res, next) => {
 
     const classname = req.body.classname;
     const newTeacherid = req.body.newTeacherid;
@@ -430,5 +430,73 @@ exports.postUpdateClass = async (req, res, next) => {
     res.status(200).json({
         success: true
     })
+
+}
+
+exports.getGetClassOfAStudent = async (req, res, next) => {
+
+    const studentid = req.params.id;
+
+    try {
+
+        const classData = await Student.findOne({
+            where: {
+                _id: studentid,
+            },
+            include: Class,
+
+        })
+
+
+
+        res.status(200).json({
+            grade: classData.class.dataValues.grade,
+            gradeid: classData.class.dataValues.classid,
+
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+exports.postUpdateStudentClass = async (req, res, next) => {
+
+    const classname = req.body.moveclass;
+    const studentid = req.body.studentid;
+
+    try {
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        })
+
+        const classData = await Class.findOne({
+            where: {
+                grade: classname
+            }
+        })
+
+        studentData.classClassid = classData.classid;
+
+        const re = await studentData.save();
+
+        res.status(200).json({
+            update: true
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
+
+    }
+
+
 
 }
