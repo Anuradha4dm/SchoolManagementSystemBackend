@@ -82,6 +82,10 @@ const Student = sequelize.define('student', {
     },
     resetTokenExpire: {
         type: DataTypes.DATE
+    },
+    graderegistration: {
+        type: DataTypes.INTEGER,
+        defaultValue: new Date().getFullYear()
     }
 
 

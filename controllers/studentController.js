@@ -74,14 +74,15 @@ exports.getStudentProfile = async (req, res, next) => {
             addressLine2: studentData.addressline2,
             addressLine3: studentData.addressline3,
             city: studentData.city,
-            mobile: studentData.mobile
+            mobile: studentData.mobile,
+            graderegistration: studentData.graderegistration
 
         }
     })
 
 }
 
-exports.postEditStudentProfile = (req, res, next) => {
+exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
     if (req.body.imagepath && !req.file) {
@@ -89,6 +90,12 @@ exports.postEditStudentProfile = (req, res, next) => {
     } else {
         updatedImagePath = req.file.path;
     }
+
+    const classData = await Class.findOne({
+        where: {
+            grade: req.body.grade
+        }
+    })
 
 
     Student.findByPk(id).then(student => {
@@ -108,6 +115,8 @@ exports.postEditStudentProfile = (req, res, next) => {
             student.addressLine3 = req.body.addressline3,
             student.city = req.body.city,
             student.mobile = req.body.mobile
+        student.classClassid = classData.classid
+        student.graderegistration = new Date().getFullYear()
 
         return student.save();
     })

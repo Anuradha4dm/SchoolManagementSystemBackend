@@ -465,6 +465,8 @@ exports.postUpdateStudentClass = async (req, res, next) => {
 
     const classname = req.body.moveclass;
     const studentid = req.body.studentid;
+    const nonacademicid = req.body.nonacademicid;
+    console.log("nonacademicid", nonacademicid)
 
     try {
 
@@ -482,7 +484,21 @@ exports.postUpdateStudentClass = async (req, res, next) => {
 
         studentData.classClassid = classData.classid;
 
-        const re = await studentData.save();
+        const result = await studentData.save();
+
+        const notification = await studentData.createNotification({
+            type: 4,
+            from: nonacademicid,
+            expire: new Date() + (3600000 * 24 + 3),
+            message: `You have successfully change your class to ${classname}`,
+            to: studentid,
+            publisher: nonacademicid,
+            title: "Class Change Success",
+            attachmentpath: null,
+
+
+        })
+
 
         res.status(200).json({
             update: true
