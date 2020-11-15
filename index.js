@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 require('dotenv').config()
-const upload = require('express-fileupload')
+// const upload = require('express-fileupload')
 //include the body to the parse
 const app = express();
 

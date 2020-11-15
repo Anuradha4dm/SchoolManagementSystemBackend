@@ -4,10 +4,10 @@ const Result = require("../models/resultModel");
 const ResultSummary = require("../models/resultSummaryModel");
 const StudentAttendence = require('../models/studentAttendaceModule');
 const Student = require("../models/studentModel");
-const { Op } = require('sequelize')
-const SubjectWrapper = require("../models/subjectWrapper");
+
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
+
 
 exports.postAddStudentResults = async (req, res, next) => {
 
@@ -204,6 +204,161 @@ exports.getSubjectOfStudent = async (req, res, next) => {
     })
 
 }
+
+exports.getGetTeacherDataForProfile = async (req, res, next) => {
+
+
+    const teacherid = req.params.id;
+
+    try {
+
+        const teacherData = await Teacher.findOne({
+            where: {
+                teacherid: teacherid
+            }
+        })
+
+        if (teacherData === null) {
+            var error = new Error('No Teacher Found...Enter Valid User Id');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        res.status(200).json({
+            surname: teacherData.surname,
+            firstname: teacherData.firstname,
+            lastname: teacherData.lastname,
+            email: teacherData.lastname,
+            username: teacherData.username,
+            imagepath: teacherData.imagepath,
+            startyear: teacherData.startyear,
+            age: teacherData.age,
+            role: teacherData.role,
+            subjects: teacherData.subjects,
+            timatable: teacherData.timetablepath,
+            qualifications: teacherData.qualifications,
+            description: teacherData.description,
+            mobile: teacherData.mobile,
+            numberofleaves: teacherData.numberofleaves
+        })
+
+
+    } catch (error) {
+
+        if (!error.statusCode) {
+            error.statusCode = 403;
+
+        }
+        next(error);
+    }
+
+
+}
+
+exports.postGetPreviousResultData = async (req, res, next) => {
+
+
+    const year = req.body.year;
+    const term = req.body.term;
+    const studentid = req.body.studentid;
+
+    try {
+
+        const resultData = await Result.findAll({
+            where: {
+                year: year,
+                term: term,
+                studentId: studentid
+            },
+            include: Subject,
+
+        });
+
+        const resposeData = resultData.map(value => {
+            return { subjectid: value.subjectSubjectid, subjectname: value.subject.subjectname, mark: value.marks }
+        })
+
+        res.json({
+            result: resposeData
+        })
+
+    } catch (error) {
+
+        console.log(error);
+    }
+
+}
+
+
+
+exports.postUpdateStudentResult = async (req, res, next) => {
+
+    const year = req.body.year;
+    const term = req.body.term;
+    const studentid = req.body.studentid;
+    const updatedResult = req.body.result;
+
+
+    try {
+
+        const resultSetInfo = await Result.findAll({
+            where: {
+                year: year,
+                term: term,
+                studentid: studentid
+            }
+        })
+
+        const udpateResultSetToStore = resultSetInfo.map(pastResult => {
+
+            updatedResult.forEach(newResult => {
+                if (newResult.subjectid === pastResult.subjectSubjectid) {
+                    pastResult.marks = newResult.mark;
+                    return pastResult;
+                }
+            })
+            return pastResult
+
+        })
+
+
+
+        await udpateResultSetToStore.forEach(async element => {
+            await element.save()
+
+        });
+
+
+
+        res.status(200).json({
+            update: true
+
+        })
+
+
+    } catch (error) {
+
+        console.log(error)
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function getWeek(year, month, day) {

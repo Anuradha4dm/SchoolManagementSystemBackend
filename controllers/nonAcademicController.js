@@ -335,7 +335,7 @@ exports.getGetFreeClassTeachers = async (req, res, next) => {
 }
 
 
-exports.postUpdateClass = async (req, res, next) => {
+exports.postUpdateClassHandler = async (req, res, next) => {
 
     const classname = req.body.classname;
     const newTeacherid = req.body.newTeacherid;
@@ -430,5 +430,89 @@ exports.postUpdateClass = async (req, res, next) => {
     res.status(200).json({
         success: true
     })
+
+}
+
+exports.getGetClassOfAStudent = async (req, res, next) => {
+
+    const studentid = req.params.id;
+
+    try {
+
+        const classData = await Student.findOne({
+            where: {
+                _id: studentid,
+            },
+            include: Class,
+
+        })
+
+
+
+        res.status(200).json({
+            grade: classData.class.dataValues.grade,
+            gradeid: classData.class.dataValues.classid,
+
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+exports.postUpdateStudentClass = async (req, res, next) => {
+
+    const classname = req.body.moveclass;
+    const studentid = req.body.studentid;
+    const nonacademicid = req.body.nonacademicid;
+    console.log("nonacademicid", nonacademicid)
+
+    try {
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        })
+
+        const classData = await Class.findOne({
+            where: {
+                grade: classname
+            }
+        })
+
+        studentData.classClassid = classData.classid;
+
+        const result = await studentData.save();
+
+        const notification = await studentData.createNotification({
+            type: 4,
+            from: nonacademicid,
+            expire: new Date() + (3600000 * 24 + 3),
+            message: `You have successfully change your class to ${classname}`,
+            to: studentid,
+            publisher: nonacademicid,
+            title: "Class Change Success",
+            attachmentpath: null,
+
+
+        })
+
+
+        res.status(200).json({
+            update: true
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
+
+    }
+
+
 
 }

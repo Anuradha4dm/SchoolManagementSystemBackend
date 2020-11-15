@@ -22,6 +22,12 @@ router.get('/get-class-teacher/:class', nonacademicController.getGetClassTeacher
 router.get('/get-free-class-teacher', nonacademicController.getGetFreeClassTeachers);
 
 //GET /nonacademic/update-class
-router.post('/update-class', nonacademicController.postUpdateClass)
+router.post('/update-class-handler', nonacademicController.postUpdateClassHandler)
+
+//GET /nonacademic/get-class
+router.get('/get-class-student/:id', nonacademicController.getGetClassOfAStudent);
+
+//POST /nonacademic/update-class
+router.post('/update-class-student', nonacademicController.postUpdateStudentClass)
 
 module.exports = router;
