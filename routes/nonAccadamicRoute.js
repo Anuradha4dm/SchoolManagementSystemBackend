@@ -24,10 +24,13 @@ router.get('/get-free-class-teacher', nonacademicController.getGetFreeClassTeach
 //GET /nonacademic/update-class
 router.post('/update-class-handler', nonacademicController.postUpdateClassHandler)
 
-//GET /nonacademic/get-class
+//GET /nonacademic/get-class        =>this route is used to get the class of the specific student
 router.get('/get-class-student/:id', nonacademicController.getGetClassOfAStudent);
 
-//POST /nonacademic/update-class
+//POST /nonacademic/update-class            =>
 router.post('/update-class-student', nonacademicController.postUpdateStudentClass)
+
+//GET /nonacademic/get-pending-leaves
+router.get('/get-pending-leaves', nonacademicController.getGetPendingLeaveRequests);
 
 module.exports = router;

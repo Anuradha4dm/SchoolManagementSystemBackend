@@ -22,8 +22,10 @@ router.get('/get-teacher-profile/:id', teacherController.getGetTeacherDataForPro
 //POST      /teacher/edit-result   =>this route will get the past result data to update the result by the teacher
 router.post('/edit-results-get-previous', teacherController.postGetPreviousResultData);
 
-//POST /teacher/update-result
+//POST /teacher/update-result        => this router is used to update the past result of the student and update the recode in the database
 router.post('/update-student-result', teacherController.postUpdateStudentResult);
+
+
 
 
 module.exports = router;

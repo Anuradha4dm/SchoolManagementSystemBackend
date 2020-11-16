@@ -1,10 +1,10 @@
+const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
 const Student = require('../models/studentModel');
 const Teacher = require('../models/teacherModel');
-const { getClass } = require('../socketHandler');
 
 exports.getGetPengingRequestList = async (req, res, next) => {
 
@@ -514,5 +514,66 @@ exports.postUpdateStudentClass = async (req, res, next) => {
     }
 
 
+
+}
+
+exports.getGetPendingLeaveRequests = async (req, res, next) => {
+
+    //0-half day
+    //1-short leave
+    //2- full day
+
+    try {
+
+        const getPendingRequests = await Leave.findAll({
+            where: {
+                [Op.and]: {
+                    allow: false,
+                    leavedate: {
+                        [Op.gte]: new Date()
+                    }
+                }
+            },
+            include: Teacher
+        });
+
+        var type = "";
+
+        var responsePendingLeaveDataArray = getPendingRequests.map(leaveData => {
+
+            if (leaveData.leavetype === 0) {
+                type = "Half Day"
+            }
+            if (leaveData.leavetype === 0) {
+                type = "Short Leave"
+            }
+            if (leaveData.leavetype === 0) {
+                type = "Full Day"
+            }
+
+
+            return {
+                leaveid: leaveData.leaveid,
+                leavedate: leaveData.leavedate,
+                description: leaveData.description,
+                leavetype: type,
+                userid: leaveData.teacherTeacherid,
+                fullname: leaveData.teacher.firstname + " " + leaveData.teacher.lastname,
+                role: leaveData.teacher.role,
+                numofleave: leaveData.teacher.numberofleaves
+            }
+        })
+
+
+        res.status(200).json({
+            leavedata: responsePendingLeaveDataArray
+        })
+
+
+
+    } catch (error) {
+
+        console.log(error);
+    }
 
 }
