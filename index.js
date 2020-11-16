@@ -202,6 +202,13 @@ sequelize
             socket.on("getSubjects", data => {          //get subject for chart1
                 socketHandler.getSubjectForChart1(data);
             })
+
+
+            socket.on("findClassId", data => {
+                socketHandler.getSubjectId(data);
+
+            })
+
         })
 
 

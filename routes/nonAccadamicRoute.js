@@ -31,7 +31,9 @@ router.get('/get-class-student/:id', nonacademicController.getGetClassOfAStudent
 router.post('/update-class-student', nonacademicController.postUpdateStudentClass)
 
 //GET /nonacademic/reset-student-subject  
-router.get('/reset-student-subjects/:id', nonacademicController.getResetStudentSubjects)
+router.get('/reset-student-subjects/:id', nonacademicController.getResetStudentSubjects);
 
+//GET /nonacademic/get-teacher-subject-list
+router.get('/get-teacher-subject-list/:id', nonacademicController.getGetSubjectListOfTheTeahcer);
 
 module.exports = router;

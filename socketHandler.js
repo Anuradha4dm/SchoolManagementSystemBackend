@@ -92,6 +92,29 @@ exports.getSubjectForChart1 = async (data) => {
 }
 
 
+exports.getSubjectId = async (data) => {
+
+    try {
+
+        const subjectData = await Subject.findOne({
+            where: {
+                subjectname: data.subjectname,
+                grade: data.classname
+            },
+            attributes: ['subjectid']
+        })
+
+        io.getIo().emit('subjectIdRes', { subjectid: subjectData.subjectid })
+    } catch (error) {
+
+        console.log(error);
+    }
+
+
+}
+
+
+
 function removeDuplicates(data) {
     return [...new Set(data)]
 }

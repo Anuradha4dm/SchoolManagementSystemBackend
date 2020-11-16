@@ -3,6 +3,7 @@ const Leave = require('../models/leaveRequest');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
 const Student = require('../models/studentModel');
+const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
 const { getClass } = require('../socketHandler');
@@ -438,6 +439,8 @@ exports.getGetClassOfAStudent = async (req, res, next) => {
 
     const studentid = req.params.id;
 
+
+
     try {
 
         const classData = await Student.findOne({
@@ -467,7 +470,6 @@ exports.postUpdateStudentClass = async (req, res, next) => {
     const classname = req.body.moveclass;
     const studentid = req.body.studentid;
     const nonacademicid = req.body.nonacademicid;
-    console.log("nonacademicid", nonacademicid)
 
     try {
 
@@ -558,8 +560,7 @@ exports.getResetStudentSubjects = async (req, res, next) => {
             title: "Subject Reset",
             attachmentpath: null,
 
-
-        })
+        });
 
 
         res.status(200).json({
@@ -575,5 +576,51 @@ exports.getResetStudentSubjects = async (req, res, next) => {
 
     }
 
+}
 
+exports.getGetSubjectListOfTheTeahcer = async (req, res, next) => {
+
+    try {
+
+        const teacherid = req.params.id;
+
+        const teacherData = await Teacher.findOne({
+            where: {
+                teacherid: teacherid
+            }
+        })
+
+        if (teacherData === null) {
+            var error = new Error("Teacher Not Found With Id " + teacherid);
+            error.statusCode = 401;
+            throw error;
+        }
+
+        const subjectList = await Subject.findAll({
+            where: {
+                teacherTeacherid: teacherid,
+            }
+        })
+
+        const responceList = subjectList.map(subject => {
+
+            return {
+                subjectid: subject.subjectid,
+                subjectname: subject.subjectname,
+                assigndate: subject.createdAt,
+                grade: subject.grade
+            }
+        })
+
+
+        res.status(200).json({
+            subjectlist: responceList
+        })
+
+    } catch (error) {
+        if (!error.statudCode) {
+            error.statusCode = 401;
+        }
+        next(error)
+    }
 }
