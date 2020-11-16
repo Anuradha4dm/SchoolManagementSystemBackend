@@ -3,6 +3,7 @@ const Leave = require('../models/leaveRequest');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
 const Student = require('../models/studentModel');
+const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
 const { getClass } = require('../socketHandler');
 
@@ -512,7 +513,67 @@ exports.postUpdateStudentClass = async (req, res, next) => {
         next(error)
 
     }
+}
 
+exports.getResetStudentSubjects = async (req, res, next) => {
+
+    const studentid = req.params.id;
+
+
+    try {
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        });
+
+        if (studentData === null) {
+            var error = new Error('Student Not found...');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        studentData.subjectRegistrationDone = 0;
+
+        const deleteData = await SubjectWrapper.destroy({
+            where: {
+                studentId: studentid
+            }
+        })
+
+        if (!deleteData) {
+            var error = new Error('You Have No Register For Subjects...');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        const notification = await studentData.createNotification({
+            type: 4,
+            from: "ADMIN",
+            expire: new Date() + (3600000 * 24 + 3),
+            message: `You have successfully Reset Class .Pleace Re-Register for subject as soon as possible . Otherwise you will loose the process tracking`,
+            to: studentid,
+            publisher: "ADMIN",
+            title: "Subject Reset",
+            attachmentpath: null,
+
+
+        })
+
+
+        res.status(200).json({
+            update: true
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
+
+    }
 
 
 }

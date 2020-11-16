@@ -1,10 +1,13 @@
+const stripe=require('stripe');
+const { Op} = require('sequelize');
+
 
 const Teacher = require('../models/teacherModel');
 const NonAcademic = require('../models/nonAcademicModel');
 const LeaveRequest = require('../models/leaveRequest');
-const { Op, DataTypes } = require('sequelize');
 const Notification = require('../models/notification');
-const sequelize = require('sequelize')
+
+
 
 
 const nodemailer = require('nodemailer');
@@ -356,3 +359,18 @@ exports.sendEmail = async (req, res, next) => {
 
 }
 
+exports.getPayment = async (req , res, next) => {
+
+    const studentid = req.params.id;
+
+    try {
+            
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+
+
+}

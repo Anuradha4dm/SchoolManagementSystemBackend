@@ -27,7 +27,11 @@ router.post('/update-class-handler', nonacademicController.postUpdateClassHandle
 //GET /nonacademic/get-class
 router.get('/get-class-student/:id', nonacademicController.getGetClassOfAStudent);
 
-//POST /nonacademic/update-class
+//POST /nonacademic/update-class    =>this will use to change the student class manualy by the non academic member and send notification to the student
 router.post('/update-class-student', nonacademicController.postUpdateStudentClass)
+
+//GET /nonacademic/reset-student-subject  
+router.get('/reset-student-subjects/:id', nonacademicController.getResetStudentSubjects)
+
 
 module.exports = router;
