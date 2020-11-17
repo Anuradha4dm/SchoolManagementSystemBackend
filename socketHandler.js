@@ -96,6 +96,8 @@ exports.getSubjectId = async (data) => {
 
     try {
 
+        console.log(data)
+
         const subjectData = await Subject.findOne({
             where: {
                 subjectname: data.subjectname,
@@ -103,6 +105,7 @@ exports.getSubjectId = async (data) => {
             },
             attributes: ['subjectid']
         })
+
 
         io.getIo().emit('subjectIdRes', { subjectid: subjectData.subjectid })
     } catch (error) {

@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
 const NonAcademic = require('../models/nonAcademicModel');
@@ -6,7 +7,7 @@ const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
-const { getClass } = require('../socketHandler');
+
 
 exports.getGetPengingRequestList = async (req, res, next) => {
 
@@ -623,4 +624,64 @@ exports.getGetSubjectListOfTheTeahcer = async (req, res, next) => {
         }
         next(error)
     }
+}
+
+
+exports.postUpdateTeacherSubjectList = async (req, res, next) => {
+
+
+    try {
+        const teacherid = req.body.teacherid;
+        const updatedSubjectList = req.body.subjectList;
+
+        var updatedSubjectids = [];
+
+        updatedSubjectList.forEach(element => {
+            return updatedSubjectids.push(element.subjectid);
+        });
+
+        const teacherSubjectList = await Subject.findAll({
+            where: {
+                [Op.or]: {
+                    teacherTeacherid: teacherid,
+                    subjectid: updatedSubjectids
+
+                }
+            }
+        })
+
+        teacherSubjectList.forEach(subject => {
+
+
+            if (updatedSubjectids.includes(subject.subjectid)) {
+
+                subject.teacherTeacherid = teacherid;
+            } else {
+                subject.teacherTeacherid = null;
+            }
+        });
+
+
+        teacherSubjectList.forEach(async subject => {
+
+            await subject.save();
+
+        })
+
+        res.status(200).json({
+            update: true
+        })
+
+
+
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 401
+        }
+        next(error)
+
+    }
+
 }
