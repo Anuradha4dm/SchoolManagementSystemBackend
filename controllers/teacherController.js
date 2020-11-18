@@ -11,14 +11,14 @@ const Subject = require("../models/subjectModel");
 
 exports.postAddStudentResults = async (req, res, next) => {
 
-    const year = req.body.year;
-    const term = req.body.term;
-    const grade = req.body.grade;
-    const studentid = req.body.studentid;
-    const resultArray = req.body.result;
-    const message = req.body.message;
-
     try {
+        const year = req.body.year;
+        const term = req.body.term;
+        const grade = req.body.grade;
+        const studentid = req.body.studentid;
+        const resultArray = req.body.result;
+        const message = req.body.message;
+
         const reslutAvailable = await Result.count({
             where: {
                 year: year,
@@ -44,8 +44,6 @@ exports.postAddStudentResults = async (req, res, next) => {
             sum += +resultObj.marks;
             count++;
 
-            console.log(resultObj);
-
             resultObj.year = year;
             resultObj.term = term;
             resultObj.studentId = studentid;
@@ -55,14 +53,14 @@ exports.postAddStudentResults = async (req, res, next) => {
 
         });
 
-        console.log(sum);
 
         const summary = {
             year: year,
             term: term,
             _id: studentid,
             average: (sum) / count,
-            message: message
+            message: message,
+            grade: grade
         }
 
         const re = await ResultSummary.create(summary);
@@ -90,26 +88,41 @@ exports.postAddStudentResults = async (req, res, next) => {
 
 exports.postMarkStudentAttendence = async (req, res, next) => {
 
-    const date = new Date(req.body.date);
-    const attendencelist = req.body.attendence;
-
     try {
+        const date = new Date();
+        const attendencelist = req.body.submitdata;
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
-        const day = date.getDay() + 1;
+        const day = date.getDate();
+
+        var studentAttendenceData = [];
 
 
-        const storeData = [
-            { studentId: "ST_1", year: 2020, present: true, month: 11, week: 45, day: 4, date: new Date() },
-            { studentId: "ST_2", year: 2020, present: true, month: 11, week: 45, day: 4, date: new Date() },
-            { studentId: "ST_3", year: 2020, present: true, month: 11, week: 45, day: 4, date: new Date() },
-            { studentId: "ST_4", year: 2020, present: true, month: 11, week: 45, day: 4, date: new Date() }
+        var checkMarkAllReady = [];
 
-        ]
+        for (const key in attendencelist) {
+            if (attendencelist.hasOwnProperty(key)) {
+                console.log(key)
+                checkMarkAllReady = await StudentAttendence.findAll({
+                    where: {
+                        year: year,
+                        day: day,
+                        month: month,
+                        studentId: key
+                    }
+                })
 
+                if (checkMarkAllReady.length != 0) {
+                    var error = new Error("You Have Already Marks The Student Attendence....");
+                    error.statusCode = 401;
+                    throw error;
+                }
 
+                studentAttendenceData.push({ studentId: key, year: year, present: attendencelist[key], month: month, week: getWeek(year, month, day), day: day, date: new Date() })
+            }
+        }
 
-        await StudentAttendence.bulkCreate(storeData);
+        await StudentAttendence.bulkCreate(studentAttendenceData);
 
 
         res.status(200).json({
@@ -118,7 +131,10 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error)
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
     }
 
 
@@ -215,7 +231,14 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
         const teacherData = await Teacher.findOne({
             where: {
                 teacherid: teacherid
-            }
+            },
+            include: [Class]
+        })
+
+        const subjectData = await Subject.findAll({
+            where: {
+                teacherTeacherid: teacherid
+            },
         })
 
         if (teacherData === null) {
@@ -223,6 +246,8 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             error.statusCode = 403;
             throw error;
         }
+
+        console.log(teacherData.class);
 
         res.status(200).json({
             surname: teacherData.surname,
@@ -234,12 +259,17 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             startyear: teacherData.startyear,
             age: teacherData.age,
             role: teacherData.role,
-            subjects: teacherData.subjects,
+            subjects: subjectData,
             timatable: teacherData.timetablepath,
-            qualifications: teacherData.qualifications,
+            qualifications: teacherData.qualifications.split('%'),
             description: teacherData.description,
             mobile: teacherData.mobile,
-            numberofleaves: teacherData.numberofleaves
+            numberofleaves: teacherData.numberofleaves,
+            class: teacherData.class.grade,
+            addressline1: teacherData.addressline1,
+            addressline2: teacherData.addressline2,
+            addressline3: teacherData.addressline3,
+            city: teacherData.city
         })
 
 
@@ -343,6 +373,35 @@ exports.postUpdateStudentResult = async (req, res, next) => {
 
 }
 
+
+exports.postGetAvarageDataForTheClass = async (req, res, next) => {
+
+
+    try {
+        const teacherid = req.body.teacherid;
+        const year = req.body.year;
+        const term = req.body.term;
+        const grade = req.body.grade;
+
+
+        const avarageData = await ResultSummary.findAll({
+            where: {
+                year: year,
+                term: term,
+                grade: grade
+            }
+        })
+
+        res.status(200).json({
+            avarageData: avarageData
+        })
+
+    } catch (error) {
+        console.log("error", error)
+
+    }
+
+}
 
 
 

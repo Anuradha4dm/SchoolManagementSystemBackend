@@ -42,6 +42,27 @@ const Teacher = sequelize.define("teacher", {
     age: {
         type: DataTypes.INTEGER
     },
+    gender: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+
+    addressline1: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    addressline2: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    addressline3: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     role: {
         type: DataTypes.STRING,
         allowNull: true
@@ -74,6 +95,10 @@ const Teacher = sequelize.define("teacher", {
     },
     resetTokenExpire: {
         type: DataTypes.DATE
+    },
+    birthdate: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
 
 

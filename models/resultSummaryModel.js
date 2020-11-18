@@ -20,8 +20,13 @@ const ResultSummary = sequelize.define('resultsummary', {
     },
     average: {
         type: DataTypes.DOUBLE,
+        allowNull: false
     }
     ,
+    grade: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     place: {
         type: DataTypes.INTEGER
     },

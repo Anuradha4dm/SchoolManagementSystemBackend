@@ -1,3 +1,4 @@
+
 const Result = require('./models/resultModel');
 const Subject = require('./models/subjectModel');
 const io = require('./webSocket');
@@ -8,13 +9,10 @@ exports.getYear = async (studentObj) => {
 
     const studentid = studentObj.studentid;
 
-    console.log(studentObj);
-
-
     try {
 
         const yearsData = await Result.findAll({
-            where: { studentId: "ST_1" },
+            where: { studentId: studentid },
             attributes: ['year']
         })
 
@@ -96,7 +94,6 @@ exports.getSubjectId = async (data) => {
 
     try {
 
-        console.log(data)
 
         const subjectData = await Subject.findOne({
             where: {
@@ -109,6 +106,7 @@ exports.getSubjectId = async (data) => {
 
         io.getIo().emit('subjectIdRes', { subjectid: subjectData.subjectid })
     } catch (error) {
+
 
         console.log(error);
     }

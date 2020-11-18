@@ -15,7 +15,7 @@ exports.getData =
             "role": "teacher",                  //dont change
             "grades": 'Grade A',                    //dont change
             "subjects": "mathematices",
-            "birthdate": "2020-10-21 00:00:00",
+            "birthdate": '2020-10-21 00:00:00',
             "gender": "male",
             "addressline1": "5D 53",
             "description": "I am the best mathematics teacher",
