@@ -35,7 +35,10 @@ const Notification = require('./models/notification');
 const Sports = require('./models/sportModel');
 const SportsWrapper = require('./models/sportsWrapperModule');
 const Winning = require('./models/winningModel');
-
+const MainExamDetails = require('./models/mainExamDetails');
+const MainExamResult = require('./models/mainExamResult');
+const MainExamSubjectWrapper = require('./models/mainExamSubjectWrapper');
+const MainExamSubject = require('./models/mainExamSubjects');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -84,7 +87,6 @@ const storageLocation = multer.diskStorage({
 });
 
 //filefilter 
-
 const filters = (req, file, callback) => {
 
 
@@ -104,9 +106,9 @@ app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name
 
 //include the body parser 
 app.use(bodyParser.json());
-
 app.use(bodyParser.urlencoded())
 
+//main routes
 app.use('/student', studentRoute);
 app.use('/admin', adminRouter);
 app.use('/teacher', teacherRouter);
@@ -115,7 +117,7 @@ app.use('/auth', authenticationRouter);
 app.use('/common', commnoRouter);
 
 
-
+//error handler
 app.use((error, req, res, next) => {
     console.log(error);
     const statusCode = error.statusCode;
@@ -125,6 +127,9 @@ app.use((error, req, res, next) => {
         message: message
     })
 })
+
+//these are the associations
+
 //M:N realation
 Student.belongsToMany(Subject, {
     through: 'subjectwrapper',
@@ -151,6 +156,18 @@ Sports.belongsToMany(Student, {
     through: 'sportswrapper',
     otherKey: 'studentid',
     foreignKey: 'sportid'
+});
+
+Student.belongsToMany(MainExamSubject, {
+    through: 'mainexamsubjectwrapper',
+    otherKey: 'mesubjectid',
+    foreignKey: 'studentid'
+});
+
+MainExamSubject.belongsToMany(Student, {
+    through: 'mainexamsubjectwrapper',
+    otherKey: 'studentid',
+    foreignKey: 'mesubjectid'
 })
 
 
@@ -160,15 +177,21 @@ Student.belongsTo(Class);
 Teacher.belongsTo(Class);
 Class.hasOne(Teacher);
 Result.belongsTo(Subject);
-Student.hasMany(Result);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
 Leave.belongsTo(Teacher);
+
+
+//1:M
+Student.hasMany(Result);
 Teacher.hasMany(Leave);
 NonAcademic.hasMany(Leave);
 Student.hasMany(StudentAttendence);
 Student.hasMany(Winning);
 Teacher.hasMany(Notification);
 Student.hasMany(Notification);
+Teacher.hasMany(MainExamSubject, { foreignKey: 'teacherid' });
+Student.hasMany(MainExamDetails, { foreignKey: 'studentid' });
+Student.hasMany(MainExamResult, { foreignKey: 'studentid' });
 
 
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });

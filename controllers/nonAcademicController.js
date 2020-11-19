@@ -1,6 +1,8 @@
 const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
+const MainExamDetails = require('../models/mainExamDetails');
+const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
 const Student = require('../models/studentModel');
@@ -672,15 +674,116 @@ exports.postUpdateTeacherSubjectList = async (req, res, next) => {
             update: true
         })
 
-
-
-
-
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 401
         }
         next(error)
+
+    }
+
+}
+
+exports.postRegistratinMainExam = async (req, res, next) => {
+
+    try {
+        const studentid = req.body.studentid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const shy = req.body.shy;
+        const type = req.body.type;
+        const subjectsList = req.body.subjectnames;
+        const studentclass = req.body.class;
+        const stream = req.body.stream;
+
+        var registration;
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        });
+
+        if (studentData === null) {
+            throw new Error('User Not Found....')
+        }
+
+
+        if (!type) {
+            registration = await MainExamDetails.create({
+                indexnumber: indexnumber,
+                studentid: studentid,
+                meyear: year,
+                metype: false,
+                shy: shy,
+                class: studentclass
+            })
+
+
+        }
+        if (type) {
+            registration = await MainExamDetails.create({
+                indexnumber: indexnumber,
+                studentid: studentid,
+                meyear: year,
+                metype: true,
+                shy: shy,
+                stream: stream
+
+            })
+
+        }
+
+        if (registration === null) {
+            throw new Error('Registration Fail....');
+        }
+
+        const mainExamSubjectId = await MainExamSubject.findAll({
+            where: {
+                mesubjectname: {
+                    [Op.in]: subjectsList
+                }
+            },
+
+        })
+
+        const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
+
+        if (registerSubject.length === 0) {
+            throw new Error('Some Probolem Occur In the Registration....');
+        }
+
+
+        res.status(200).json({
+            registration: true,
+            subjectRegister: true,
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
+}
+
+exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
+
+
+    try {
+        const nonacademcid = req.body.nonacademicid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const type = req.body.type;
+        const result = req.body.results;
+
+
+
+
+
+    } catch (error) {
+        console.log("error", error)
 
     }
 
