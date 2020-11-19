@@ -11,16 +11,16 @@ const MainExamResult = sequelize.define('mainexamresult', {
         primaryKey: true,
         autoIncrement: true
     },
-    indexnumber: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     meyear: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
     metype: {
         type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
+    subjectid: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     result: {

@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
 const MainExamDetails = require('../models/mainExamDetails');
+const MainExamResult = require('../models/mainExamResult');
 const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
@@ -9,6 +10,7 @@ const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
+const { resetPasswordChecking } = require('../validators/authenticationValidation');
 
 
 exports.getGetPengingRequestList = async (req, res, next) => {
@@ -621,7 +623,7 @@ exports.getGetSubjectListOfTheTeahcer = async (req, res, next) => {
         })
 
     } catch (error) {
-        if (!error.statudCode) {
+        if (!error.statusCode) {
             error.statusCode = 401;
         }
         next(error)
@@ -777,13 +779,72 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
         const year = req.body.year;
         const type = req.body.type;
         const result = req.body.results;
+        const districtrank = req.body.districtrank;
+        const islandrank = req.body.islandrank;
+        var resultcounts = { acount: 0, bcount: 0, ccount: 0, scount: 0, wcount: 0 };
+
+        var storeResultData = result.map(result => {
+
+            if (result.meresult.toUpperCase() === "A") {
+                resultcounts.acount++;
+            }
+
+            if (result.meresult.toUpperCase() === "B") {
+                resultcounts.bcount++;
+            }
+
+            if (result.meresult.toUpperCase() === "C") {
+                resultcounts.ccount++;
+            }
+
+            if (result.meresult.toUpperCase() === "S") {
+                resultcounts.scount++;
+            }
+
+            if (result.meresult.toUpperCase() === "W") {
+                resultcounts.wcount++;
+            }
+
+            return { index: indexnumber, meyear: year, metype: type, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
+        });
 
 
 
+
+
+        const meDetailsOfStudent = await MainExamDetails.findOne({
+            where: {
+                indexnumber: indexnumber
+            }
+        });
+
+        meDetailsOfStudent.districtrank = districtrank;
+        meDetailsOfStudent.islandrank = islandrank;
+        meDetailsOfStudent.acount = resultcounts.acount;
+        meDetailsOfStudent.bcount = resultcounts.bcount;
+        meDetailsOfStudent.ccount = resultcounts.ccount;
+        meDetailsOfStudent.scount = resultcounts.scount;
+        meDetailsOfStudent.wcount = resultcounts.wcount;
+
+        const addOLresults = await MainExamResult.bulkCreate(storeResultData);
+        const detailUpdateOfStudent = await meDetailsOfStudent.save();
+
+        if (detailUpdateOfStudent === null || addOLresults === null) {
+            throw new Error("Result Addition Problem... Try Later....");
+        }
+
+        res.status(200).json({
+            resultaddtion: true
+        })
 
 
     } catch (error) {
-        console.log("error", error)
+        if (!error.statusCode) {
+            error.statusCode = 500;
+
+        }
+
+        next(errro);
 
     }
 

@@ -191,7 +191,8 @@ Teacher.hasMany(Notification);
 Student.hasMany(Notification);
 Teacher.hasMany(MainExamSubject, { foreignKey: 'teacherid' });
 Student.hasMany(MainExamDetails, { foreignKey: 'studentid' });
-Student.hasMany(MainExamResult, { foreignKey: 'studentid' });
+MainExamDetails.hasMany(MainExamResult, { foreignKey: 'index' });
+
 
 
 // Teacher.hasMany(Subject, { foreignKey: 'subjectid', targetKey: 'id' });
