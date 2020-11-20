@@ -380,8 +380,6 @@ exports.postNewpassword = async (req, res, next) => {
                 userData.password = hashedpassword;
 
                 return userData.save();
-
-
             })
             .then(result => {
 
@@ -407,6 +405,4 @@ exports.postNewpassword = async (req, res, next) => {
 
         next(error);
     }
-
-
 }
