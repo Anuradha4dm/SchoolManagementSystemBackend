@@ -783,6 +783,8 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
         const islandrank = req.body.islandrank;
         var resultcounts = { acount: 0, bcount: 0, ccount: 0, scount: 0, wcount: 0 };
 
+
+
         var storeResultData = result.map(result => {
 
             if (result.meresult.toUpperCase() === "A") {
@@ -805,7 +807,7 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
                 resultcounts.wcount++;
             }
 
-            return { index: indexnumber, meyear: year, metype: type, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
+            return { index: indexnumber, meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
         });
 
 
@@ -825,6 +827,7 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
         meDetailsOfStudent.ccount = resultcounts.ccount;
         meDetailsOfStudent.scount = resultcounts.scount;
         meDetailsOfStudent.wcount = resultcounts.wcount;
+        meDetailsOfStudent.addresultdone = true;
 
         const addOLresults = await MainExamResult.bulkCreate(storeResultData);
         const detailUpdateOfStudent = await meDetailsOfStudent.save();
@@ -844,8 +847,86 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
 
         }
 
-        next(errro);
+        next(error);
 
+    }
+
+}
+
+exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
+
+    try {
+
+        const nonacademicid = req.body.nonacademicid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const islandrank = req.body.islandrank;
+        const districtrank = req.body.districtrank;
+        const resultList = req.body.results;
+        const stream = req.body.stream;
+        const zscore = req.body.zscore;
+        var resultcounts = { acount: 0, bcount: 0, ccount: 0, scount: 0, wcount: 0 };
+
+        const mainExamRegistrationData = await MainExamDetails.findOne({
+            where: {
+                indexnumber: indexnumber
+            }
+        });
+
+        const storeResultArray = resultList.map(result => {
+            if (result.meresult.toUpperCase() === "A") {
+                resultcounts.acount++;
+            }
+
+            if (result.meresult.toUpperCase() === "B") {
+                resultcounts.bcount++;
+            }
+
+            if (result.meresult.toUpperCase() === "C") {
+                resultcounts.ccount++;
+            }
+
+            if (result.meresult.toUpperCase() === "S") {
+                resultcounts.scount++;
+            }
+
+            if (result.meresult.toUpperCase() === "W") {
+                resultcounts.wcount++;
+            }
+            return { meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult, index: indexnumber }
+        });
+
+        mainExamRegistrationData.stream = stream;
+        mainExamRegistrationData.zscore = zscore;
+        mainExamRegistrationData.districtrank = districtrank;
+        mainExamRegistrationData.islandrank = islandrank;
+        mainExamRegistrationData.acount = resultcounts.acount;
+        mainExamRegistrationData.bcount = resultcounts.bcount;
+        mainExamRegistrationData.ccount = resultcounts.ccount;
+        mainExamRegistrationData.scount = resultcounts.scount;
+        mainExamRegistrationData.wcount = resultcounts.wcount;
+        mainExamRegistrationData.addresultdone = true;
+
+
+
+
+        const updateProfileDataInRegistration = await mainExamRegistrationData.save();
+        const addedResultData = await MainExamResult.bulkCreate(storeResultArray);
+
+        if (updateProfileDataInRegistration !== null || addedResultData !== null) {
+            throw new Error("Result Additoin Error Occure ... Try Later...")
+        }
+
+        res.status(200).json({
+            resultaddtion: true
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 
 }

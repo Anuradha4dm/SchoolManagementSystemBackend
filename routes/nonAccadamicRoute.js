@@ -42,8 +42,11 @@ router.post('/update-teacher-subject-list', nonacademicController.postUpdateTeac
 //POST /nonacademic/registration-ordinary-exam     =>this is to register student for the ordinary level examinatin  for the 
 router.post('/registration-exam', nonacademicController.postRegistratinMainExam);
 
-//POST /nonacademic/add-ordinary-level-results
+//POST /nonacademic/add-ordinary-level-results          =>this route is used to add result of the ordinary level
 router.post('/add-ordinary-level-results', nonacademicController.postAddOrdinaryLevelStudentResult);
+
+//POST /nonacademic/add-advance-lavel-result
+router.post('/add-advance-lavel-result', nonacademicController.postAddAdvanceLevelExamResult);
 
 
 module.exports = router;
