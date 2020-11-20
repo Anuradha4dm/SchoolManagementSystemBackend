@@ -930,3 +930,56 @@ exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
     }
 
 }
+
+
+exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, next) => {
+
+    try {
+
+        const studentid = req.params.id;
+        const year = req.params.id;
+
+
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        })
+
+        if (studentData === null) {
+            throw new Error('Student Not Found With Is' + studentid);
+        }
+
+        const subjectData = await studentData.getMainexamsubjects(
+            {
+                through: {
+                    where: {
+                        year: req.query.year
+                    }
+                }
+            });
+
+        if (subjectData.length === 0) {
+            throw new Error('Subject Are Not Found....')
+        }
+
+        const responseDataSetUp = subjectData.map(subject => {
+            return { mesubjectid: subject.mesubjectid, mesubjectname: subject.mesubjectname }
+        })
+
+        res.status(200).json({
+            responsedata: responseDataSetUp
+        })
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+
+    }
+
+}
