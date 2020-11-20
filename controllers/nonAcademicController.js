@@ -169,7 +169,7 @@ exports.postAddNotification = async (req, res, next) => {
                 message: message,
                 expire: expire,
                 attachmentpath: path,
-                publilsher: nonacademicid,
+                publisher: nonacademicid,
                 to: to
 
             });
@@ -977,9 +977,6 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
         if (!error.statusCode) {
             error.statusCode = 500;
         }
-
         next(error);
-
     }
-
 }

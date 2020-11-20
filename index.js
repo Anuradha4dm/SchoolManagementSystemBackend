@@ -6,6 +6,7 @@ require('dotenv').config()
 // const upload = require('express-fileupload')
 //include the body to the parse
 const app = express();
+const { Op } = require('sequelize');
 
 //these are the main routing modules
 const studentRoute = require('./routes/studentRouter');
@@ -107,6 +108,10 @@ app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name
 //include the body parser 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded())
+
+//notifiacatin remove 
+
+
 
 //main routes
 app.use('/student', studentRoute);
@@ -234,6 +239,19 @@ sequelize
             })
 
         })
+
+        setInterval(() => {
+
+            Notification.destroy({
+                where: {
+                    expire: {
+                        [Op.lte]: new Date()
+                    }
+                }
+            })
+
+
+        }, (1000 * 60 * 24));
 
 
 

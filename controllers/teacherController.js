@@ -226,6 +226,8 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
 
     const teacherid = req.params.id;
 
+
+
     try {
 
         const teacherData = await Teacher.findOne({
@@ -247,7 +249,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             throw error;
         }
 
-        console.log(teacherData.class);
+
 
         res.status(200).json({
             surname: teacherData.surname,
@@ -261,11 +263,11 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             role: teacherData.role,
             subjects: subjectData,
             timatable: teacherData.timetablepath,
-            qualifications: teacherData.qualifications.split('%'),
+            qualifications: (teacherData.qualifications === null) ? "Qualifications are not specified..." : teacherData.qualifications.split('%'),
             description: teacherData.description,
             mobile: teacherData.mobile,
             numberofleaves: teacherData.numberofleaves,
-            class: teacherData.class.grade,
+            class: (teacherData.class === null) ? "No Class..." : teacherData.class.grade,
             addressline1: teacherData.addressline1,
             addressline2: teacherData.addressline2,
             addressline3: teacherData.addressline3,
