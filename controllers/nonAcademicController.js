@@ -8,7 +8,6 @@ const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
 
-
 exports.getGetPengingRequestList = async (req, res, next) => {
 
 
@@ -682,6 +681,65 @@ exports.postUpdateTeacherSubjectList = async (req, res, next) => {
         }
         next(error)
 
+    }
+}
+exports.getGetPendingLeaveRequests = async (req, res, next) => {
+
+    //0-half day
+    //1-short leave
+    //2- full day
+
+    try {
+
+        const getPendingRequests = await Leave.findAll({
+            where: {
+                [Op.and]: {
+                    allow: false,
+                    leavedate: {
+                        [Op.gte]: new Date()
+                    }
+                }
+            },
+            include: Teacher
+        });
+
+        var type = "";
+
+        var responsePendingLeaveDataArray = getPendingRequests.map(leaveData => {
+
+            if (leaveData.leavetype === 0) {
+                type = "Half Day"
+            }
+            if (leaveData.leavetype === 0) {
+                type = "Short Leave"
+            }
+            if (leaveData.leavetype === 0) {
+                type = "Full Day"
+            }
+
+
+            return {
+                leaveid: leaveData.leaveid,
+                leavedate: leaveData.leavedate,
+                description: leaveData.description,
+                leavetype: type,
+                userid: leaveData.teacherTeacherid,
+                fullname: leaveData.teacher.firstname + " " + leaveData.teacher.lastname,
+                role: leaveData.teacher.role,
+                numofleave: leaveData.teacher.numberofleaves
+            }
+        })
+
+
+        res.status(200).json({
+            leavedata: responsePendingLeaveDataArray
+        })
+
+
+
+    } catch (error) {
+
+        console.log(error);
     }
 
 }
