@@ -1,12 +1,16 @@
 const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
+const MainExamDetails = require('../models/mainExamDetails');
+const MainExamResult = require('../models/mainExamResult');
+const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
 const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
+const { resetPasswordChecking } = require('../validators/authenticationValidation');
 
 
 exports.getGetPengingRequestList = async (req, res, next) => {
@@ -165,7 +169,7 @@ exports.postAddNotification = async (req, res, next) => {
                 message: message,
                 expire: expire,
                 attachmentpath: path,
-                publilsher: nonacademicid,
+                publisher: nonacademicid,
                 to: to
 
             });
@@ -619,7 +623,7 @@ exports.getGetSubjectListOfTheTeahcer = async (req, res, next) => {
         })
 
     } catch (error) {
-        if (!error.statudCode) {
+        if (!error.statusCode) {
             error.statusCode = 401;
         }
         next(error)
@@ -672,10 +676,6 @@ exports.postUpdateTeacherSubjectList = async (req, res, next) => {
             update: true
         })
 
-
-
-
-
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 401
@@ -684,4 +684,299 @@ exports.postUpdateTeacherSubjectList = async (req, res, next) => {
 
     }
 
+}
+
+exports.postRegistratinMainExam = async (req, res, next) => {
+
+    try {
+        const studentid = req.body.studentid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const shy = req.body.shy;
+        const type = req.body.type;
+        const subjectsList = req.body.subjectnames;
+        const studentclass = req.body.class;
+        const stream = req.body.stream;
+
+        var registration;
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        });
+
+        if (studentData === null) {
+            throw new Error('User Not Found....')
+        }
+
+
+        if (!type) {
+            registration = await MainExamDetails.create({
+                indexnumber: indexnumber,
+                studentid: studentid,
+                meyear: year,
+                metype: false,
+                shy: shy,
+                class: studentclass
+            })
+
+
+        }
+        if (type) {
+            registration = await MainExamDetails.create({
+                indexnumber: indexnumber,
+                studentid: studentid,
+                meyear: year,
+                metype: true,
+                shy: shy,
+                stream: stream
+
+            })
+
+        }
+
+        if (registration === null) {
+            throw new Error('Registration Fail....');
+        }
+
+        const mainExamSubjectId = await MainExamSubject.findAll({
+            where: {
+                mesubjectname: {
+                    [Op.in]: subjectsList
+                }
+            },
+
+        })
+
+        const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
+
+        if (registerSubject.length === 0) {
+            throw new Error('Some Probolem Occur In the Registration....');
+        }
+
+
+        res.status(200).json({
+            registration: true,
+            subjectRegister: true,
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
+}
+
+exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
+
+
+    try {
+        const nonacademcid = req.body.nonacademicid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const type = req.body.type;
+        const result = req.body.results;
+        const districtrank = req.body.districtrank;
+        const islandrank = req.body.islandrank;
+        var resultcounts = { acount: 0, bcount: 0, ccount: 0, scount: 0, wcount: 0 };
+
+
+
+        var storeResultData = result.map(result => {
+
+            if (result.meresult.toUpperCase() === "A") {
+                resultcounts.acount++;
+            }
+
+            if (result.meresult.toUpperCase() === "B") {
+                resultcounts.bcount++;
+            }
+
+            if (result.meresult.toUpperCase() === "C") {
+                resultcounts.ccount++;
+            }
+
+            if (result.meresult.toUpperCase() === "S") {
+                resultcounts.scount++;
+            }
+
+            if (result.meresult.toUpperCase() === "W") {
+                resultcounts.wcount++;
+            }
+
+            return { index: indexnumber, meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
+        });
+
+
+
+
+
+        const meDetailsOfStudent = await MainExamDetails.findOne({
+            where: {
+                indexnumber: indexnumber
+            }
+        });
+
+        meDetailsOfStudent.districtrank = districtrank;
+        meDetailsOfStudent.islandrank = islandrank;
+        meDetailsOfStudent.acount = resultcounts.acount;
+        meDetailsOfStudent.bcount = resultcounts.bcount;
+        meDetailsOfStudent.ccount = resultcounts.ccount;
+        meDetailsOfStudent.scount = resultcounts.scount;
+        meDetailsOfStudent.wcount = resultcounts.wcount;
+        meDetailsOfStudent.addresultdone = true;
+
+        const addOLresults = await MainExamResult.bulkCreate(storeResultData);
+        const detailUpdateOfStudent = await meDetailsOfStudent.save();
+
+        if (detailUpdateOfStudent === null || addOLresults === null) {
+            throw new Error("Result Addition Problem... Try Later....");
+        }
+
+        res.status(200).json({
+            resultaddtion: true
+        })
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+
+        }
+
+        next(error);
+
+    }
+
+}
+
+exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
+
+    try {
+
+        const nonacademicid = req.body.nonacademicid;
+        const indexnumber = req.body.indexnumber;
+        const year = req.body.year;
+        const islandrank = req.body.islandrank;
+        const districtrank = req.body.districtrank;
+        const resultList = req.body.results;
+        const stream = req.body.stream;
+        const zscore = req.body.zscore;
+        var resultcounts = { acount: 0, bcount: 0, ccount: 0, scount: 0, wcount: 0 };
+
+        const mainExamRegistrationData = await MainExamDetails.findOne({
+            where: {
+                indexnumber: indexnumber
+            }
+        });
+
+        const storeResultArray = resultList.map(result => {
+            if (result.meresult.toUpperCase() === "A") {
+                resultcounts.acount++;
+            }
+
+            if (result.meresult.toUpperCase() === "B") {
+                resultcounts.bcount++;
+            }
+
+            if (result.meresult.toUpperCase() === "C") {
+                resultcounts.ccount++;
+            }
+
+            if (result.meresult.toUpperCase() === "S") {
+                resultcounts.scount++;
+            }
+
+            if (result.meresult.toUpperCase() === "W") {
+                resultcounts.wcount++;
+            }
+            return { meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult, index: indexnumber }
+        });
+
+        mainExamRegistrationData.stream = stream;
+        mainExamRegistrationData.zscore = zscore;
+        mainExamRegistrationData.districtrank = districtrank;
+        mainExamRegistrationData.islandrank = islandrank;
+        mainExamRegistrationData.acount = resultcounts.acount;
+        mainExamRegistrationData.bcount = resultcounts.bcount;
+        mainExamRegistrationData.ccount = resultcounts.ccount;
+        mainExamRegistrationData.scount = resultcounts.scount;
+        mainExamRegistrationData.wcount = resultcounts.wcount;
+        mainExamRegistrationData.addresultdone = true;
+
+
+
+
+        const updateProfileDataInRegistration = await mainExamRegistrationData.save();
+        const addedResultData = await MainExamResult.bulkCreate(storeResultArray);
+
+        if (updateProfileDataInRegistration !== null || addedResultData !== null) {
+            throw new Error("Result Additoin Error Occure ... Try Later...")
+        }
+
+        res.status(200).json({
+            resultaddtion: true
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
+
+}
+
+
+exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, next) => {
+
+    try {
+
+        const studentid = req.params.id;
+        const year = req.params.id;
+
+
+
+        const studentData = await Student.findOne({
+            where: {
+                _id: studentid
+            }
+        })
+
+        if (studentData === null) {
+            throw new Error('Student Not Found With Is' + studentid);
+        }
+
+        const subjectData = await studentData.getMainexamsubjects(
+            {
+                through: {
+                    where: {
+                        year: req.query.year
+                    }
+                }
+            });
+
+        if (subjectData.length === 0) {
+            throw new Error('Subject Are Not Found....')
+        }
+
+        const responseDataSetUp = subjectData.map(subject => {
+            return { mesubjectid: subject.mesubjectid, mesubjectname: subject.mesubjectname }
+        })
+
+        res.status(200).json({
+            responsedata: responseDataSetUp
+        })
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
 }

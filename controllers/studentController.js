@@ -151,7 +151,7 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
     Subject.findOne(
         {
             where: {
-                subjectname: subjectname,
+                subjectname: subjectname.replace(" ", "_").toLowerCase(),
                 grade: grade
             }
         }
@@ -168,6 +168,7 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
             res.status(200).json(responseData)
         })
         .catch(error => {
+
             error.message = "Subject is not assign to teacher check later....."
             if (!error.statusCode) {
                 error.statusCode = 500

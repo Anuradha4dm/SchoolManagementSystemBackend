@@ -1,5 +1,5 @@
-const stripe=require('stripe');
-const { Op} = require('sequelize');
+const stripe = require('stripe');
+const { Op } = require('sequelize');
 
 
 const Teacher = require('../models/teacherModel');
@@ -359,14 +359,11 @@ exports.sendEmail = async (req, res, next) => {
 
 }
 
-exports.getPayment = async (req , res, next) => {
+exports.getPayment = async (req, res, next) => {
 
     const studentid = req.params.id;
 
     try {
-            
-
-
 
     } catch (error) {
         console.log(error)
