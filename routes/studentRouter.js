@@ -11,7 +11,7 @@ const router = express.Router();
 // GET=> /studet/profile/:id get the student profile infomation
 router.get('/profile/:id', studentController.getStudentProfile);
 
-//POST=> /student/edit-profilr/:id
+//POST=> /student/edit-profilr/:id                =>this router is used to update the students profile details
 router.post('/edit-profile/:id', studentController.postEditStudentProfile);
 
 //POST=> /student/getSubjectInfo/:subject/:grade

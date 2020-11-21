@@ -54,4 +54,10 @@ router.post('/add-advance-lavel-result', nonacademicController.postAddAdvanceLev
 //GET  /nonacademic/get-subjects-result-add
 router.get('/get-subjects-result-add/:id', nonacademicController.getGetStudentRegisteredSubjectsForResultAdditiion);
 
+//GET /notification/get-all-notifications    =>this method is used to get all the notifications of the students
+router.get('/get-all-notifications', nonacademicController.getGetAllNotificaions);
+
+//POST /nonacademic/switch-class-students
+router.post('/switch-class-students', nonacademicController.postSwitchStudentsClassForTheYear);
+
 module.exports = router;

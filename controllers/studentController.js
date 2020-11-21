@@ -11,6 +11,8 @@ const ResultSummary = require('../models/resultSummaryModel');
 const StudentAttendence = require('../models/studentAttendaceModule');
 const Sports = require('../models/sportModel');
 const webSocket = require('../webSocket');
+const AdvanceLevelGradeChange = require('../models/advanceLevelSelctionModule');
+const MainExamDetails = require('../models/mainExamDetails');
 
 
 
@@ -97,25 +99,45 @@ exports.postEditStudentProfile = async (req, res, next) => {
         }
     })
 
+    var classClassid = classData.classid;
+
+    if ((req.body.gradeRequest === "true")) {
+        classClassid = 5;
+
+        const ordinaryLevelData = await MainExamDetails.findOne({
+            where: {
+                studentid: id,
+                metype: false
+            }
+        })
+
+        const updateNon = await AdvanceLevelGradeChange.create({
+            indexnumber: ordinaryLevelData.indexnumber,
+            requeststream: req.body.grade,
+            studentId: id
+        })
+
+        console.log(updateNon);
+    }
 
     Student.findByPk(id).then(student => {
 
-        student.surname = req.body.surname,
-            student.firstName = req.body.firstname,
-            student.lastName = req.body.lastname,
-            student.email = req.body.email,
-            student.username = req.body.username,
-            student.age = req.body.age,
-            student.imagePath = updatedImagePath,
-            student.gender = req.body.gender,
-            student.startYear = req.body.startyear,
-            student.birthDate = req.body.birthdate,
-            student.addressLine1 = req.body.addressline1,
-            student.addressLine2 = req.body.addressline2,
-            student.addressLine3 = req.body.addressline3,
-            student.city = req.body.city,
-            student.mobile = req.body.mobile
-        student.classClassid = classData.classid
+        student.surname = req.body.surname;
+        student.firstName = req.body.firstname;
+        student.lastName = req.body.lastname;
+        student.email = req.body.email;
+        student.username = req.body.username;
+        student.age = req.body.age;
+        student.imagePath = updatedImagePath;
+        student.gender = req.body.gender;
+        student.startYear = req.body.startyear;
+        student.birthDate = req.body.birthdate;
+        student.addressLine1 = req.body.addressline1;
+        student.addressLine2 = req.body.addressline2;
+        student.addressLine3 = req.body.addressline3;
+        student.city = req.body.city;
+        student.mobile = req.body.mobile;
+        student.classClassid = classClassid;
         student.graderegistration = new Date().getFullYear()
 
         return student.save();

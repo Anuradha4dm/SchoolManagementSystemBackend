@@ -1039,3 +1039,181 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
         next(error);
     }
 }
+
+exports.getGetAllNotificaions = async (req, res, next) => {
+
+    try {
+
+        const notification = await Notification.findAll();
+        res.status(200).json(notification);
+
+    } catch (error) {
+        console.log("error", error)
+
+    }
+}
+
+exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
+
+    try {
+
+        const switchingTypeMode = req.body.type;
+
+
+        if (switchingTypeMode === "random") {
+
+
+            var gradeCount = 1;
+            var previousGrade = []
+
+            for (let i = 0; i < 4; i++) {
+                previousGrade[i] = await Student.findAll({
+                    where: {
+                        classClassid: {
+                            [Op.in]: [gradeCount, gradeCount + 1, gradeCount + 2, gradeCount + 3, gradeCount + 4]
+                        }
+                    }
+                });
+
+                gradeCount += 5;
+
+                previousGrade[i] = shuffle(previousGrade[i]);
+            }
+
+            //get grade 10 students
+            const grade10students = await Student.findAll({
+                where: {
+                    classClassid: {
+                        [Op.in]: [21, 22, 23, 24, 25]
+
+                    }
+                }
+            });
+
+            //update the grade to grade 11
+            await Promise.all(
+
+                grade10students.map(async student => {
+
+                    student.classClassid += 5;
+
+                    await student.save();
+
+                })
+
+            );
+
+            //get grede 12 students
+            const grade12students = await Student.findAll({
+                where: {
+                    classClassid: {
+                        [Op.in]: [31, 32, 33, 34, 35]
+
+                    }
+                }
+            });
+            //change student grade 13 
+            await Promise.all(
+
+                grade12students.map(async student => {
+
+                    student.classClassid += 5;
+
+                    await student.save();
+
+                })
+
+            );
+
+
+
+            var newGradeArray = [];
+
+            for (let i = 0; i < 4; i++) {
+                newGradeArray[i] = []
+                for (let k = 0; k < 5; k++) {
+
+
+                    newGradeArray[i][k] = previousGrade[i].filter((student, index) => {
+
+                        if ((index % 5) === k) {
+                            return student;
+                        }
+                        return null;
+
+                    })
+
+                }
+
+            }
+
+            var incrementClassid = 6;
+
+            for (let i = 0; i < 4; i++) {
+
+                for (let k = 0; k < 5; k++) {
+
+
+                    await Promise.all(
+                        newGradeArray[i][k].map(async (student) => {
+                            student.subjectRegistrationDone = false;
+                            student.classClassid = incrementClassid;
+
+                            await student.save();
+
+                        })
+
+
+                    )
+
+
+                    // await Promise.all(newGradeArray[i][k].forEach(async student => {
+                    //     student.subjectRegistrationDone = false;
+                    //     student.classClassid = incrementClassid;
+
+                    //     await student.save();
+                    // }))
+
+                    incrementClassid++;
+
+                }
+
+
+            }
+
+            res.status(200).json({
+                gradeUpdate: true
+            })
+        }
+
+
+
+
+
+    } catch (error) {
+        console.log("error", error)
+
+    }
+
+
+}
+
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}

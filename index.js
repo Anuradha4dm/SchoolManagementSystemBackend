@@ -40,6 +40,7 @@ const MainExamDetails = require('./models/mainExamDetails');
 const MainExamResult = require('./models/mainExamResult');
 const MainExamSubjectWrapper = require('./models/mainExamSubjectWrapper');
 const MainExamSubject = require('./models/mainExamSubjects');
+const AdvanceLevelGradeChange = require('./models/advanceLevelSelctionModule');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -184,6 +185,7 @@ Class.hasOne(Teacher);
 Result.belongsTo(Subject);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
 Leave.belongsTo(Teacher);
+AdvanceLevelGradeChange.belongsTo(Student);
 
 
 //1:M
