@@ -6,6 +6,7 @@ const MainExamResult = require('../models/mainExamResult');
 const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
+const ResultSummary = require('../models/resultSummaryModel');
 const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
@@ -1156,8 +1157,13 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
                     await Promise.all(
                         newGradeArray[i][k].map(async (student) => {
-                            student.subjectRegistrationDone = false;
+
                             student.classClassid = incrementClassid;
+
+                            if (i === 3) {
+                                student.subjectRegistrationDone = false;
+
+                            }
 
                             await student.save();
 
@@ -1184,6 +1190,147 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
             res.status(200).json({
                 gradeUpdate: true
             })
+        }
+
+        if (switchingTypeMode === "default") {
+
+            const getAllStudentsData = await Student.findAll({
+                where: {
+                    classClassid: {
+                        [Op.notIn]: [26, 27, 28, 29, 30, 36, 37, 38, 39, 40]
+                    }
+                }
+            });
+
+            await Promise.all(
+
+                getAllStudentsData.map(async student => {
+
+                    student.classClassid += 5;
+
+                    if (student.classClassid >= 21 && student.classClassid <= 25) {
+                        student.subjectRegistrationDone = false;
+                    }
+
+                    await student.save();
+
+                })
+            )
+
+            res.status(200).json({
+                gradeUpdate: true
+            })
+
+        }
+
+        if (switchingTypeMode === "best") {
+
+            var gradeCount = 1;
+            var getStudentDataGradeWise = [];
+
+            for (let i = 0; i < 4; i++) {
+                getStudentDataGradeWise[i] = await Student.findAll({
+                    where: {
+                        classClassid: {
+                            [Op.in]: [gradeCount, gradeCount + 1, gradeCount + 2, gradeCount + 3, gradeCount + 4]
+                        }
+                    }
+                });
+
+                gradeCount += 5;
+            }
+
+
+            var studentSummationOfAveragesWithStudentid = [];
+
+
+            for (let i = 0; i < 4; i++) {
+
+                studentSummationOfAveragesWithStudentid[i] = [];
+
+                await Promise.all(
+                    getStudentDataGradeWise[i].map(async studentdata => {
+
+
+                        const results = await ResultSummary.findAll({
+                            where: {
+                                _id: studentdata._id,
+                                year: studentdata.graderegistration
+                            },
+                            attributes: ['average']
+                        })
+
+                        var sum = 0;
+
+                        results.forEach(varage => {
+
+                            sum = ((results[0].average != undefined) ? results[0].average : 0) + ((results[1].average != undefined) ? results[1].average : 0) + ((results[2].average != undefined) ? results[2].average : 0)
+
+                        })
+
+                        studentSummationOfAveragesWithStudentid[i].push({ studentdata: studentdata, sumOfAvg: sum });
+
+                        sum = 0;
+                    })
+                )
+            }
+
+
+            var newClassArray = [];
+            var numberOfStudentsInClass = 0;
+            var startIndex = 0;
+
+            for (let i = 0; i < 4; i++) {
+
+                newClassArray[i] = [];
+
+                studentSummationOfAveragesWithStudentid[i] = studentSummationOfAveragesWithStudentid[i].sort((a, b) => (a.sumOfAvg < b.sumOfAvg) ? 1 : -1);
+
+                numberOfStudentsInClass = Math.ceil(studentSummationOfAveragesWithStudentid[i].length / 5);
+
+
+
+                for (let k = 0; k < 5; k++) {
+                    newClassArray[i][k] = studentSummationOfAveragesWithStudentid[i].splice(startIndex, numberOfStudentsInClass)
+
+                }
+
+            }
+
+
+            var incrementClassid = 6;
+
+            for (let i = 0; i < 4; i++) {
+
+                for (let k = 0; k < 5; k++) {
+
+
+                    await Promise.all(
+                        newClassArray[i][k].map(async ({ ...studentdata }) => {
+                            studentdata.studentdata.classClassid = incrementClassid;
+
+                            if (i === 3) {
+                                studentdata.studentdata.subjectRegistrationDone = false;
+
+                            }
+
+
+                            await studentdata.studentdata.save()
+
+                        })
+
+
+                    )
+                    incrementClassid++;
+
+                }
+            }
+
+
+            res.status(200).json({
+                gradeUpdate: true
+            })
+
         }
 
 
