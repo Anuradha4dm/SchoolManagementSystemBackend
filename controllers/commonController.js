@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport(sendGridTransport({
     }
 }))
 
-
+/*
 exports.postGetDataForleave = async (req, res, next) => {
 
     const id = req.body.id;
@@ -131,7 +131,7 @@ exports.postGetDataForleave = async (req, res, next) => {
     }
 
 }
-
+*/
 
 exports.postGetPreviousLeavesData = async (req, res, next) => {
 
