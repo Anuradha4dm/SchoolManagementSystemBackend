@@ -89,7 +89,7 @@ exports.getStudentProfile = async (req, res, next) => {
 exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
-    console.log(req.body.gradeRequest)
+
 
     if (req.body.imagepath && !req.file) {
         updatedImagePath = req.body.imagepath

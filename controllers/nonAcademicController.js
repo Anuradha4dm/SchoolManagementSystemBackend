@@ -1,3 +1,4 @@
+
 const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
@@ -1363,4 +1364,224 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+
+exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
+
+    try {
+
+        const result = req.query.result;
+        const count = parseInt(req.query.count);
+        var countByYear;
+
+        if (result.toUpperCase() === "A") {
+
+            countByYear = await MainExamDetails.count({
+                where: {
+                    acount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            });
+        }
+
+        if (result.toUpperCase() === "B") {
+
+            countByYear = await MainExamDetails.count({
+                where: {
+                    bcount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            });
+        }
+
+        if (result.toUpperCase() === "C") {
+
+            countByYear = await MainExamDetails.count({
+                where: {
+                    ccount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            });
+        }
+
+        if (result.toUpperCase() === "S") {
+
+            countByYear = await MainExamDetails.count({
+                where: {
+                    scount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            });
+        }
+
+        if (result.toUpperCase() === "W") {
+
+            countByYear = await MainExamDetails.count({
+                where: {
+                    wcount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            });
+        }
+
+
+        res.status(200).json(countByYear)
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1374 ~ error", error)
+
+    }
+
+}
+
+
+exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
+
+    try {
+        const year = parseInt(req.query.year);
+        const subjectid = parseInt(req.query.subjectid);
+
+        const Acount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: false,
+                result: "A"
+            },
+
+        });
+        const Bcount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: false,
+                result: "B"
+            },
+
+        });
+        const Ccount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: false,
+                result: "C"
+            },
+
+        });
+        const Scount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: false,
+                result: "S"
+            },
+
+        });
+        const Wcount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: false,
+                result: "W"
+            },
+
+        });
+
+        res.status(200).json({
+            acount: Acount,
+            bcount: Bcount,
+            ccount: Ccount,
+            Scount: Scount,
+            wcount: Wcount
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1449 ~ error", error)
+
+    }
+
+}
+
+exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
+
+
+    try {
+
+        const year = parseInt(req.query.year);
+        const result = req.query.result;
+        const count = parseInt(req.query.count);
+
+        var studentDataSet;
+
+        if (result.toUpperCase() === "A") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    acount: count,
+                    metype: false,
+                    meyear: year
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid']
+            })
+        }
+        if (result.toUpperCase() === "B") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    bcount: count,
+                    metype: false,
+                    meyear: year
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid']
+            })
+        }
+        if (result.toUpperCase() === "C") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    ccount: count,
+                    metype: false,
+                    meyear: year
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid']
+            })
+        }
+        if (result.toUpperCase() === "S") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    scount: count,
+                    metype: false,
+                    meyear: year
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid']
+            })
+        }
+        if (result.toUpperCase() === "W") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    wcount: count,
+                    metype: false,
+                    meyear: year
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid']
+            })
+        }
+
+
+        res.status(200).json(studentDataSet)
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
+
+    }
+
 }

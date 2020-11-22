@@ -57,7 +57,18 @@ router.get('/get-subjects-result-add/:id', nonacademicController.getGetStudentRe
 //GET /notification/get-all-notifications    =>this method is used to get all the notifications of the students
 router.get('/get-all-notifications', nonacademicController.getGetAllNotificaions);
 
-//POST /nonacademic/switch-class-students
+//POST /nonacademic/switch-class-students       =>this router is used to change the grade of the students in the way that random,default ,and best
 router.post('/switch-class-students', nonacademicController.postSwitchStudentsClassForTheYear);
+
+
+//POST /nonacademic/ol-chart-one        =>this route is used to get the data of the ordinary level chartone
+router.get('/ol-chart-one', nonacademicController.postGetOrdinalyLevelChartOneData)
+
+//GET  /nonacademic/ol-chart-two        =>this route used to get the data of chart two
+router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
+
+//GET /nonacademic/ol-chart-three
+router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
+
 
 module.exports = router;
