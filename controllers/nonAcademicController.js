@@ -1735,4 +1735,82 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
 
 exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
 
+    try {
+        const year = parseInt(req.body.year);
+        const result = req.body.result;
+        const count = parseInt(req.body.count);
+        const stream = req.body.stream
+
+        var studentDataSet;
+
+        if (result.toUpperCase() === "A") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    acount: count,
+                    metype: true,
+                    meyear: year,
+                    stream: stream,
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+            })
+        }
+        if (result.toUpperCase() === "B") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    bcount: count,
+                    metype: true,
+                    meyear: year,
+                    stream: stream,
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+            })
+        }
+        if (result.toUpperCase() === "C") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    ccount: count,
+                    metype: true,
+                    meyear: year,
+                    stream: stream,
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+            })
+        }
+        if (result.toUpperCase() === "S") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    scount: count,
+                    metype: true,
+                    meyear: year,
+                    stream: stream,
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+            })
+        }
+        if (result.toUpperCase() === "W") {
+            studentDataSet = await MainExamDetails.findAll({
+                where: {
+                    wcount: count,
+                    metype: true,
+                    meyear: year,
+                    stream: stream,
+
+                },
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+            })
+        }
+
+
+        res.status(200).json(studentDataSet)
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
+
+    }
+
+
 }

@@ -75,5 +75,7 @@ router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
 
 router.post('/al-chart-two', nonacademicController.postGetAdvanceLevelChartTwo);
 
+router.post('/al-chart-three', nonacademicController.postGetAdvanceLevelChartThree);
+
 
 module.exports = router;
