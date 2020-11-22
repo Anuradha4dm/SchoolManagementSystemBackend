@@ -13,6 +13,8 @@ const Sports = require('../models/sportModel');
 const webSocket = require('../webSocket');
 const AdvanceLevelGradeChange = require('../models/advanceLevelSelctionModule');
 const MainExamDetails = require('../models/mainExamDetails');
+const MainExamResult = require('../models/mainExamResult');
+const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');
 
 
 
@@ -87,6 +89,8 @@ exports.getStudentProfile = async (req, res, next) => {
 exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
+    console.log(req.body.gradeRequest)
+
     if (req.body.imagepath && !req.file) {
         updatedImagePath = req.body.imagepath
     } else {
@@ -102,7 +106,6 @@ exports.postEditStudentProfile = async (req, res, next) => {
     var classClassid = classData.classid;
 
     if ((req.body.gradeRequest === "true")) {
-        classClassid = 5;
 
         const ordinaryLevelData = await MainExamDetails.findOne({
             where: {
@@ -111,13 +114,9 @@ exports.postEditStudentProfile = async (req, res, next) => {
             }
         })
 
-        const updateNon = await AdvanceLevelGradeChange.create({
-            indexnumber: ordinaryLevelData.indexnumber,
-            requeststream: req.body.grade,
-            studentId: id
-        })
 
-        console.log(updateNon);
+        await addRecodeToPermissionAdvanceLevel(ordinaryLevelData, id, classClassid);
+        classClassid = 0;
     }
 
     Student.findByPk(id).then(student => {
@@ -153,6 +152,67 @@ exports.postEditStudentProfile = async (req, res, next) => {
             throw error;
         })
 
+
+}
+
+
+
+async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream) {
+
+
+
+
+    try {
+        var mathResult;
+        var sinhalaResult;
+
+        var allResultCountABC = studentData.acount + studentData.bcount + studentData.ccount;
+        var minimumRequirement = false;
+
+        if (allResultCountABC > 6) {
+            minimumRequirement = true;
+        }
+        else if (studentData.scount > 3) {
+            minimumRequirement = ((allResultCountABC + 3) > 6) ? true : false;
+        } else {
+            minimumRequirement = false;
+        }
+
+
+        const mathsAndScienceResult = await MainExamResult.findAll({
+            where: {
+                index: studentData.indexnumber,
+                subjectid: {
+                    [Op.in]: [1, 4]
+                }
+            },
+            attributes: ['result', 'subjectid']
+        })
+
+        mathsAndScienceResult.forEach(resultData => {
+
+            if (resultData.subjectid === 1) {
+                mathResult = (resultData.result === "W") ? false : true;
+            }
+            if (resultData.subjectid === 4) {
+                sinhalaResult = (resultData.result === "W") ? false : true;
+            }
+        })
+
+
+
+        const permission = await PermissionAvanceLevel.create({
+            stream: stream,
+            allcount: minimumRequirement,
+            mathresult: mathResult,
+            sinhalaresult: sinhalaResult,
+            studentId: studentid
+        });
+
+    } catch (error) {
+
+        throw new Error('server side error...try later.....')
+    }
 
 }
 
@@ -198,6 +258,9 @@ exports.getGetSubjectData = (req, res, next) => {  //this is used to whent the s
             next(error);
         })
 }
+
+
+
 
 exports.postAddSubjectPrimary = async (req, res, next) => {
 
