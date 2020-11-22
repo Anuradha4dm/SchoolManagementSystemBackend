@@ -1,4 +1,5 @@
 
+const { response } = require('express');
 const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
@@ -1379,7 +1380,8 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
             countByYear = await MainExamDetails.count({
                 where: {
-                    acount: count
+                    acount: count,
+                    metype: false,
                 },
                 attributes: ['meyear'],
                 group: ['meyear']
@@ -1390,7 +1392,8 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
             countByYear = await MainExamDetails.count({
                 where: {
-                    bcount: count
+                    bcount: count,
+                    metype: false,
                 },
                 attributes: ['meyear'],
                 group: ['meyear']
@@ -1401,7 +1404,8 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
             countByYear = await MainExamDetails.count({
                 where: {
-                    ccount: count
+                    ccount: count,
+                    metype: false,
                 },
                 attributes: ['meyear'],
                 group: ['meyear']
@@ -1412,7 +1416,8 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
             countByYear = await MainExamDetails.count({
                 where: {
-                    scount: count
+                    scount: count,
+                    metype: false,
                 },
                 attributes: ['meyear'],
                 group: ['meyear']
@@ -1423,7 +1428,8 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
             countByYear = await MainExamDetails.count({
                 where: {
-                    wcount: count
+                    wcount: count,
+                    metype: false,
                 },
                 attributes: ['meyear'],
                 group: ['meyear']
@@ -1581,6 +1587,82 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
 
     } catch (error) {
         console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
+
+    }
+
+}
+
+
+exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
+
+    try {
+        const result = req.body.result;
+        const count = parseInt(req.body.count);
+        const stream = req.body.stream;
+
+        var responseData;
+
+        if (result.toUpperCase() === "A") {
+            responseData = await MainExamDetails.count({
+                where: {
+                    metype: true,
+                    stream: stream,
+                    acount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            })
+        }
+        if (result.toUpperCase() === "B") {
+            responseData = await MainExamDetails.count({
+                where: {
+                    metype: true,
+                    stream: stream,
+                    bcount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            })
+        }
+        if (result.toUpperCase() === "c") {
+            responseData = await MainExamDetails.count({
+                where: {
+                    metype: true,
+                    stream: stream,
+                    ccount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            })
+        }
+        if (result.toUpperCase() === "S") {
+            responseData = await MainExamDetails.count({
+                where: {
+                    metype: true,
+                    stream: stream,
+                    scount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            })
+        }
+        if (result.toUpperCase() === "W") {
+            responseData = await MainExamDetails.count({
+                where: {
+                    metype: true,
+                    stream: stream,
+                    wcount: count
+                },
+                attributes: ['meyear'],
+                group: ['meyear']
+            })
+        }
+
+
+        res.status(200).json(responseData);
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1595 ~ error", error)
 
     }
 
