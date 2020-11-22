@@ -1665,5 +1665,74 @@ exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
         console.log("🚀 ~ file: nonAcademicController.js ~ line 1595 ~ error", error)
 
     }
+}
+
+exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
+
+    try {
+        const year = parseInt(req.body.year);
+        const subjectid = parseInt(req.body.subjectid);
+
+        const Acount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: true,
+                result: "A"
+            },
+
+        });
+        const Bcount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: true,
+                result: "B"
+            },
+
+        });
+        const Ccount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: true,
+                result: "C"
+            },
+
+        });
+        const Scount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: true,
+                result: "S"
+            },
+
+        });
+        const Wcount = await MainExamResult.count({
+            where: {
+                meyear: year,
+                subjectid: subjectid,
+                metype: true,
+                result: "W"
+            },
+
+        });
+
+        res.status(200).json({
+            acount: Acount,
+            bcount: Bcount,
+            ccount: Ccount,
+            Scount: Scount,
+            wcount: Wcount
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1449 ~ error", error)
+
+    }
+}
+
+exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
 
 }

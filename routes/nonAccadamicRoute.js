@@ -73,5 +73,7 @@ router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThre
 //POST /nonacademic/al-chart-one
 router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
 
+router.post('/al-chart-two', nonacademicController.postGetAdvanceLevelChartTwo);
+
 
 module.exports = router;
