@@ -1,5 +1,6 @@
 
-const { response } = require('express');
+const fs = require('fs');
+const path = require('path');
 const { Op } = require('sequelize');
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
@@ -1091,7 +1092,10 @@ exports.getGetAllNotificaions = async (req, res, next) => {
     try {
 
         const notification = await Notification.findAll();
-        res.status(200).json(notification);
+        res.status(200).json({
+
+            notificationList: notification
+        });
 
     } catch (error) {
         console.log("error", error)
@@ -1904,3 +1908,56 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
     }
 
 }
+
+
+exports.postUpdateNotification = async (req, res, next) => {
+
+
+    try {
+
+        const nonacademicid = req.body.nonacademicid;
+        const notificationid = req.body.notificationid;
+        const from = req.body.from;
+        const expire = req.body.expire;
+        const message = req.body.message;
+        const publisher = req.body.publisher;
+        const title = req.body.title;
+
+        const notificationData = await Notification.findByPk(notificationid);
+
+        notificationData.from = from;
+        notificationData.expire = expire;
+        notificationData.message = message;
+        notificationData.title = title;
+        notificationData.publisher = nonacademicid;
+
+
+
+        if (req.files.attachment != undefined) {
+            if (notificationData.attachmentpath != null) {
+                console.log("data")
+                fs.unlink(notificationData.attachmentpath, error => {
+                    if (error) {
+                        throw error;
+                    }
+                });
+
+            }
+
+            notificationData.attachmentpath = req.files.attachment[0].path.replace('\\', '/');
+
+        }
+
+        await notificationData.save();
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1918 ~ exports.postUpdateNotification= ~ error", error)
+
+    }
+
+}
+
+
+
+

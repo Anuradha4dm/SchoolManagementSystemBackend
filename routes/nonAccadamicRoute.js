@@ -82,5 +82,8 @@ router.post('/al-chart-two', nonacademicController.postGetAdvanceLevelChartTwo);
 //POST /nonacademic/al-chart-three        =>this route is used to handle the advance level chart three data
 router.post('/al-chart-three', nonacademicController.postGetAdvanceLevelChartThree);
 
+//POST /nonacademic/update-notification
+router.post("/update-notification", nonacademicController.postUpdateNotification)
+
 
 module.exports = router;
