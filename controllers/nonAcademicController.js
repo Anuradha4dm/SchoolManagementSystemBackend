@@ -1,7 +1,8 @@
 
 const fs = require('fs');
-const path = require('path');
+
 const { Op } = require('sequelize');
+
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
 const MainExamDetails = require('../models/mainExamDetails');
@@ -1958,6 +1959,46 @@ exports.postUpdateNotification = async (req, res, next) => {
 
 }
 
+
+exports.getDeletePostedNotification = async (req, res, next) => {
+
+    try {
+
+        const notificationid = parseInt(req.params.id);
+
+        const notificationData = await Notification.findByPk(notificationid);
+
+        if (notificationData === null) {
+            throw new Error('Notification Not Found....');
+        }
+
+        if (notificationData.attachmentpath != null) {
+            fs.unlink(notificationData.attachmentpath, error => {
+                if (error) {
+                    throw error
+                }
+            })
+        }
+
+
+        if (notificationid === undefined) {
+            console.log("data");
+        }
+
+        await notificationData.destroy();
+
+
+        res.status(200).json({
+            delete: true
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1967 ~ exports.getDeletePostedNotification ~ error", error)
+
+    }
+
+
+}
 
 
 
