@@ -999,7 +999,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
     try {
 
         const studentid = req.params.id;
-        const year = req.params.id;
+        const year = parseInt(req.query.year);
 
 
 
@@ -1017,7 +1017,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
             {
                 through: {
                     where: {
-                        year: req.query.year
+                        year: year
                     }
                 }
             });
@@ -1031,7 +1031,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
         })
 
         res.status(200).json({
-            responsedata: responseDataSetUp
+            responsedata: { ...responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
         })
 
 
@@ -1811,6 +1811,38 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
         console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
 
     }
+}
 
+exports.postGetStudentListInMainExam = async (req, res, next) => {
+
+    try {
+        const year = req.body.year;
+        const type = req.body.type;
+        var studentlist;
+
+        if (type === true) {
+
+            studentlist = await MainExamDetails.findAll({
+                where: {
+                    meyear: year,
+                    metype: true,
+
+                },
+                attributes: ['indexnumber', 'studentid', 'stream'],
+
+            });
+
+            res.status(200).json(studentlist)
+        }
+
+
+
+
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1821 ~ exports.getGetStudentListForMainExam= ~ error", error)
+
+    }
 
 }
