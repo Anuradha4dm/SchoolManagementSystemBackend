@@ -21,7 +21,7 @@ const MainExamDetails = sequelize.define('mainexamdetails', {
         type: DataTypes.STRING,
     },
     zscore: {
-        type: DataTypes.DECIMAL
+        type: DataTypes.DECIMAL(10, 6)
     },
 
     districtrank: {

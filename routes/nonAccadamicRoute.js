@@ -67,8 +67,15 @@ router.get('/ol-chart-one', nonacademicController.postGetOrdinalyLevelChartOneDa
 //GET  /nonacademic/ol-chart-two        =>this route used to get the data of chart two
 router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
 
-//GET /nonacademic/ol-chart-three
+//GET /nonacademic/ol-chart-three       =>this route is used to pass the data of the chart three
 router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
+
+//POST /nonacademic/al-chart-one
+router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
+
+router.post('/al-chart-two', nonacademicController.postGetAdvanceLevelChartTwo);
+
+router.post('/al-chart-three', nonacademicController.postGetAdvanceLevelChartThree);
 
 
 module.exports = router;
