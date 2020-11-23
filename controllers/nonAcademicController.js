@@ -71,19 +71,13 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 exports.postAnswerLeaveRequest = async (req, res, next) => {
 
-    const id = req.body.id;
+    const id = req.body.nonacademicid;
     const leaveid = req.body.leaveid;
-    const answer = req.body.answer;
-    const leavetype = req.body.leavetype;
+    const answer = req.body.answer === true;
+    const message = req.body.message;
 
 
     try {
-
-        if (answer) {
-            //send notification that the requese is cansel
-            //retur from here
-        }
-
         const leave = await Leave.findOne({
             where: {
                 leaveid: leaveid
@@ -91,35 +85,84 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
+        if (leave === null) {
+            throw new Error("No Leave Is Found...Check Again....")
+        }
+
         if (leave.allow) {
             res.status(200).json({
                 update: true,
                 messsge: "Already Leave Is Accepted"
             })
         }
-
-
         if (answer) {
 
-            if (leavetype != 2) {
+            leave.allow = true;
+            if (leave.leavetype != 2) {
                 leave.teacher.numberofleaves -= 0.5
             } else {
                 leave.teacher.numberofleaves -= 1;
             }
 
+            await leave.teacher.save();
+
+            await leave.save();
+
+
+            await Notification.create({
+                type: 2,
+                from: id,
+                title: "Allow Leave Request",
+                message: "Your Leave is accepted",
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
+                attachmentpath: null,
+                publisher: id,
+                to: leave.teacher.teacherid,
+                teacherTeacherid: leave.teacher.teacherid
+            })
+
+
+
+            res.status(200).json({
+                leaveupdate: true
+            })
+
+        } else {
+
+            await leave.destroy();
+
+            await Notification.create({
+                type: 2,
+                from: id,
+                title: "Reject Leave Request",
+                message: "Your Leave is Rejected because " + message,
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
+                attachmentpath: null,
+                publisher: id,
+                to: leave.teacher.teacherid,
+                teacherTeacherid: leave.teacher.teacherid
+            })
+            res.status(200).json({
+                leaveupdate: true
+            })
 
         }
 
 
-        leave.allow = answer;
-
-        const teacherUpdate = await leave.teacher.save();
-        const leaveUpdate = await leave.save();
 
 
-        res.status(200).json({
-            update: true
-        })
+
+
+
+        // leave.allow = answer;
+
+        // const teacherUpdate = await leave.teacher.save();
+        // const leaveUpdate = await leave.save();
+
+
+        // res.status(200).json({
+        //     update: true
+        // })
 
 
     } catch (error) {
@@ -205,7 +248,7 @@ exports.postAddNotification = async (req, res, next) => {
                     message: message,
                     expire: expire,
                     attachmentpath: path,
-                    publilsher: nonacademicid,
+                    publisher: nonacademicid,
                     to: teacherData.teacherid,
                     teacherTeacherid: teacherData.teacherid
                 })
@@ -241,7 +284,7 @@ exports.postAddNotification = async (req, res, next) => {
                     message: message,
                     expire: expire,
                     attachmentpath: path,
-                    publilsher: nonacademicid,
+                    publisher: nonacademicid,
                     to: studentData._id,
                     studentId: studentData._id
 
@@ -1835,6 +1878,21 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
             res.status(200).json(studentlist)
         }
 
+
+        if (type === false) {
+
+            studentlist = await MainExamDetails.findAll({
+                where: {
+                    meyear: year,
+                    metype: true,
+
+                },
+                attributes: ['indexnumber', 'studentid'],
+
+            });
+
+            res.status(200).json(studentlist)
+        }
 
 
 
