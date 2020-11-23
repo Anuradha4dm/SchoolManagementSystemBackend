@@ -14,6 +14,7 @@ const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
 const { resetPasswordChecking } = require('../validators/authenticationValidation');
 
+//Use to get pending leave data
 exports.getGetPengingRequestList = async (req, res, next) => {
 
 
@@ -46,11 +47,10 @@ exports.getGetPengingRequestList = async (req, res, next) => {
                 leaveid: element.leaveid,
                 leavedate: element.leavedate,
                 leavedescription: element.description,
-                leavenumber: element.leaveid,
                 leavetype: element.leavetype,
                 fullname: element.teacher.firstname + " " + element.teacher.lastname,
-                roll: element.teacher.role
-
+                roll: element.teacher.role,
+                userid: element.teacher.teacherid
             }
 
         })
