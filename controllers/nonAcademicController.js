@@ -70,15 +70,16 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 exports.postAnswerLeaveRequest = async (req, res, next) => {
 
-    const id = req.body.id;
     const leaveid = req.body.leaveid;
     const answer = req.body.answer;
     const leavetype = req.body.leavetype;
+    const message = req.body.message;
 
 
     try {
 
-        if (answer) {
+        if (answer || !answer) {
+            //this should modify to send email including this.message 
             //send notification that the requese is cansel
             //retur from here
         }
@@ -90,6 +91,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
+        //you can remove this not nesssary
         if (leave.allow) {
             res.status(200).json({
                 update: true,
@@ -110,14 +112,15 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
         }
 
 
-        leave.allow = answer;
+        leave.allow = true;
 
         const teacherUpdate = await leave.teacher.save();
         const leaveUpdate = await leave.save();
 
 
         res.status(200).json({
-            update: true
+            update: true,
+            message: message
         })
 
 
