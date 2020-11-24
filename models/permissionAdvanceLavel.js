@@ -23,6 +23,16 @@ const PermissionAvanceLevel = sequelize.define('permissionadvancelevel', {
     },
     sinhalaresult: {
         type: DataTypes.BOOLEAN
+    },
+    viewcount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false
+    },
+    state: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 2
     }
 
 });

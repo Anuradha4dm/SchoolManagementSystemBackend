@@ -10,6 +10,7 @@ const MainExamResult = require('../models/mainExamResult');
 const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
+const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');
 const ResultSummary = require('../models/resultSummaryModel');
 const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
@@ -2000,5 +2001,41 @@ exports.getDeletePostedNotification = async (req, res, next) => {
 
 }
 
+exports.getAllPendingAdvanceLevelRegistration = async (req, res, next) => {
+    try {
 
+        const pendings = await PermissionAvanceLevel.findAll();
+
+        var responserDataArray;
+        var streamData;
+
+        await Promise.all(
+
+            responserDataArray = pendings.map(async requestData => {
+
+                streamData = await Class.findOne({
+                    where: {
+                        classid: requestData.stream
+                    },
+                    attributes: ['grade']
+                })
+
+                requestData.stream = streamData.grade;
+
+                return requestData;
+
+            })
+
+
+        )
+
+        res.status(200).json({
+            dataset: pendings
+        });
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2007 ~ exports.getAllPendingAdvanceLevelRegistration= ~ error", error)
+
+    }
+}
 

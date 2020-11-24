@@ -11,7 +11,6 @@ const ResultSummary = require('../models/resultSummaryModel');
 const StudentAttendence = require('../models/studentAttendaceModule');
 const Sports = require('../models/sportModel');
 const webSocket = require('../webSocket');
-const AdvanceLevelGradeChange = require('../models/advanceLevelSelctionModule');
 const MainExamDetails = require('../models/mainExamDetails');
 const MainExamResult = require('../models/mainExamResult');
 const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');

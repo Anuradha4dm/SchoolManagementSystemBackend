@@ -87,5 +87,7 @@ router.post("/update-notification", nonacademicController.postUpdateNotification
 
 router.get('/delete-notification/:id', nonacademicController.getDeletePostedNotification);
 
+router.get('/get-advance-level-stream-register', nonacademicController.getAllPendingAdvanceLevelRegistration);
+
 
 module.exports = router;
