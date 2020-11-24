@@ -113,6 +113,10 @@ exports.postEditStudentProfile = async (req, res, next) => {
             }
         })
 
+        if (ordinaryLevelData === null) {
+            throw new Error("Ordinary Level Result Is Not Still Available")
+        }
+
 
         await addRecodeToPermissionAdvanceLevel(ordinaryLevelData, id, classClassid);
         classClassid = 0;
@@ -210,7 +214,7 @@ async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream)
 
     } catch (error) {
 
-        throw new Error('server side error...try later.....')
+        console.log(error)
     }
 
 }

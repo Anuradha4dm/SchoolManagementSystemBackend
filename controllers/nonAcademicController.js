@@ -2039,3 +2039,99 @@ exports.getAllPendingAdvanceLevelRegistration = async (req, res, next) => {
     }
 }
 
+exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
+
+    try {
+
+        const answer = req.body.answer;
+        const requestid = req.body.requestid;
+        const nonacademicid = req.body.nonacademicid;
+        const message = req.body.message;
+        const studentid = req.body.studentid;
+        const classname = req.body.classname;
+
+        if (answer === 0) {
+            const requestData = await PermissionAvanceLevel.findByPk(requestid);
+
+            if (requestData === null) {
+                throw new Error("This Request Can Not Found...");
+            }
+            requestData.state = 0;
+            requestData.viewcount++;
+
+            const studentData = await Student.findByPk(studentid);
+
+            studentData.classClassid = 0;
+
+
+            await requestData.save();
+            await studentData.save();
+
+            await Notification.create({
+                type: 4,
+                from: nonacademicid,
+                title: "Advance Level Registration",
+                message: message,
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 7),
+                attachmentpath: null,
+                publisher: nonacademicid,
+                to: studentid,
+
+            });
+
+            res.status(200).json({
+                udpaterecode: true
+            })
+
+
+        }
+
+        if (answer === 1) {
+
+            const requestData = await PermissionAvanceLevel.findByPk(requestid);
+
+            if (requestData === null) {
+                throw new Error("This Request Can Not Found...");
+            }
+
+            requestData.state = 1;
+            requestData.viewcount++;
+
+            const studentData = await Student.findByPk(studentid);
+
+            if (studentData === null) {
+                throw new Error("Student Can Not Found...");
+            }
+
+            studentData.classClassid = requestData.stream;
+            studentData.selectedRequest = new Date().getFullYear();
+            requestData.save();
+            studentData.save();
+
+            await Notification.create({
+                type: 4,
+                from: nonacademicid,
+                title: "Advance Level Registration",
+                message: "Your Have Successfully Register For The classs " + classname + ". You Can Start Your Accademic Activities for " + new Date().getFullYear() + " Year",
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 7),
+                attachmentpath: null,
+                publisher: nonacademicid,
+                to: studentid,
+                studentId: studentid
+
+            });
+
+            res.status(200).json({
+                udpaterecode: true
+            })
+
+        }
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2047 ~ exports.postHandleAdvanceLevelRequest= ~ error", error)
+
+    }
+}
+
+
