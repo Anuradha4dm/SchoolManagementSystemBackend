@@ -1,6 +1,8 @@
 
-const { response } = require('express');
+const fs = require('fs');
+
 const { Op } = require('sequelize');
+
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
 const MainExamDetails = require('../models/mainExamDetails');
@@ -8,6 +10,7 @@ const MainExamResult = require('../models/mainExamResult');
 const MainExamSubject = require('../models/mainExamSubjects');
 const NonAcademic = require('../models/nonAcademicModel');
 const Notification = require('../models/notification');
+const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');
 const ResultSummary = require('../models/resultSummaryModel');
 const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
@@ -71,19 +74,13 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 exports.postAnswerLeaveRequest = async (req, res, next) => {
 
-    const id = req.body.id;
+    const id = req.body.nonacademicid;
     const leaveid = req.body.leaveid;
-    const answer = req.body.answer;
-    const leavetype = req.body.leavetype;
+    const answer = req.body.answer === true;
+    const message = req.body.message;
 
 
     try {
-
-        if (answer) {
-            //send notification that the requese is cansel
-            //retur from here
-        }
-
         const leave = await Leave.findOne({
             where: {
                 leaveid: leaveid
@@ -91,35 +88,84 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
+        if (leave === null) {
+            throw new Error("No Leave Is Found...Check Again....")
+        }
+
         if (leave.allow) {
             res.status(200).json({
                 update: true,
                 messsge: "Already Leave Is Accepted"
             })
         }
-
-
         if (answer) {
 
-            if (leavetype != 2) {
+            leave.allow = true;
+            if (leave.leavetype != 2) {
                 leave.teacher.numberofleaves -= 0.5
             } else {
                 leave.teacher.numberofleaves -= 1;
             }
 
+            await leave.teacher.save();
+
+            await leave.save();
+
+
+            await Notification.create({
+                type: 2,
+                from: id,
+                title: "Allow Leave Request",
+                message: "Your Leave is accepted",
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
+                attachmentpath: null,
+                publisher: id,
+                to: leave.teacher.teacherid,
+                teacherTeacherid: leave.teacher.teacherid
+            })
+
+
+
+            res.status(200).json({
+                leaveupdate: true
+            })
+
+        } else {
+
+            await leave.destroy();
+
+            await Notification.create({
+                type: 2,
+                from: id,
+                title: "Reject Leave Request",
+                message: "Your Leave is Rejected because " + message,
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
+                attachmentpath: null,
+                publisher: id,
+                to: leave.teacher.teacherid,
+                teacherTeacherid: leave.teacher.teacherid
+            })
+            res.status(200).json({
+                leaveupdate: true
+            })
 
         }
 
 
-        leave.allow = answer;
-
-        const teacherUpdate = await leave.teacher.save();
-        const leaveUpdate = await leave.save();
 
 
-        res.status(200).json({
-            update: true
-        })
+
+
+
+        // leave.allow = answer;
+
+        // const teacherUpdate = await leave.teacher.save();
+        // const leaveUpdate = await leave.save();
+
+
+        // res.status(200).json({
+        //     update: true
+        // })
 
 
     } catch (error) {
@@ -205,7 +251,7 @@ exports.postAddNotification = async (req, res, next) => {
                     message: message,
                     expire: expire,
                     attachmentpath: path,
-                    publilsher: nonacademicid,
+                    publisher: nonacademicid,
                     to: teacherData.teacherid,
                     teacherTeacherid: teacherData.teacherid
                 })
@@ -241,7 +287,7 @@ exports.postAddNotification = async (req, res, next) => {
                     message: message,
                     expire: expire,
                     attachmentpath: path,
-                    publilsher: nonacademicid,
+                    publisher: nonacademicid,
                     to: studentData._id,
                     studentId: studentData._id
 
@@ -999,7 +1045,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
     try {
 
         const studentid = req.params.id;
-        const year = req.params.id;
+        const year = parseInt(req.query.year);
 
 
 
@@ -1017,7 +1063,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
             {
                 through: {
                     where: {
-                        year: req.query.year
+                        year: year
                     }
                 }
             });
@@ -1031,7 +1077,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
         })
 
         res.status(200).json({
-            responsedata: responseDataSetUp
+            responsedata: { ...responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
         })
 
 
@@ -1048,7 +1094,10 @@ exports.getGetAllNotificaions = async (req, res, next) => {
     try {
 
         const notification = await Notification.findAll();
-        res.status(200).json(notification);
+        res.status(200).json({
+
+            notificationList: notification
+        });
 
     } catch (error) {
         console.log("error", error)
@@ -1811,6 +1860,278 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
         console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
 
     }
+}
+
+exports.postGetStudentListInMainExam = async (req, res, next) => {
+
+    try {
+        const year = req.body.year;
+        const type = req.body.type;
+        var studentlist;
+
+        if (type === true) {
+
+            studentlist = await MainExamDetails.findAll({
+                where: {
+                    meyear: year,
+                    metype: true,
+
+                },
+                attributes: ['indexnumber', 'studentid', 'stream'],
+
+            });
+
+            res.status(200).json(studentlist)
+        }
+
+
+        if (type === false) {
+
+            studentlist = await MainExamDetails.findAll({
+                where: {
+                    meyear: year,
+                    metype: true,
+
+                },
+                attributes: ['indexnumber', 'studentid'],
+
+            });
+
+            res.status(200).json(studentlist)
+        }
+
+
+
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1821 ~ exports.getGetStudentListForMainExam= ~ error", error)
+
+    }
+
+}
+
+
+exports.postUpdateNotification = async (req, res, next) => {
+
+
+    try {
+
+        const nonacademicid = req.body.nonacademicid;
+        const notificationid = req.body.notificationid;
+        const from = req.body.from;
+        const expire = req.body.expire;
+        const message = req.body.message;
+        const publisher = req.body.publisher;
+        const title = req.body.title;
+
+        const notificationData = await Notification.findByPk(notificationid);
+
+        notificationData.from = from;
+        notificationData.expire = expire;
+        notificationData.message = message;
+        notificationData.title = title;
+        notificationData.publisher = nonacademicid;
+
+
+
+        if (req.files.attachment != undefined) {
+            if (notificationData.attachmentpath != null) {
+                console.log("data")
+                fs.unlink(notificationData.attachmentpath, error => {
+                    if (error) {
+                        throw error;
+                    }
+                });
+
+            }
+
+            notificationData.attachmentpath = req.files.attachment[0].path.replace('\\', '/');
+
+        }
+
+        await notificationData.save();
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1918 ~ exports.postUpdateNotification= ~ error", error)
+
+    }
+
+}
+
+
+exports.getDeletePostedNotification = async (req, res, next) => {
+
+    try {
+
+        const notificationid = parseInt(req.params.id);
+
+        const notificationData = await Notification.findByPk(notificationid);
+
+        if (notificationData === null) {
+            throw new Error('Notification Not Found....');
+        }
+
+        if (notificationData.attachmentpath != null) {
+            fs.unlink(notificationData.attachmentpath, error => {
+                if (error) {
+                    throw error
+                }
+            })
+        }
+
+
+        if (notificationid === undefined) {
+            console.log("data");
+        }
+
+        await notificationData.destroy();
+
+
+        res.status(200).json({
+            delete: true
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 1967 ~ exports.getDeletePostedNotification ~ error", error)
+
+    }
 
 
 }
+
+exports.getAllPendingAdvanceLevelRegistration = async (req, res, next) => {
+    try {
+
+        const pendings = await PermissionAvanceLevel.findAll();
+
+        var responserDataArray;
+        var streamData;
+
+        await Promise.all(
+
+            responserDataArray = pendings.map(async requestData => {
+
+                streamData = await Class.findOne({
+                    where: {
+                        classid: requestData.stream
+                    },
+                    attributes: ['grade']
+                })
+
+                requestData.stream = streamData.grade;
+
+                return requestData;
+
+            })
+
+
+        )
+
+        res.status(200).json({
+            dataset: pendings
+        });
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2007 ~ exports.getAllPendingAdvanceLevelRegistration= ~ error", error)
+
+    }
+}
+
+exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
+
+    try {
+
+        const answer = req.body.answer;
+        const requestid = req.body.requestid;
+        const nonacademicid = req.body.nonacademicid;
+        const message = req.body.message;
+        const studentid = req.body.studentid;
+        const classname = req.body.classname;
+
+        if (answer === 0) {
+            const requestData = await PermissionAvanceLevel.findByPk(requestid);
+
+            if (requestData === null) {
+                throw new Error("This Request Can Not Found...");
+            }
+            requestData.state = 0;
+            requestData.viewcount++;
+
+            const studentData = await Student.findByPk(studentid);
+
+            studentData.classClassid = 0;
+
+
+            await requestData.save();
+            await studentData.save();
+
+            await Notification.create({
+                type: 4,
+                from: nonacademicid,
+                title: "Advance Level Registration",
+                message: message,
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 7),
+                attachmentpath: null,
+                publisher: nonacademicid,
+                to: studentid,
+
+            });
+
+            res.status(200).json({
+                udpaterecode: true
+            })
+
+
+        }
+
+        if (answer === 1) {
+
+            const requestData = await PermissionAvanceLevel.findByPk(requestid);
+
+            if (requestData === null) {
+                throw new Error("This Request Can Not Found...");
+            }
+
+            requestData.state = 1;
+            requestData.viewcount++;
+
+            const studentData = await Student.findByPk(studentid);
+
+            if (studentData === null) {
+                throw new Error("Student Can Not Found...");
+            }
+
+            studentData.classClassid = requestData.stream;
+            studentData.selectedRequest = new Date().getFullYear();
+            requestData.save();
+            studentData.save();
+
+            await Notification.create({
+                type: 4,
+                from: nonacademicid,
+                title: "Advance Level Registration",
+                message: "Your Have Successfully Register For The classs " + classname + ". You Can Start Your Accademic Activities for " + new Date().getFullYear() + " Year",
+                expire: new Date().getTime() + (1000 * 3600 * 24 * 7),
+                attachmentpath: null,
+                publisher: nonacademicid,
+                to: studentid,
+                studentId: studentid
+
+            });
+
+            res.status(200).json({
+                udpaterecode: true
+            })
+
+        }
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2047 ~ exports.postHandleAdvanceLevelRequest= ~ error", error)
+
+    }
+}
+
+

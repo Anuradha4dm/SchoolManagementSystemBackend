@@ -42,17 +42,20 @@ router.post('/update-teacher-subject-list', nonacademicController.postUpdateTeac
 //GET /nonacademic/get-pending-leaves
 router.get('/get-pending-leaves', nonacademicController.getGetPendingLeaveRequests);
 
-//POST /nonacademic/registration-ordinary-exam     =>this is to register student for the ordinary level examinatin  for the 
+//POST /nonacademic/registration-ordinary-exam     =>this is to register student for the ordinary level examinatin  for the both al and ol s
 router.post('/registration-exam', nonacademicController.postRegistratinMainExam);
 
-//POST /nonacademic/add-ordinary-level-results          =>this route is used to add result of the ordinary level
+//POST /nonacademic/add-ordinary-level-results          =>this route is used to add result of the ordinary level students 
 router.post('/add-ordinary-level-results', nonacademicController.postAddOrdinaryLevelStudentResult);
 
 //POST /nonacademic/add-advance-lavel-result        =>this route is used to add results to the advance level exmination
 router.post('/add-advance-lavel-result', nonacademicController.postAddAdvanceLevelExamResult);
 
-//GET  /nonacademic/get-subjects-result-add
+//GET  /nonacademic/get-subjects-result-add                 =>this router is used to get the subject list which is register by them self for the AL or OL examination
 router.get('/get-subjects-result-add/:id', nonacademicController.getGetStudentRegisteredSubjectsForResultAdditiion);
+
+//GET /nonacademic/get-student-list-main-exam
+router.post('/get-student-list-main-exam', nonacademicController.postGetStudentListInMainExam);
 
 //GET /notification/get-all-notifications    =>this method is used to get all the notifications of the students
 router.get('/get-all-notifications', nonacademicController.getGetAllNotificaions);
@@ -70,12 +73,25 @@ router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
 //GET /nonacademic/ol-chart-three       =>this route is used to pass the data of the chart three
 router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
 
-//POST /nonacademic/al-chart-one
+//POST /nonacademic/al-chart-one        =>this route is used to handle the advance level chart one data
 router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
 
+//POST /nonacademic/al-chart-two        =>this route is used to handle the advance level chart two data
 router.post('/al-chart-two', nonacademicController.postGetAdvanceLevelChartTwo);
 
+//POST /nonacademic/al-chart-three        =>this route is used to handle the advance level chart three data
 router.post('/al-chart-three', nonacademicController.postGetAdvanceLevelChartThree);
+
+//POST /nonacademic/update-notification             =>this route is used to update the specific post
+router.post("/update-notification", nonacademicController.postUpdateNotification);
+
+router.get('/delete-notification/:id', nonacademicController.getDeletePostedNotification);
+
+//GET /nonacademic/get-advance-level-stream-register     =>this router is used to get the advance level requests
+router.get('/get-advance-level-stream-register', nonacademicController.getAllPendingAdvanceLevelRegistration);
+
+//POST /nonacademic/respose-advance-levl-registration
+router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest)
 
 
 module.exports = router;
