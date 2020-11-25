@@ -11,7 +11,6 @@ const ResultSummary = require('../models/resultSummaryModel');
 const StudentAttendence = require('../models/studentAttendaceModule');
 const Sports = require('../models/sportModel');
 const webSocket = require('../webSocket');
-const AdvanceLevelGradeChange = require('../models/advanceLevelSelctionModule');
 const MainExamDetails = require('../models/mainExamDetails');
 const MainExamResult = require('../models/mainExamResult');
 const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');
@@ -114,6 +113,10 @@ exports.postEditStudentProfile = async (req, res, next) => {
             }
         })
 
+        if (ordinaryLevelData === null) {
+            throw new Error("Ordinary Level Result Is Not Still Available")
+        }
+
 
         await addRecodeToPermissionAdvanceLevel(ordinaryLevelData, id, classClassid);
         classClassid = 0;
@@ -211,7 +214,7 @@ async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream)
 
     } catch (error) {
 
-        throw new Error('server side error...try later.....')
+        console.log(error)
     }
 
 }
