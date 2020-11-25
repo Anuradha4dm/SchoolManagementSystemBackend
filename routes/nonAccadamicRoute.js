@@ -70,5 +70,8 @@ router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
 //GET /nonacademic/ol-chart-three
 router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
 
+//used to get ol and al details of any year
+router.post('/get-main-exam-results',nonacademicController.getMainExamResults);
+
 
 module.exports = router;

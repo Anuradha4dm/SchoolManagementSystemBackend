@@ -31,6 +31,4 @@ router.post('/get-average-data', teacherController.postGetAvarageDataForTheClass
 
 
 
-
-
 module.exports = router;
