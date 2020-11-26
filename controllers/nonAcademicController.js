@@ -78,8 +78,6 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
     const answer = req.body.answer;
     const leavetype = req.body.leavetype;
     const id = req.body.nonacademicid;
-    const leaveid = req.body.leaveid;
-    const answer = req.body.answer === true;
     const message = req.body.message;
 
 
@@ -1667,7 +1665,7 @@ exports.getMainExamResults = async (req,res,next)=>{
                 meyear: year,
                 metype: type
             },
-            attributes:['stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
+            attributes:['indexnumber','stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
         })
 
         res.status(200).json(
