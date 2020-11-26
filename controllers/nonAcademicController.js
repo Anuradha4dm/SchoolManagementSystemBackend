@@ -125,7 +125,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
                 type: 2,
                 from: id,
                 title: "Allow Leave Request",
-                message: "Your Leave is accepted",
+                message: message,
                 expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
                 attachmentpath: null,
                 publisher: id,
@@ -140,6 +140,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             })
 
         } else {
+            leave.allow = true;
 
             await leave.destroy();
 
@@ -147,7 +148,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
                 type: 2,
                 from: id,
                 title: "Reject Leave Request",
-                message: "Your Leave is Rejected because " + message,
+                message: message,
                 expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
                 attachmentpath: null,
                 publisher: id,
@@ -159,10 +160,6 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             })
 
         }
-
-
-        leave.allow = true;
-
 
 
         res.status(200).json({
