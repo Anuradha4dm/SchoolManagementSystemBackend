@@ -73,6 +73,8 @@ router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
 //GET /nonacademic/ol-chart-three       =>this route is used to pass the data of the chart three
 router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
 
+//used to get ol and al details of any year
+router.post('/get-main-exam-results',nonacademicController.getMainExamResults);
 //POST /nonacademic/al-chart-one        =>this route is used to handle the advance level chart one data
 router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
 
