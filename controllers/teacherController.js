@@ -9,8 +9,9 @@ const Student = require("../models/studentModel");
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
 const QRData = require("../models/QRdataModel");
-const { errorMonitor } = require("nodemailer/lib/mailer");
-const { Op } = require("sequelize/types");
+
+const { Op } = require("sequelize");
+const TeacherAttendence = require("../models/teacherAttendenceModel");
 
 
 
@@ -428,12 +429,10 @@ exports.postAddQRcodeRecode = async (req, res, next) => {
             throw new Error("Teacher not found with id " + teacherid)
         }
 
-
-
         const addQRdata = await QRData.create({
             teacherTeacherid: teacherid,
             randomcode: qrcoderandom,
-            expiredtime: Date.now() + 15000
+            expiredtime: Date.now() + 60000
         })
 
 
@@ -458,6 +457,13 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
         const sequreid = req.query.sequreid;
         const macaddress = req.query.macid;
 
+        const date = new Date();
+
+        //default
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
         const teacherData = await Teacher.findOne({
             teacherid: teacherid,
             macaddress: macaddress
@@ -472,7 +478,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
                 teacherTeacherid: teacherData.teacherid,
                 randomcode: sequreid,
                 expiredtime: {
-                    [Op.lte]: Date.now()
+                    [Op.gte]: Date.now()
                 }
             }
         })
@@ -481,10 +487,43 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             throw new Error("Authentication Failed....Or Token expire.....");
         }
 
+        const alredyMarkCheck = await TeacherAttendence.count({
+            where: {
+                teacherTeacherid: teacherid,
+                year: year,
+                date: date,
+                month: month
+            }
+        })
+
+        if (count != 0) {
+            throw new Error("Your Have Alredy Mark Your Attendence");
+        }
+
+
+        const addAttendence = await TeacherAttendence.create({
+            present: true,
+            date: new Date().toLocaleString(),
+            year: year,
+            day: day,
+            month: month,
+            teacherTeacherid: teacherid
+
+        })
+
+
+        res.status(200).json({
+            markattendence: true
+        })
 
     } catch (error) {
-        console.log("🚀 ~ file: teacherController.js ~ line 458 ~ exports.getMarkTeacherAttendence=async ~ error", error)
 
+        if (!error.statusCode) {
+
+            error.statusCode = 500;
+        }
+
+        next(error)
     }
 
 }
