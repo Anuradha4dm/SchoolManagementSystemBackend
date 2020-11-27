@@ -470,7 +470,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
         })
 
         if (!teacherData) {
-            throw new Error('Teacher not found with relavant device....')
+            throw new Error('Teacher Is Not With Relavante Device....')
         }
 
         const QRrecode = await QRData.findOne({
@@ -487,7 +487,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             throw new Error("Authentication Failed....Or Token expire.....");
         }
 
-        const alredyMarkCheck = await TeacherAttendence.count({
+        const countVal = await TeacherAttendence.count({
             where: {
                 teacherTeacherid: teacherid,
                 year: year,
@@ -496,7 +496,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             }
         })
 
-        if (count != 0) {
+        if (countVal != 0) {
             throw new Error("Your Have Alredy Mark Your Attendence");
         }
 
@@ -510,6 +510,10 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             teacherTeacherid: teacherid
 
         })
+
+        if (!addAttendence) {
+            throw new Error("Attendence Mark Error....")
+        }
 
 
         res.status(200).json({
