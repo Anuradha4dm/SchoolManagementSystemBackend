@@ -28,7 +28,7 @@ router.post('/update-student-result', teacherController.postUpdateStudentResult)
 //POST /teacher//get-average-data =>this route is used to get avatage data of the class
 router.post('/get-average-data', teacherController.postGetAvarageDataForTheClass);
 
-
+router.post('/update-teacher-profile',teacherController.postUpdateTeacherProfile);
 
 
 module.exports = router;

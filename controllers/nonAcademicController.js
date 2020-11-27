@@ -1665,9 +1665,10 @@ exports.getMainExamResults = async (req,res,next)=>{
             attributes:['indexnumber','stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
         })
 
-        res.status(200).json(
-            mainResults
-        )
+        res.status(200).json({
+            result: mainResults
+        });
+
     }catch(error){
         console.log("Results error",error);
     }
