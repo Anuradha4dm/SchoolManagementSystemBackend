@@ -313,12 +313,22 @@ exports.postGetPreviousResultData = async (req, res, next) => {
 
         });
 
+        const studentName = await Student.findOne({
+            where:{
+                _id: studentid
+            },
+            attributes: ['firstname','lastname','surname']
+        })
+
+        const fullname = studentName.firstname+" "+studentName.lastname+" "+studentName.surname;
+
         const resposeData = resultData.map(value => {
-            return { subjectid: value.subjectSubjectid, subjectname: value.subject.subjectname, mark: value.marks }
+            return { subjectid: value.subjectSubjectid, subjectname: value.subject.subjectname, mark: value.marks}
         })
 
         res.json({
-            result: resposeData
+            result: resposeData,
+            fullname: fullname
         })
 
     } catch (error) {
@@ -339,6 +349,8 @@ exports.postUpdateStudentResult = async (req, res, next) => {
 
 
     try {
+        var count=0;
+        var sum=0;
 
         const resultSetInfo = await Result.findAll({
             where: {
@@ -351,6 +363,8 @@ exports.postUpdateStudentResult = async (req, res, next) => {
         const udpateResultSetToStore = resultSetInfo.map(pastResult => {
 
             updatedResult.forEach(newResult => {
+                sum+= +newResult.mark;
+                count++;
                 if (newResult.subjectid === pastResult.subjectSubjectid) {
                     pastResult.marks = newResult.mark;
                     return pastResult;
@@ -359,15 +373,22 @@ exports.postUpdateStudentResult = async (req, res, next) => {
             return pastResult
 
         })
-
-
-
+        
         await udpateResultSetToStore.forEach(async element => {
             await element.save()
 
         });
 
+        const avg = await ResultSummary.findOne({
+            where:{
+                year: year,
+                term: term,
+                _id: studentid
+            }
+        })
 
+        avg.average=sum/count;
+        await avg.save();
 
         res.status(200).json({
             update: true
@@ -398,7 +419,8 @@ exports.postGetAvarageDataForTheClass = async (req, res, next) => {
                 year: year,
                 term: term,
                 grade: grade
-            }
+            },
+            attributes:['average','place','_id']
         })
 
         res.status(200).json({
@@ -532,8 +554,6 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
     }
 
 }
-
-
 
 
 

@@ -18,6 +18,7 @@ const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
 const { resetPasswordChecking } = require('../validators/authenticationValidation');
 
+//Use to get pending leave data
 exports.getGetPengingRequestList = async (req, res, next) => {
 
 
@@ -50,11 +51,10 @@ exports.getGetPengingRequestList = async (req, res, next) => {
                 leaveid: element.leaveid,
                 leavedate: element.leavedate,
                 leavedescription: element.description,
-                leavenumber: element.leaveid,
                 leavetype: element.leavetype,
                 fullname: element.teacher.firstname + " " + element.teacher.lastname,
-                roll: element.teacher.role
-
+                roll: element.teacher.role,
+                userid: element.teacher.teacherid
             }
 
         })
@@ -74,13 +74,21 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 exports.postAnswerLeaveRequest = async (req, res, next) => {
 
-    const id = req.body.nonacademicid;
     const leaveid = req.body.leaveid;
-    const answer = req.body.answer === true;
+    const answer = req.body.answer;
+    const leavetype = req.body.leavetype;
+    const id = req.body.nonacademicid;
     const message = req.body.message;
 
 
     try {
+
+        if (answer || !answer) {
+            //this should modify to send email including this.message 
+            //send notification that the requese is cansel
+            //retur from here
+        }
+
         const leave = await Leave.findOne({
             where: {
                 leaveid: leaveid
@@ -88,6 +96,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
+        //you can remove this not nesssary
         if (leave === null) {
             throw new Error("No Leave Is Found...Check Again....")
         }
@@ -116,7 +125,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
                 type: 2,
                 from: id,
                 title: "Allow Leave Request",
-                message: "Your Leave is accepted",
+                message: message,
                 expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
                 attachmentpath: null,
                 publisher: id,
@@ -131,6 +140,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             })
 
         } else {
+            leave.allow = true;
 
             await leave.destroy();
 
@@ -138,7 +148,7 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
                 type: 2,
                 from: id,
                 title: "Reject Leave Request",
-                message: "Your Leave is Rejected because " + message,
+                message: message,
                 expire: new Date().getTime() + (1000 * 3600 * 24 * 3),
                 attachmentpath: null,
                 publisher: id,
@@ -152,9 +162,10 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
         }
 
 
-
-
-
+        res.status(200).json({
+            update: true,
+            message: message
+        })
 
 
         // leave.allow = answer;
@@ -1641,6 +1652,26 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
 
 }
 
+exports.getMainExamResults = async (req,res,next)=>{
+    try{
+        const year=req.body.year;
+        const type=req.body.type;
+
+        const mainResults = await MainExamDetails.findAll({
+            where:{
+                meyear: year,
+                metype: type
+            },
+            attributes:['indexnumber','stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
+        })
+
+        res.status(200).json(
+            mainResults
+        )
+    }catch(error){
+        console.log("Results error",error);
+    }
+}
 
 exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
 
