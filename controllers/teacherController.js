@@ -515,6 +515,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             throw new Error("Attendence Mark Error....")
         }
 
+        await QRrecode.destroy();
 
         res.status(200).json({
             markattendence: true
