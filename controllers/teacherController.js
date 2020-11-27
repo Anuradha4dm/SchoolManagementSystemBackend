@@ -290,8 +290,19 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
         }
         next(error);
     }
+}
 
+//need to completed
+exports.postUpdateTeacherProfile = async (req, res, next) => {
+    try{
 
+        res.status(200).json({
+            updated: true,
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
 }
 
 exports.postGetPreviousResultData = async (req, res, next) => {
