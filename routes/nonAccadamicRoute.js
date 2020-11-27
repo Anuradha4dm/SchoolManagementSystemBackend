@@ -90,8 +90,8 @@ router.get('/delete-notification/:id', nonacademicController.getDeletePostedNoti
 //GET /nonacademic/get-advance-level-stream-register     =>this router is used to get the advance level requests
 router.get('/get-advance-level-stream-register', nonacademicController.getAllPendingAdvanceLevelRegistration);
 
-//POST /nonacademic/respose-advance-levl-registration
-router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest)
+//POST /nonacademic/respose-advance-levl-registration           =>this route is used to respond to advance level registration
+router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest);
 
 
 module.exports = router;

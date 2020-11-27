@@ -23,6 +23,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "seeduwa",
             "mobile": "0771346601",
+            "macaddress": "E5:25",
         },
         {
             "teacherid": "AC_16",                        //mandatory
@@ -47,6 +48,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "delgoda",
             "mobile": "0773446701",
+            "macaddress": "E5:25",
         },
         {
             "teacherid": "AC_2",                        //mandatory
@@ -71,6 +73,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "seeduwa",
             "mobile": "0771346601",
+            "macaddress": "E5:25",
         },
 
 
@@ -98,6 +101,7 @@ exports.getData =
             "addressline3": "addolugama",
             "city": "duwa",
             "mobile": "0771346603",
+            "macaddress": "E5:25",
         },
 
 
@@ -124,6 +128,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "seeduwa",
             "mobile": "0771346604",
+            "macaddress": "E5:25",
         },
         {
             "teacherid": "AC_5",                        //mandatory
@@ -148,6 +153,7 @@ exports.getData =
             "addressline3": "main street",
             "city": "seeduwa",
             "mobile": "0771346622",
+            "macaddress": "E5:25",
         },
 
 
@@ -174,6 +180,7 @@ exports.getData =
             "addressline3": "kaduwela",
             "city": "kaduwela",
             "mobile": "0771346333",
+            "macaddress": "E5:25",
         },
 
 
@@ -200,6 +207,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "seeduwa",
             "mobile": "0771344444",
+            "macaddress": "E5:25",
         },
 
 
@@ -226,6 +234,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "seeduwa",
             "mobile": "0771396601",
+            "macaddress": "E5:25",
         },
 
         {
@@ -251,6 +260,7 @@ exports.getData =
             "addressline3": "raddolugama",
             "city": "mathara",
             "mobile": "0751346601",
+            "macaddress": "E5:25",
         },
 
         {
@@ -276,6 +286,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773456701",
+            "macaddress": "E5:25",
         },
         {
             "teacherid": "AC_11",                        //mandatory
@@ -300,6 +311,7 @@ exports.getData =
             "addressline3": "yatihena road",
             "city": "malwana north",
             "mobile": "0773433701",
+            "macaddress": "E5:25",
         },
         {
             "teacherid": "AC_12",                        //mandatory
@@ -324,6 +336,7 @@ exports.getData =
             "addressline3": "yatihena south",
             "city": "malwana",
             "mobile": "0753456701",
+            "macaddress": "E5:25",
         },
 
         {
@@ -349,6 +362,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773452201",
+            "macaddress": "E5:25",
         },
 
         {
@@ -374,6 +388,7 @@ exports.getData =
             "addressline3": "yatihena north",
             "city": " main street malwana",
             "mobile": "0773456334",
+            "macaddress": "E5:25",
         },
 
 
@@ -400,6 +415,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773456551",
+            "macaddress": "E5:25",
         },
 
 
@@ -430,6 +446,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773456701",
+            "macaddress": "E5:25",
         },
 
 
@@ -457,6 +474,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773456701",
+            "macaddress": "E5:25",
         },
 
         {
@@ -482,6 +500,7 @@ exports.getData =
             "addressline3": "yatihena",
             "city": "malwana",
             "mobile": "0773456701",
+            "macaddress": "E5:25",
         },
 
 

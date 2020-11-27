@@ -99,6 +99,11 @@ const Teacher = sequelize.define("teacher", {
     birthdate: {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    macaddress: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "12:E3:22:4D"
     }
 
 

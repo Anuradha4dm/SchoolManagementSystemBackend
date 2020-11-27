@@ -28,9 +28,11 @@ router.post('/update-student-result', teacherController.postUpdateStudentResult)
 //POST /teacher//get-average-data =>this route is used to get avatage data of the class
 router.post('/get-average-data', teacherController.postGetAvarageDataForTheClass);
 
+//POST /teacher/add-qrcode-data   >this route is used to add the data for the QR code
+router.post("/add-qrcode-data", teacherController.postAddQRcodeRecode);
 
-
-
+//GET /teacher/mark-teacher-attendence   =>this route is used to mark the teacher attendence
+router.get("/mark-teacher-attendence", teacherController.getMarkTeacherAttendence)
 
 
 module.exports = router;

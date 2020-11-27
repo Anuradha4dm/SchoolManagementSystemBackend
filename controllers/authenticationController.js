@@ -468,7 +468,7 @@ exports.postForgetPassword = async (req, res, next) => {
             await userData.save();
 
             transporter.sendMail({
-                to: "tharindha.lakmal@gmail.com",
+                to: email,
                 from: "damithanuradha44@gmail.com",
                 subject: "Welcome To ABC School",
                 html: `password reset to click <a href="http://localhost:4200/forget-password?resetmode=true&token=${token}&role=${userRole}">me</a>`

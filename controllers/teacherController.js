@@ -3,10 +3,16 @@ const Class = require("../models/classModel");
 const Result = require("../models/resultModel");
 const ResultSummary = require("../models/resultSummaryModel");
 const StudentAttendence = require('../models/studentAttendaceModule');
+const QRdata = require('../models/QRdataModel');
 const Student = require("../models/studentModel");
 
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
+const QRData = require("../models/QRdataModel");
+const { errorMonitor } = require("nodemailer/lib/mailer");
+const { Op } = require("sequelize/types");
+
+
 
 
 exports.postAddStudentResults = async (req, res, next) => {
@@ -405,15 +411,83 @@ exports.postGetAvarageDataForTheClass = async (req, res, next) => {
 
 }
 
+exports.postAddQRcodeRecode = async (req, res, next) => {
+
+    try {
+
+        const qrcoderandom = req.body.qrcode;
+        const teacherid = req.body.teacherid;
+
+        const teacherData = await Teacher.findOne({
+            where: {
+                teacherid: teacherid
+            }
+        })
+
+        if (!teacherData) {
+            throw new Error("Teacher not found with id " + teacherid)
+        }
 
 
 
+        const addQRdata = await QRData.create({
+            teacherTeacherid: teacherid,
+            randomcode: qrcoderandom,
+            expiredtime: Date.now() + 15000
+        })
 
 
+        res.status(200).json({
+            auth: true
+        })
+
+    } catch (error) {
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
+    }
+
+}
+
+exports.getMarkTeacherAttendence = async (req, res, next) => {
+
+    try {
+        const teacherid = req.query.teacherid;
+        const sequreid = req.query.sequreid;
+        const macaddress = req.query.macid;
+
+        const teacherData = await Teacher.findOne({
+            teacherid: teacherid,
+            macaddress: macaddress
+        })
+
+        if (!teacherData) {
+            throw new Error('Teacher not found with relavant device....')
+        }
+
+        const QRrecode = await QRData.findOne({
+            where: {
+                teacherTeacherid: teacherData.teacherid,
+                randomcode: sequreid,
+                expiredtime: {
+                    [Op.lte]: Date.now()
+                }
+            }
+        })
+
+        if (!QRrecode) {
+            throw new Error("Authentication Failed....Or Token expire.....");
+        }
 
 
+    } catch (error) {
+        console.log("🚀 ~ file: teacherController.js ~ line 458 ~ exports.getMarkTeacherAttendence=async ~ error", error)
 
+    }
 
+}
 
 
 
