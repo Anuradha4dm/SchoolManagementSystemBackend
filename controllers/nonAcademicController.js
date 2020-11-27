@@ -1652,24 +1652,24 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
 
 }
 
-exports.getMainExamResults = async (req,res,next)=>{
-    try{
-        const year=req.body.year;
-        const type=req.body.type;
+exports.getMainExamResults = async (req, res, next) => {
+    try {
+        const year = req.body.year;
+        const type = req.body.type;
 
         const mainResults = await MainExamDetails.findAll({
-            where:{
+            where: {
                 meyear: year,
                 metype: type
             },
-            attributes:['indexnumber','stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
+            attributes: ['indexnumber', 'stream', 'zscore', 'districtrank', 'islandrank', 'shy', 'class', 'studentid', 'acount', 'bcount', 'ccount', 'scount', 'wcount']
         })
 
         res.status(200).json(
             mainResults
         )
-    }catch(error){
-        console.log("Results error",error);
+    } catch (error) {
+        console.log("Results error", error);
     }
 }
 
