@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const Student = require('../models/studentModel');
 const DataModel = require("../models/dataModule");
 const Teacher = require('../models/teacherModel');
+const NonAcademic = require('../models/nonAcademicModel');
+const Class = require('../models/classModel');
 
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
@@ -161,6 +163,60 @@ exports.getStudentNewId = (req, res, next) => {
     }).catch(error => {
         console.log(error)
     })
+}
 
 
+exports.getAllCounts = async (req,res,next) => {
+    try{
+        const teacherCount = await Teacher.count();
+        const studentCount = await Student.count();
+        const nonCount = await NonAcademic.count();
+        const classCount = await Class.count();
+
+        res.status(200).json({
+            teacherCount: teacherCount,
+            studentCount: studentCount,
+            nonCount: nonCount,
+            classCount: classCount
+        });
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.postAddNewTeacher = async (req,res,next) => {
+    try{
+        const data=req.body.data;
+        const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
+
+        await Teacher.create({
+            teacherid: req.body.teacherid,
+            surname: data.surname,
+            firstname: data.firstname,
+            lastname: data.lastname,
+            email: data.email,
+            username: data.username,
+            password: hpassword,
+            startyear: data.startyear,
+            age: data.age,
+            description: "I am the best Teacher",
+            gender: data.gender,
+            addressline1: data.addressline1,
+            addressline2: data.addressline2,
+            addressline3: data.addressline3,
+            city: data.city,
+            role: data.role,
+            mobile: data.mobile,
+            numberofleaves: data.nbrofleaves,
+            birthdate: data.birthdate,
+        });
+
+        res.status(200).json({
+            create: true
+        });
+
+    }catch(error){
+        console.log(error);
+    }
 }

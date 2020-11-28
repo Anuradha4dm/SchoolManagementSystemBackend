@@ -255,7 +255,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             surname: teacherData.surname,
             firstname: teacherData.firstname,
             lastname: teacherData.lastname,
-            email: teacherData.lastname,
+            email: teacherData.email,
             username: teacherData.username,
             imagepath: teacherData.imagepath,
             startyear: teacherData.startyear,

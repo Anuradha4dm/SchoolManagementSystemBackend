@@ -13,4 +13,10 @@ router.get("/get-new-student-id", adminController.getStudentNewId);
 //GET /
 router.get('/test', adminController.getTest);
 
+//use to get new teacher details
+router.post('/add-new-teacher',adminController.postAddNewTeacher);
+
+//return counts of students,non,classes and teachers
+router.get('/get-all-count',adminController.getAllCounts);
+
 module.exports = router;
