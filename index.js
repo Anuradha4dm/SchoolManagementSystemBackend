@@ -41,6 +41,8 @@ const MainExamResult = require('./models/mainExamResult');
 const MainExamSubjectWrapper = require('./models/mainExamSubjectWrapper');
 const MainExamSubject = require('./models/mainExamSubjects');
 const PermissionAdvanceLavel = require('./models/permissionAdvanceLavel');
+const QRData = require('./models/QRdataModel');
+const TeacherAttendence = require('./models/teacherAttendenceModel');
 
 //data dumy
 const studentDumy = require('./test/studentDumy');
@@ -186,7 +188,8 @@ Result.belongsTo(Subject);
 ResultSummary.belongsTo(Student, { foreignKey: '_id', foreignKeyConstraint: true })
 Leave.belongsTo(Teacher);
 PermissionAdvanceLavel.belongsTo(Student);
-
+QRData.belongsTo(Teacher);
+TeacherAttendence.belongsTo(Teacher);
 
 //1:M
 Student.hasMany(Result);

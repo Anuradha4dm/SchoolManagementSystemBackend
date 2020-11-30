@@ -3,11 +3,18 @@ const Class = require("../models/classModel");
 const Result = require("../models/resultModel");
 const ResultSummary = require("../models/resultSummaryModel");
 const StudentAttendence = require('../models/studentAttendaceModule');
+const QRdata = require('../models/QRdataModel');
 const Student = require("../models/studentModel");
 const Notification = require("../models/notification");
 
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
+const QRData = require("../models/QRdataModel");
+
+const { Op } = require("sequelize");
+const TeacherAttendence = require("../models/teacherAttendenceModel");
+
+
 
 
 exports.postAddStudentResults = async (req, res, next) => {
@@ -484,15 +491,126 @@ exports.sendTeacherNotifications = async (req,res,next) => {
         console.log(error);
     }
 }
+exports.postAddQRcodeRecode = async (req, res, next) => {
+
+    try {
+
+        const qrcoderandom = req.body.qrcode;
+        const teacherid = req.body.teacherid;
+
+        const teacherData = await Teacher.findOne({
+            where: {
+                teacherid: teacherid
+            }
+        })
+
+        if (!teacherData) {
+            throw new Error("Teacher not found with id " + teacherid)
+        }
+
+        const addQRdata = await QRData.create({
+            teacherTeacherid: teacherid,
+            randomcode: qrcoderandom,
+            expiredtime: Date.now() + 60000
+        })
 
 
+        res.status(200).json({
+            auth: true
+        })
+
+    } catch (error) {
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
+    }
+
+}
+
+exports.getMarkTeacherAttendence = async (req, res, next) => {
+
+    try {
+        const teacherid = req.query.teacherid;
+        const sequreid = req.query.sequreid;
+        const macaddress = req.query.macid;
+
+        const date = new Date();
+
+        //default
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        const teacherData = await Teacher.findOne({
+            teacherid: teacherid,
+            macaddress: macaddress
+        })
+
+        if (!teacherData) {
+            throw new Error('Teacher Is Not With Relavante Device....')
+        }
+
+        const QRrecode = await QRData.findOne({
+            where: {
+                teacherTeacherid: teacherData.teacherid,
+                randomcode: sequreid,
+                expiredtime: {
+                    [Op.gte]: Date.now()
+                }
+            }
+        })
+
+        if (!QRrecode) {
+            throw new Error("Authentication Failed....Or Token expire.....");
+        }
+
+        const countVal = await TeacherAttendence.count({
+            where: {
+                teacherTeacherid: teacherid,
+                year: year,
+                date: date,
+                month: month
+            }
+        })
+
+        if (countVal != 0) {
+            throw new Error("Your Have Alredy Mark Your Attendence");
+        }
 
 
+        const addAttendence = await TeacherAttendence.create({
+            present: true,
+            date: new Date().toLocaleString(),
+            year: year,
+            day: day,
+            month: month,
+            teacherTeacherid: teacherid
 
+        })
 
+        if (!addAttendence) {
+            throw new Error("Attendence Mark Error....")
+        }
 
+        await QRrecode.destroy();
 
+        res.status(200).json({
+            markattendence: true
+        })
 
+    } catch (error) {
+
+        if (!error.statusCode) {
+
+            error.statusCode = 500;
+        }
+
+        next(error)
+    }
+
+}
 
 
 

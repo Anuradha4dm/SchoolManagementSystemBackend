@@ -32,4 +32,11 @@ router.post('/update-teacher-profile',teacherController.postUpdateTeacherProfile
 
 //to add notifictions from teacher to database
 router.post('/teacher-send-notifications',teacherController.sendTeacherNotifications);
+//POST /teacher/add-qrcode-data   >this route is used to add the data for the QR code
+router.post("/add-qrcode-data", teacherController.postAddQRcodeRecode);
+
+//GET /teacher/mark-teacher-attendence   =>this route is used to mark the teacher attendence
+router.get("/mark-teacher-attendence", teacherController.getMarkTeacherAttendence)
+
+
 module.exports = router;

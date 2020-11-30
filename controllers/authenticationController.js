@@ -12,6 +12,7 @@ const NonAcademic = require('../models/nonAcademicModel');
 
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
+const { nextTick } = require('process');
 
 
 const transporter = nodemailer.createTransport(sendGridTransport({
@@ -405,4 +406,179 @@ exports.postNewpassword = async (req, res, next) => {
 
         next(error);
     }
+}
+
+
+exports.postForgetPassword = async (req, res, next) => {
+
+    try {
+
+        const userid = req.body.userid;
+        const email = req.body.email;
+        var token;
+        var tokenExpiration;
+        var userData;
+
+        const userRole = userid.split('_')[0];
+
+        if (userRole === 'ST') {
+            userData = await Student.findOne({
+                where: {
+                    _id: userid,
+                    email: email
+                }
+            });
+
+        }
+        else if (userRole === "AC") {
+            userData = await Teacher.findOne({
+                where: {
+                    teacherid: userid,
+                    email: email
+                }
+            });
+
+        }
+        else if (userRole === "NAC") {
+
+            userData = await NonAcademic.findOne({
+                where: {
+                    nonacademicid: userid,
+                    email: email
+                }
+            });
+        } else {
+            throw new Error("Invalid User Id...Check Again...")
+        }
+
+        if (!userData) {
+            throw new Error("Not StudentId Or Email Id match.....")
+        }
+
+        crypto.randomBytes(32, async (error, buff) => {
+            if (error) {
+                throw error;
+            }
+            token = buff.toString('hex');
+            tokenExpiration = Date.now() + (3600000);
+
+            userData.resetToken = token;
+            userData.resetTokenExpire = tokenExpiration;
+
+            await userData.save();
+
+            transporter.sendMail({
+                to: email,
+                from: "damithanuradha44@gmail.com",
+                subject: "Welcome To ABC School",
+                html: `password reset to click <a href="http://localhost:4200/forget-password?resetmode=true&token=${token}&role=${userRole}">me</a>`
+            }).then(re => {
+                res.status(200).json({
+                    resetLink: true
+                })
+
+            })
+                .catch(err => {
+                    throw err;
+                })
+
+        })
+
+
+
+
+
+    } catch (error) {
+
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+
+    }
+
+}
+
+exports.postNewpasswordInForget = async (req, res, next) => {
+
+
+    try {
+
+        const newpassword = req.body.newpassword;
+        const token = req.body.token;
+        const role = req.body.role;
+        var userData;
+
+        if (role === "ST") {
+            var userData = await Student.findOne({
+                where: {
+                    resetToken: token
+                }
+            })
+
+
+        }
+        else if (role === "AC") {
+
+            var userData = await Teacher.findOne({
+                where: {
+                    resetToken: token
+                }
+            })
+
+        }
+        else if (role === "NAC") {
+
+            var userData = await NonAcademic.findOne({
+                where: {
+                    resetToken: token
+                }
+            })
+
+        } else {
+
+            throw new Error("Invalid Credenticals....Try Email Link....")
+
+        }
+
+        if (!userData) {
+            throw new Error("Invalid Token...Try Later....");
+        }
+
+        if (userData.resetTokenExpire < new Date()) {
+            throw new Error("Invalid Token...Token Expired....");
+        }
+
+        bcrypt.hash(newpassword.trim(), 12)
+            .then(hashedpassword => {
+
+                userData.password = hashedpassword;
+                userData.resetToken = null;
+                userData.resetTokenExpire = null;
+                return userData.save();
+            })
+            .then(result => {
+
+                if (!result) {
+                    var error = new Error("Server Error");
+                    error.statusCode = 500;
+                    return error;
+                }
+
+                res.status(200).json({
+                    reset: true
+                })
+            })
+            .catch(error => {
+                throw error;
+            })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 401;
+        }
+        next(error);
+    }
+
 }
