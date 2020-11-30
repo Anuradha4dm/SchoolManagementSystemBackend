@@ -96,5 +96,4 @@ router.get('/get-advance-level-stream-register', nonacademicController.getAllPen
 //POST /nonacademic/respose-advance-levl-registration           =>this route is used to respond to advance level registration
 router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest);
 
-
 module.exports = router;

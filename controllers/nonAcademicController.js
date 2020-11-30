@@ -926,7 +926,7 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
                 resultcounts.wcount++;
             }
 
-            return { index: indexnumber, meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
+            return { index: indexnumber, meyear: year, metype: false, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
         });
 
 
@@ -993,26 +993,28 @@ exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
         });
 
         const storeResultArray = resultList.map(result => {
-            if (result.meresult.toUpperCase() === "A") {
-                resultcounts.acount++;
+            if(result.mesubjectid!=10){
+                if (result.meresult.toUpperCase() === "A") {
+                    resultcounts.acount++;
+                }
+    
+                if (result.meresult.toUpperCase() === "B") {
+                    resultcounts.bcount++;
+                }
+    
+                if (result.meresult.toUpperCase() === "C") {
+                    resultcounts.ccount++;
+                }
+    
+                if (result.meresult.toUpperCase() === "S") {
+                    resultcounts.scount++;
+                }
+    
+                if (result.meresult.toUpperCase() === "W") {
+                    resultcounts.wcount++;
+                }
             }
-
-            if (result.meresult.toUpperCase() === "B") {
-                resultcounts.bcount++;
-            }
-
-            if (result.meresult.toUpperCase() === "C") {
-                resultcounts.ccount++;
-            }
-
-            if (result.meresult.toUpperCase() === "S") {
-                resultcounts.scount++;
-            }
-
-            if (result.meresult.toUpperCase() === "W") {
-                resultcounts.wcount++;
-            }
-            return { meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult, index: indexnumber }
+            return { meyear: year, metype: true, subjectid: result.mesubjectid, result: result.meresult.toUpperCase(), index: indexnumber }
         });
 
         mainExamRegistrationData.stream = stream;
@@ -1032,7 +1034,7 @@ exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
         const updateProfileDataInRegistration = await mainExamRegistrationData.save();
         const addedResultData = await MainExamResult.bulkCreate(storeResultArray);
 
-        if (updateProfileDataInRegistration !== null || addedResultData !== null) {
+        if (updateProfileDataInRegistration === null || addedResultData === null) {
             throw new Error("Result Additoin Error Occure ... Try Later...")
         }
 
@@ -1087,9 +1089,9 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
             return { mesubjectid: subject.mesubjectid, mesubjectname: subject.mesubjectname }
         })
 
-        res.status(200).json({
-            responsedata: { ...responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
-        })
+        res.status(200).json(
+            {subjects: responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
+        )
 
 
     } catch (error) {
@@ -1907,9 +1909,10 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                 where: {
                     meyear: year,
                     metype: true,
+                    addresultdone: false
 
                 },
-                attributes: ['indexnumber', 'studentid', 'stream'],
+                attributes: ['indexnumber', 'studentid', 'stream','class'],
 
             });
 
@@ -1922,10 +1925,10 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
             studentlist = await MainExamDetails.findAll({
                 where: {
                     meyear: year,
-                    metype: true,
-
+                    metype: false,
+                    addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid'],
+                attributes: ['indexnumber', 'studentid','class'],
 
             });
 
@@ -2165,5 +2168,3 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
 
     }
 }
-
-
