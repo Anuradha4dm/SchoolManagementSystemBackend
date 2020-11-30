@@ -30,5 +30,6 @@ router.post('/get-average-data', teacherController.postGetAvarageDataForTheClass
 
 router.post('/update-teacher-profile',teacherController.postUpdateTeacherProfile);
 
-
+//to add notifictions from teacher to database
+router.post('/teacher-send-notifications',teacherController.sendTeacherNotifications);
 module.exports = router;
