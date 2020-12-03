@@ -19,4 +19,7 @@ router.post('/add-new-teacher',adminController.postAddNewTeacher);
 //return counts of students,non,classes and teachers
 router.get('/get-all-count',adminController.getAllCounts);
 
+//to create new class
+router.post('/create-new-class',adminController.postCreateNewClass)
+
 module.exports = router;

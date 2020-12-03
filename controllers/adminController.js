@@ -219,3 +219,24 @@ exports.postAddNewTeacher = async (req,res,next) => {
         console.log(error);
     }
 }
+
+exports.postCreateNewClass = async (req,res,next) =>{
+    try{
+        const className=req.body.className;
+        const year=new Date().getFullYear();
+
+        await Class.create({
+            year: year,
+            grade: className,
+            numofstudents: 0,
+            timetable: ''
+        });
+
+        res.status(200).json(
+            true
+        )
+    }
+    catch(error){
+        console.log(error);
+    }
+}
