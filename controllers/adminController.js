@@ -187,36 +187,35 @@ exports.getAllCounts = async (req,res,next) => {
 
 exports.postAddNewTeacher = async (req,res,next) => {
     try{
-        const data=req.body.data;
         const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
 
         await Teacher.create({
             teacherid: req.body.teacherid,
-            surname: data.surname,
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-            username: data.username,
+            surname: req.body.surname,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            username: req.body.username,
             password: hpassword,
-            startyear: data.startyear,
-            age: data.age,
+            startyear: req.body.startyear,
+            age: req.body.age,
             description: "I am the best Teacher",
-            gender: data.gender,
-            addressline1: data.addressline1,
-            addressline2: data.addressline2,
-            addressline3: data.addressline3,
-            city: data.city,
-            role: data.role,
-            mobile: data.mobile,
-            numberofleaves: data.nbrofleaves,
-            birthdate: data.birthdate,
+            gender: req.body.gender,
+            addressline1: req.body.addressline1,
+            addressline2: req.body.addressline2,
+            addressline3: req.body.addressline3,
+            city: req.body.city,
+            role: req.body.role,
+            mobile: req.body.mobile,
+            numberofleaves: req.body.nbrofleaves,
+            birthdate: req.body.birthdate,
         });
 
-        res.status(200).json({
-            create: true
-        });
+        res.status(200).json(
+            true
+        );
 
-    }catch(error){
+     }catch(error){
         console.log(error);
     }
 }
