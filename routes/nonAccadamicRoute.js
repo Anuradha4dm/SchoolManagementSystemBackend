@@ -75,6 +75,7 @@ router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThre
 
 //used to get ol and al details of any year
 router.post('/get-main-exam-results',nonacademicController.getMainExamResults);
+
 //POST /nonacademic/al-chart-one        =>this route is used to handle the advance level chart one data
 router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
 
@@ -94,6 +95,5 @@ router.get('/get-advance-level-stream-register', nonacademicController.getAllPen
 
 //POST /nonacademic/respose-advance-levl-registration           =>this route is used to respond to advance level registration
 router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest);
-
 
 module.exports = router;

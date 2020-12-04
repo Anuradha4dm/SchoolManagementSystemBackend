@@ -5,6 +5,7 @@ const ResultSummary = require("../models/resultSummaryModel");
 const StudentAttendence = require('../models/studentAttendaceModule');
 const QRdata = require('../models/QRdataModel');
 const Student = require("../models/studentModel");
+const Notification = require("../models/notification");
 
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
@@ -262,7 +263,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             surname: teacherData.surname,
             firstname: teacherData.firstname,
             lastname: teacherData.lastname,
-            email: teacherData.lastname,
+            email: teacherData.email,
             username: teacherData.username,
             imagepath: teacherData.imagepath,
             startyear: teacherData.startyear,
@@ -496,6 +497,51 @@ exports.postGetAvarageDataForTheClass = async (req, res, next) => {
 
 }
 
+exports.sendTeacherNotifications = async (req,res,next) => {
+    try{
+        const data = req.body.data;
+        const notifications=[];
+        const list = req.body.list;
+
+        if(data.type==5){
+            const notification = {
+                type: data.type,
+                from: req.body.teacherid,
+                expire: data.expire,
+                message: data.description,
+                to: req.body.list,
+                title: data.title,
+            }
+            
+            await Notification.create(notification);
+        }
+        else{
+           
+            list.forEach((element)=>{
+                notifications.push({
+                    type: data.type,
+                    from: req.body.teacherid,
+                    expire: data.expire,
+                    message: data.description,
+                    to: element,
+                    studentId: element,
+                    title: data.title,
+                });
+             })
+
+            await Notification.bulkCreate(notifications);
+        }
+      
+
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
+    }
+}
 exports.postAddQRcodeRecode = async (req, res, next) => {
 
     try {

@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const Student = require('../models/studentModel');
 const DataModel = require("../models/dataModule");
 const Teacher = require('../models/teacherModel');
+const NonAcademic = require('../models/nonAcademicModel');
+const Class = require('../models/classModel');
 
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
@@ -161,6 +163,80 @@ exports.getStudentNewId = (req, res, next) => {
     }).catch(error => {
         console.log(error)
     })
+}
 
 
+exports.getAllCounts = async (req,res,next) => {
+    try{
+        const teacherCount = await Teacher.count();
+        const studentCount = await Student.count();
+        const nonCount = await NonAcademic.count();
+        const classCount = await Class.count();
+
+        res.status(200).json({
+            teacherCount: teacherCount,
+            studentCount: studentCount,
+            nonCount: nonCount,
+            classCount: classCount
+        });
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.postAddNewTeacher = async (req,res,next) => {
+    try{
+        const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
+
+        await Teacher.create({
+            teacherid: req.body.teacherid,
+            surname: req.body.surname,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            username: req.body.username,
+            password: hpassword,
+            startyear: req.body.startyear,
+            age: req.body.age,
+            description: "I am the best Teacher",
+            gender: req.body.gender,
+            addressline1: req.body.addressline1,
+            addressline2: req.body.addressline2,
+            addressline3: req.body.addressline3,
+            city: req.body.city,
+            role: req.body.role,
+            mobile: req.body.mobile,
+            numberofleaves: req.body.nbrofleaves,
+            birthdate: req.body.birthdate,
+        });
+
+        res.status(200).json(
+            true
+        );
+
+     }catch(error){
+        console.log(error);
+    }
+}
+
+exports.postCreateNewClass = async (req,res,next) =>{
+    try{
+        const className=req.body.className;
+        const year=new Date().getFullYear();
+
+        await Class.create({
+            year: year,
+            grade: className,
+            numofstudents: 0,
+            timetable: ''
+        });
+
+        res.status(200).json(
+            true
+        )
+    }
+    catch(error){
+        console.log(error);
+    }
 }
