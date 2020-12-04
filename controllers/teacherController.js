@@ -294,13 +294,64 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
 
 //need to completed
 exports.postUpdateTeacherProfile = async (req, res, next) => {
-    try{
+    try {
+        const teacherid = req.params.id;
+        const firstname = req.body.firstname;
+        const lastname = req.body.lastname;
+        const surname = req.body.surname;
+        const username = req.body.username;
+        const email = req.body.email;
+        const mobile = req.body.mobile;
+        const age = req.body.age;
+        const addressline1 = req.body.addressline1;
+        const addressline2 = req.body.addressline2;
+        const addressline3 = req.body.addressline3;
+        const city = req.body.city;
+        const role = req.body.role;
+        const qualifications = req.body.qualifications;  //this is not array it need a string each qualification is separadte with comma
+        const description = req.body.bescription;
+        var imagepath;
+
+        if (req.files.imageData != undefined) {
+
+            imagepath = req.files.imageData[0].path.replace('\\', '/');
+
+        } else {
+            imagepath = req.body.imagepath;
+        }
+
+        const teacherData = await Teacher.findByPk(teacherid);
+
+        if (!teacherData) {
+            throw new Error("Teacher Not Found....")
+        }
+
+
+        teacherData.firstname = firstname;
+        teacherData.lastname = lastname;
+        teacherData.surname = surname;
+        teacherData.username = username;
+        teacherData.email = email;
+        teacherData.mobile = mobile;
+        teacherData.age = age;
+        teacherData.addressline1 = addressline1;
+        teacherData.addressline2 = addressline2;
+        teacherData.addressline3 = addressline3;
+        teacherData.city = city;
+        teacherData.role = role;
+        teacherData.qualifications = qualifications;
+        teacherData.description = description;
+        teacherData.imagepath = imagepath;
+
+
+        await teacherData.save();
 
         res.status(200).json({
-            updated: true,
-        });
+            update: true
+        })
+
     }
-    catch (error){
+    catch (error) {
         console.log(error);
     }
 }
@@ -325,16 +376,16 @@ exports.postGetPreviousResultData = async (req, res, next) => {
         });
 
         const studentName = await Student.findOne({
-            where:{
+            where: {
                 _id: studentid
             },
-            attributes: ['firstname','lastname','surname']
+            attributes: ['firstname', 'lastname', 'surname']
         })
 
-        const fullname = studentName.firstname+" "+studentName.lastname+" "+studentName.surname;
+        const fullname = studentName.firstname + " " + studentName.lastname + " " + studentName.surname;
 
         const resposeData = resultData.map(value => {
-            return { subjectid: value.subjectSubjectid, subjectname: value.subject.subjectname, mark: value.marks}
+            return { subjectid: value.subjectSubjectid, subjectname: value.subject.subjectname, mark: value.marks }
         })
 
         res.json({
@@ -360,8 +411,8 @@ exports.postUpdateStudentResult = async (req, res, next) => {
 
 
     try {
-        var count=0;
-        var sum=0;
+        var count = 0;
+        var sum = 0;
 
         const resultSetInfo = await Result.findAll({
             where: {
@@ -374,7 +425,7 @@ exports.postUpdateStudentResult = async (req, res, next) => {
         const udpateResultSetToStore = resultSetInfo.map(pastResult => {
 
             updatedResult.forEach(newResult => {
-                sum+= +newResult.mark;
+                sum += +newResult.mark;
                 count++;
                 if (newResult.subjectid === pastResult.subjectSubjectid) {
                     pastResult.marks = newResult.mark;
@@ -384,21 +435,21 @@ exports.postUpdateStudentResult = async (req, res, next) => {
             return pastResult
 
         })
-        
+
         await udpateResultSetToStore.forEach(async element => {
             await element.save()
 
         });
 
         const avg = await ResultSummary.findOne({
-            where:{
+            where: {
                 year: year,
                 term: term,
                 _id: studentid
             }
         })
 
-        avg.average=sum/count;
+        avg.average = sum / count;
         await avg.save();
 
         res.status(200).json({
@@ -431,7 +482,7 @@ exports.postGetAvarageDataForTheClass = async (req, res, next) => {
                 term: term,
                 grade: grade
             },
-            attributes:['average','place','_id']
+            attributes: ['average', 'place', '_id']
         })
 
         res.status(200).json({
