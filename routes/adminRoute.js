@@ -3,6 +3,7 @@ const router = express.Router();
 
 const adminController = require('../controllers/adminController');
 const validators = require('../validators/adminRouteValidator');
+const { route } = require('./commonRouter');
 
 //POST /admin/new-student-profile
 router.post('/new-student-profile', adminController.postNewStudentProfile);
@@ -21,5 +22,8 @@ router.get('/get-all-count',adminController.getAllCounts);
 
 //to create new class
 router.post('/create-new-class',adminController.postCreateNewClass)
+
+//return class list and data
+router.get('/get-class-list',adminController.getClassList)
 
 module.exports = router;

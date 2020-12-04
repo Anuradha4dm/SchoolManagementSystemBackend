@@ -165,7 +165,7 @@ exports.getStudentNewId = (req, res, next) => {
     })
 }
 
-
+//return all count of students,teachers,non and classes
 exports.getAllCounts = async (req,res,next) => {
     try{
         const teacherCount = await Teacher.count();
@@ -185,6 +185,7 @@ exports.getAllCounts = async (req,res,next) => {
     }
 }
 
+//add new teacher details to the system
 exports.postAddNewTeacher = async (req,res,next) => {
     try{
         const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
@@ -209,6 +210,7 @@ exports.postAddNewTeacher = async (req,res,next) => {
             mobile: req.body.mobile,
             numberofleaves: req.body.nbrofleaves,
             birthdate: req.body.birthdate,
+            subjects: req.body.subjectlist
         });
 
         res.status(200).json(
@@ -220,6 +222,7 @@ exports.postAddNewTeacher = async (req,res,next) => {
     }
 }
 
+//add new class details to the system
 exports.postCreateNewClass = async (req,res,next) =>{
     try{
         const className=req.body.className;
@@ -229,7 +232,6 @@ exports.postCreateNewClass = async (req,res,next) =>{
             year: year,
             grade: className,
             numofstudents: 0,
-            timetable: ''
         });
 
         res.status(200).json(
@@ -237,6 +239,26 @@ exports.postCreateNewClass = async (req,res,next) =>{
         )
     }
     catch(error){
+        console.log(error);
+    }
+}
+
+//return all class list
+exports.getClassList = async (req,res,next) => {
+    try{
+        const classList=await Class.findAll({
+            attributes: ['classid','grade'],
+            include: {
+                model: Teacher,
+                attributes: ['teacherid','firstname','lastname']
+            }
+        });
+
+        res.status(200).json(
+            classList
+        );
+
+    }catch(error){
         console.log(error);
     }
 }

@@ -296,10 +296,32 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
 //need to completed
 exports.postUpdateTeacherProfile = async (req, res, next) => {
     try{
+        const teacherid=req.body.teacherid;
 
-        res.status(200).json({
-            updated: true,
+        const teacherData=await Teacher.findOne({
+            where:{
+                teacherid: teacherid
+            }
         });
+
+        teacherData.firstname=req.body.firstname;
+        teacherData.lastname=req.body.lastname;
+        teacherData.usernamename=req.body.username;
+        teacherData.surname=req.body.surname;
+        teacherData.email=req.body.email;
+        teacherData.mobile=req.body.mobile;
+        teacherData.age=req.body.age;
+        teacherData.addressline1=req.body.addressline1;
+        teacherData.addressline2=req.body.addressline2;
+        teacherData.addressline3=req.body.addressline3;
+        teacherData.city=req.body.city;
+        teacherData.qualifications=req.body.qualifications;
+
+        await teacherData.save();
+
+        res.status(200).json(
+            true
+        );
     }
     catch (error){
         console.log(error);
@@ -349,8 +371,6 @@ exports.postGetPreviousResultData = async (req, res, next) => {
     }
 
 }
-
-
 
 exports.postUpdateStudentResult = async (req, res, next) => {
 
@@ -414,7 +434,6 @@ exports.postUpdateStudentResult = async (req, res, next) => {
     }
 
 }
-
 
 exports.postGetAvarageDataForTheClass = async (req, res, next) => {
 

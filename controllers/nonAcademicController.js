@@ -326,7 +326,6 @@ exports.postAddNotification = async (req, res, next) => {
 
 }
 
-
 exports.getGetClassTeacherData = async (req, res, next) => {
 
     const classname = req.params.class;
@@ -467,7 +466,7 @@ exports.postUpdateClassHandler = async (req, res, next) => {
         }
 
 
-
+/*
         if (req.files) {
             const getClass = await Class.findOne({
                 where: {
@@ -483,7 +482,7 @@ exports.postUpdateClassHandler = async (req, res, next) => {
 
 
         }
-
+*/
 
 
 
@@ -2166,5 +2165,99 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
     } catch (error) {
         console.log("🚀 ~ file: nonAcademicController.js ~ line 2047 ~ exports.postHandleAdvanceLevelRequest= ~ error", error)
 
+    }
+}
+
+exports.changeClassTeacher = async (req,res,next) => {
+    try{
+        const newTeacherID=req.body.newTeacherID;
+        const classID=req.body.classID;
+
+        const currentTeacher= await Teacher.findOne({
+            where:{
+                classClassid: classID
+            }
+        });
+        
+        if(currentTeacher){
+            currentTeacher.classClassid=null
+            await currentTeacher.save();
+        }
+
+        const newTeacher=await Teacher.findOne({
+            where:{
+                teacherid: newTeacherID
+            }
+        });
+
+        if(newTeacher){
+            newTeacher.classClassid=classID
+            await newTeacher.save()
+        }
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.getTeacherBySubject = async (req,res,next) =>{
+    try{
+        const subjectName=req.body.subjectName;
+
+        const teacherList=await Teacher.findAll({
+            where:{
+                subjects: {
+                    [Op.like]: '%'+subjectName+'%'
+                }
+            },
+            attributes:['teacherid']
+        })
+        console.log(subjectName)
+        res.status(200).json(
+            teacherList
+        )
+
+    }catch(error){
+        console.log(data);
+    }
+}
+
+exports.addTeacherSubject = async (req,res,next) =>{
+    try{
+        const teacherid=req.body.teacherid;
+        const subjectname=req.body.subjectname;
+        const grade=req.body.grade;
+        const info="This is the best "+subjectname;
+
+        const currentTeacher=await Subject.findOne({
+            where:{
+                grade:grade,
+                subjectname: subjectname
+            }
+        });
+
+        if(currentTeacher){
+            currentTeacher.teacherTeacherid=teacherid;
+            await currentTeacher.save();
+        }
+        else{
+            await Subject.create({
+                subjectname: subjectname,
+                grade: grade,
+                subjectinfo: info,
+                teacherTeacherid: teacherid
+            });
+        }
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error)
     }
 }
