@@ -992,23 +992,23 @@ exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
         });
 
         const storeResultArray = resultList.map(result => {
-            if(result.mesubjectid!=10){
+            if (result.mesubjectid != 10) {
                 if (result.meresult.toUpperCase() === "A") {
                     resultcounts.acount++;
                 }
-    
+
                 if (result.meresult.toUpperCase() === "B") {
                     resultcounts.bcount++;
                 }
-    
+
                 if (result.meresult.toUpperCase() === "C") {
                     resultcounts.ccount++;
                 }
-    
+
                 if (result.meresult.toUpperCase() === "S") {
                     resultcounts.scount++;
                 }
-    
+
                 if (result.meresult.toUpperCase() === "W") {
                     resultcounts.wcount++;
                 }
@@ -1089,7 +1089,7 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
         })
 
         res.status(200).json(
-            {subjects: responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
+            { subjects: responseDataSetUp, studentname: studentData.firstname + " " + studentData.lastname }
         )
 
 
@@ -1653,25 +1653,25 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
 
 }
 
-exports.getMainExamResults = async (req,res,next)=>{
-    try{
-        const year=req.body.year;
-        const type=req.body.type;
+exports.getMainExamResults = async (req, res, next) => {
+    try {
+        const year = req.body.year;
+        const type = req.body.type;
 
         const mainResults = await MainExamDetails.findAll({
-            where:{
+            where: {
                 meyear: year,
                 metype: type
             },
-            attributes:['indexnumber','stream','zscore','districtrank','islandrank','shy','class','studentid','acount','bcount','ccount','scount','wcount']
+            attributes: ['indexnumber', 'stream', 'zscore', 'districtrank', 'islandrank', 'shy', 'class', 'studentid', 'acount', 'bcount', 'ccount', 'scount', 'wcount']
         })
 
         res.status(200).json({
             result: mainResults
         });
 
-    }catch(error){
-        console.log("Results error",error);
+    } catch (error) {
+        console.log("Results error", error);
     }
 }
 
@@ -1911,7 +1911,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     addresultdone: false
 
                 },
-                attributes: ['indexnumber', 'studentid', 'stream','class'],
+                attributes: ['indexnumber', 'studentid', 'stream', 'class'],
 
             });
 
@@ -1927,7 +1927,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: false,
                     addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid','class'],
+                attributes: ['indexnumber', 'studentid', 'class'],
 
             });
 

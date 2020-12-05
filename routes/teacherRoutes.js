@@ -28,15 +28,18 @@ router.post('/update-student-result', teacherController.postUpdateStudentResult)
 //POST /teacher//get-average-data =>this route is used to get avatage data of the class
 router.post('/get-average-data', teacherController.postGetAvarageDataForTheClass);
 
-router.post('/update-teacher-profile',teacherController.postUpdateTeacherProfile);
+router.post('/update-teacher-profile', teacherController.postUpdateTeacherProfile);
 
 //to add notifictions from teacher to database
-router.post('/teacher-send-notifications',teacherController.sendTeacherNotifications);
+router.post('/teacher-send-notifications', teacherController.sendTeacherNotifications);
 //POST /teacher/add-qrcode-data   >this route is used to add the data for the QR code
 router.post("/add-qrcode-data", teacherController.postAddQRcodeRecode);
 
 //GET /teacher/mark-teacher-attendence   =>this route is used to mark the teacher attendence
 router.get("/mark-teacher-attendence", teacherController.getMarkTeacherAttendence)
+
+
+router.post('/update-teacher-profile/:id', teacherController.postUpdateTeacherProfile);
 
 
 module.exports = router;
