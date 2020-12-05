@@ -2168,3 +2168,83 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
 
     }
 }
+
+
+exports.getGetStudentListForRegistration = async (req, res, next) => {
+
+
+    try {
+
+        const studentListOrdinaryLevel = await Student.findAll({
+            where: {
+                classClassid: {
+                    [Op.in]: [26, 27, 28, 29, 30]
+                }
+            },
+            attributes: ['_id', 'firstname', 'lastname'],
+            include: [{ model: Class, attributes: ['grade'] }]
+
+        });
+
+        res.status(200).json({
+            studentList: studentListOrdinaryLevel
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2179 ~ exports.getGetStudentListForRegistration= ~ error", error)
+
+    }
+
+}
+
+exports.getGetStudentListForRegistrationAdvanceLvel = async (req, res, next) => {
+
+
+    try {
+
+        const studentListOrdinaryLevel = await Student.findAll({
+            where: {
+                classClassid: {
+                    [Op.in]: [36, 37, 38, 39, 40]
+                }
+            },
+            attributes: ['_id', 'firstname', 'lastname'],
+            include: [{ model: Class, attributes: ['grade'] }]
+
+        });
+
+        res.status(200).json({
+            studentList: studentListOrdinaryLevel
+        })
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2179 ~ exports.getGetStudentListForRegistration= ~ error", error)
+
+    }
+
+}
+
+exports.getStudentSubjectData = async (req, res, next) => {
+
+    try {
+
+        const studentid = req.params.id;
+
+        const studentData = await Student.findByPk(studentid);
+
+        const subjectListName = await studentData.getSubjects({
+            attributes: ['subjectname']
+        });
+
+        res.status(200).json({
+            subjects: subjectListName
+        })
+
+
+
+    } catch (error) {
+        console.log("🚀 ~ file: nonAcademicController.js ~ line 2232 ~ exports.getStudentSubjectData=async ~ error", error)
+
+    }
+
+}
