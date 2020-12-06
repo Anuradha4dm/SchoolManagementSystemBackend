@@ -189,6 +189,12 @@ exports.getAllCounts = async (req,res,next) => {
 exports.postAddNewTeacher = async (req,res,next) => {
     try{
         const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
+        var imagePath=null;
+
+        if (req.files.imageData != undefined)
+            imagePath = req.files.imageData[0].path.replace('\\', '/');
+
+
 
         await Teacher.create({
             teacherid: req.body.teacherid,
@@ -210,7 +216,8 @@ exports.postAddNewTeacher = async (req,res,next) => {
             mobile: req.body.mobile,
             numberofleaves: req.body.nbrofleaves,
             birthdate: req.body.birthdate,
-            subjects: req.body.subjectlist
+            subjects: req.body.subjectlist,
+            imagepath: imagePath
         });
 
         res.status(200).json(
@@ -228,15 +235,28 @@ exports.postCreateNewClass = async (req,res,next) =>{
         const className=req.body.className;
         const year=new Date().getFullYear();
 
-        await Class.create({
-            year: year,
-            grade: className,
-            numofstudents: 0,
+        const exist=await Class.findOne({
+            where:{
+                grade: className
+            }
         });
 
-        res.status(200).json(
-            true
-        )
+        if(exist){
+            res.status(200).json(
+                false
+            )
+        }
+        else{
+            await Class.create({
+                year: year,
+                grade: className,
+                numofstudents: 0,
+            });
+    
+            res.status(200).json(
+                true
+            );
+        }
     }
     catch(error){
         console.log(error);

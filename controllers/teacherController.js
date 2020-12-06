@@ -310,7 +310,7 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         const city = req.body.city;
         const role = req.body.role;
         const qualifications = req.body.qualifications;  //this is not array it need a string each qualification is separadte with comma
-        const description = req.body.bescription;
+        const description = req.body.description;
         var imagepath;
 
         if (req.files.imageData != undefined) {

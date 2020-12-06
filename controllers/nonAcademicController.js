@@ -2261,3 +2261,24 @@ exports.addTeacherSubject = async (req,res,next) =>{
         console.log(error)
     }
 }
+
+//return subject list that register to the teachers classwise
+exports.getClassRegisteredSubjects = async (req,res,next) =>{
+    try{
+        const grade= req.body.class;
+
+        const List=await Subject.findAll({
+            where:{
+                grade: grade
+            },
+            attributes: ['subjectname','teacherTeacherid']
+        });
+
+        res.status(200).json({
+            List
+        });
+
+    }catch(error){
+        console.log(error);
+    }
+}
