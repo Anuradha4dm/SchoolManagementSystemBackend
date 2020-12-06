@@ -1834,7 +1834,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "B") {
@@ -1846,7 +1846,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "C") {
@@ -1858,7 +1858,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "S") {
@@ -1870,7 +1870,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "W") {
@@ -1882,7 +1882,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
 
