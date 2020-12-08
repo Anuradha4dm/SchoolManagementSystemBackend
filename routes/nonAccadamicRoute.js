@@ -74,7 +74,7 @@ router.get('/ol-chart-two', nonacademicController.getGetOrdinaryLevelChartTwo);
 router.get('/ol-chart-three', nonacademicController.getGetOrdinaryLevelChartThree);
 
 //used to get ol and al details of any year
-router.post('/get-main-exam-results',nonacademicController.getMainExamResults);
+router.post('/get-main-exam-results', nonacademicController.getMainExamResults);
 
 //POST /nonacademic/al-chart-one        =>this route is used to handle the advance level chart one data
 router.post('/al-chart-one', nonacademicController.postGetAdvanceLevelChartOne);
@@ -107,4 +107,13 @@ router.post('/add-teacher-subject',nonacademicController.addTeacherSubject);
 
 //return subject list that register to the teachers classwise
 router.post('/get-class-registered-subjects',nonacademicController.getClassRegisteredSubjects)
+//GET /nonacademic/get-ol-student-list-for-registration   =>this route is used to get the infomation of the student for the registration
+router.get('/get-ol-student-list-for-registration', nonacademicController.getGetStudentListForRegistration);
+
+//GET /nonacademic/get-ol-student-list-for-registration   =>this route is used to get the infomation of the student for the registration gpt al
+router.get('/get-al-student-list-for-registration', nonacademicController.getGetStudentListForRegistrationAdvanceLvel);
+
+//GET /nonacademic/get-student-registered-subjects
+router.get('/get-student-registered-subjects/:id', nonacademicController.getStudentSubjectData);
+
 module.exports = router;
