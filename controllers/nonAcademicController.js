@@ -1706,7 +1706,7 @@ exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
                 group: ['meyear']
             })
         }
-        if (result.toUpperCase() === "c") {
+        if (result.toUpperCase() === "C") {
             responseData = await MainExamDetails.count({
                 where: {
                     metype: true,
