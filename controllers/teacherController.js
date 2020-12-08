@@ -500,37 +500,20 @@ exports.sendTeacherNotifications = async (req,res,next) => {
         const notifications=[];
         const list = req.body.list;
 
-        if(data.type==5){
-            const notification = {
-                type: data.type,
+        list.forEach((element)=>{
+            notifications.push({
+                type: 4,
                 from: req.body.teacherid,
                 expire: data.expire,
                 message: data.description,
-                to: req.body.list,
+                to: element,
+                studentId: element,
                 title: data.title,
-            }
-            
-            await Notification.create(notification);
-        }
-        else{
-           
-            list.forEach((element)=>{
-                notifications.push({
-                    type: data.type,
-                    from: req.body.teacherid,
-                    expire: data.expire,
-                    message: data.description,
-                    to: element,
-                    studentId: element,
-                    title: data.title,
-                });
-             })
+            });
+        });
 
-            await Notification.bulkCreate(notifications);
-        }
-      
-
-
+        await Notification.bulkCreate(notifications);
+        
         res.status(200).json(
             true
         );
