@@ -6,6 +6,7 @@ const Teacher = require('../models/teacherModel');
 const NonAcademic = require('../models/nonAcademicModel');
 
 exports.authUserChecking = (req, res, next) => {
+
     const tokenFull = req.get("Authorization");
     var decodedToken;
     if (!tokenFull) {

@@ -9,10 +9,10 @@ const authenticationValidation = require('../validators/authenticationValidation
 const router = express.Router();
 
 // GET=> /studet/profile/:id get the student profile infomation
-router.get('/profile/:id', studentController.getStudentProfile);
+router.get('/profile/:id', authenticationValidation.authUserChecking, studentController.getStudentProfile);
 
 //POST=> /student/edit-profilr/:id                =>this router is used to update the students profile details
-router.post('/edit-profile/:id', studentController.postEditStudentProfile);
+router.post('/edit-profile/:id', authenticationValidation.authUserChecking, studentController.postEditStudentProfile);
 
 //POST=> /student/getSubjectInfo/:subject/:grade
 router.post('/getsubjectinfo', studentController.getGetSubjectData);

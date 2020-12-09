@@ -23,7 +23,7 @@ const Class = sequelize.define('classes', {
     },
     timetable: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 
 })
