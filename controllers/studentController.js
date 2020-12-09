@@ -377,20 +377,20 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
 
         const subjectDetailFull = await Promise.all(datalist.subjects.map(async (element) => {
             teacherData = await element.getTeacher();
-            if (!teacherData) {
-                var error = new Error("No teacher has assign for sum of the subjects try later");
-                error.statusCode = 501;
-                throw (error);
-            }
+            // if (!teacherData) {
+            //     var error = new Error("No teacher has assign for sum of the subjects try later");
+            //     error.statusCode = 501;
+            //     throw (error);
+            // }
 
 
 
             return {
                 subjectid: element.subjectid,
-                subjectname: element.subjectname,
-                teacherid: teacherData.teacherid,
-                teachername: teacherData.firstname + " " + teacherData.lastname,
-                teacheremail: teacherData.email,
+                subjectname: (!teacherData) ? "No Teacher Still" : element.subjectname,
+                teacherid: (!teacherData) ? "N/A" : teacherData.teacherid,
+                teachername: (!teacherData) ? "N/A" : teacherData.firstname + " " + teacherData.lastname,
+                teacheremail: (!teacherData) ? "N/A" : teacherData.email,
 
             };
         }))
@@ -508,7 +508,6 @@ exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
         }
 
 
-
         const subjectList = await Subject.findAll({
             where: {
                 [Op.and]: {
@@ -518,11 +517,16 @@ exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
             }
         })
 
+        console.log(subjectList)
+
         subjectList.forEach(async (subject) => {
 
             await subject.addStudent(student);
 
         })
+
+
+
 
         student.subjectRegistrationDone = true;
 
@@ -630,7 +634,10 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
     }
 
 
