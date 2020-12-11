@@ -28,66 +28,87 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 
 exports.getStudentProfile = async (req, res, next) => {
 
-    const _id = req.params.id;
-    var teachername;
 
-    const studentData = await Student.findOne(
-        {
-            where:
-                { _id: _id },
-            include: {
-                model: Class,
-                attributes: ['grade', 'classid'],
+    try {
+        const _id = req.params.id;
+        var teachername;
+
+        if (req.userId != _id) {
+            throw new Error('You Are Not Allow To Access....')
+
+        }
+        const studentData = await Student.findOne(
+            {
+                where:
+                    { _id: _id },
+                include: {
+                    model: Class,
+                    attributes: ['grade', 'classid'],
+
+                }
+            })
+
+        if (studentData.class) {
+
+            teachername = await Teacher.findOne({
+                where: {
+                    classClassid: studentData.class.classid,
+                },
+                attributes: ['firstname', 'lastname']
+            })
+        }
+
+
+
+
+
+
+        res.status(200).json({
+            fetch: true,
+            studentData: {
+                _id: studentData._id,
+                surname: studentData.surname,
+                firstName: studentData.firstname,
+                lastName: studentData.lastname,
+                email: studentData.email,
+                username: studentData.username,
+                age: studentData.age,
+                imagePath: studentData.imagepath.replace("\\", "/"),
+                gender: studentData.gender,
+                grade: (studentData.class) ? studentData.class.grade : "No Class Is Assign ",
+                classTeacher: (teachername) ? teachername.firstname + " " + teachername.lastname : "no teacher is assign",
+                startYear: studentData.startyear,
+                birthDate: studentData.birthdate,
+                addressLine1: studentData.addressline1,
+                addressLine2: studentData.addressline2,
+                addressLine3: studentData.addressline3,
+                city: studentData.city,
+                mobile: studentData.mobile,
+                graderegistration: studentData.graderegistration
 
             }
         })
 
-    if (studentData.class) {
+    } catch (error) {
 
-        teachername = await Teacher.findOne({
-            where: {
-                classClassid: studentData.class.classid,
-            },
-            attributes: ['firstname', 'lastname']
-        })
+        if (!error.statusCode) {
+            error.statusCode = 401;
+        }
+        next(error)
     }
 
 
-
-
-
-
-    res.status(200).json({
-        fetch: true,
-        studentData: {
-            _id: studentData._id,
-            surname: studentData.surname,
-            firstName: studentData.firstname,
-            lastName: studentData.lastname,
-            email: studentData.email,
-            username: studentData.username,
-            age: studentData.age,
-            imagePath: studentData.imagepath.replace("\\", "/"),
-            gender: studentData.gender,
-            grade: (studentData.class) ? studentData.class.grade : "No Class Is Assign ",
-            classTeacher: (teachername) ? teachername.firstname + " " + teachername.lastname : "no teacher is assign",
-            startYear: studentData.startyear,
-            birthDate: studentData.birthdate,
-            addressLine1: studentData.addressline1,
-            addressLine2: studentData.addressline2,
-            addressLine3: studentData.addressline3,
-            city: studentData.city,
-            mobile: studentData.mobile,
-            graderegistration: studentData.graderegistration
-
-        }
-    })
 
 }
 
 exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
+
+    if (req.userId != _id) {
+        throw new Error('You Are Not Allow To Access....')
+
+    }
 
 
     if (req.body.imagepath && !req.file) {
@@ -354,20 +375,20 @@ exports.getRegisteredSubjectList = async (req, res, next) => {
 
         const subjectDetailFull = await Promise.all(datalist.subjects.map(async (element) => {
             teacherData = await element.getTeacher();
-            if (!teacherData) {
-                var error = new Error("No teacher has assign for sum of the subjects try later");
-                error.statusCode = 501;
-                throw (error);
-            }
+            // if (!teacherData) {
+            //     var error = new Error("No teacher has assign for sum of the subjects try later");
+            //     error.statusCode = 501;
+            //     throw (error);
+            // }
 
 
 
             return {
                 subjectid: element.subjectid,
-                subjectname: element.subjectname,
-                teacherid: teacherData.teacherid,
-                teachername: teacherData.firstname + " " + teacherData.lastname,
-                teacheremail: teacherData.email,
+                subjectname: (!teacherData) ? "No Teacher Still" : element.subjectname,
+                teacherid: (!teacherData) ? "N/A" : teacherData.teacherid,
+                teachername: (!teacherData) ? "N/A" : teacherData.firstname + " " + teacherData.lastname,
+                teacheremail: (!teacherData) ? "N/A" : teacherData.email,
 
             };
         }))
@@ -485,7 +506,6 @@ exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
         }
 
 
-
         const subjectList = await Subject.findAll({
             where: {
                 [Op.and]: {
@@ -495,11 +515,16 @@ exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
             }
         })
 
+        console.log(subjectList)
+
         subjectList.forEach(async (subject) => {
 
             await subject.addStudent(student);
 
         })
+
+
+
 
         student.subjectRegistrationDone = true;
 
@@ -607,7 +632,10 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
     }
 
 

@@ -1,5 +1,6 @@
 const express = require('express');
 
+const authenticationValidator = require('../validators/authenticationValidation');
 const nonacademicController = require('../controllers/nonAcademicController');
 const { route } = require('./studentRouter');
 
@@ -115,5 +116,10 @@ router.get('/get-al-student-list-for-registration', nonacademicController.getGet
 
 //GET /nonacademic/get-student-registered-subjects
 router.get('/get-student-registered-subjects/:id', nonacademicController.getStudentSubjectData);
+
+//GET /nonacadecmic/profile-data        //profile data of the nonacademic staff
+router.get('/profile-data/:id', authenticationValidator.authUserChecking, nonacademicController.getNonAcademicProfileData);
+
+
 
 module.exports = router;

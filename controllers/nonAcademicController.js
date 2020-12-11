@@ -2367,22 +2367,90 @@ exports.getStudentSubjectData = async (req, res, next) => {
     try {
 
         const studentid = req.params.id;
+        const examtype = req.query.examtype == 0 ? 0 : 1;
+
+
 
         const studentData = await Student.findByPk(studentid);
+
+        if (!studentData) {
+            throw new Error('Student Can Not Found....')
+        }
+
 
         const subjectListName = await studentData.getSubjects({
             attributes: ['subjectname']
         });
 
+        const subjectList = subjectListName.map(subjectData => { return subjectData.subjectname });
+
+        const mainExamSubjectData = await MainExamSubject.findAll({
+
+            where: {
+                [Op.and]: {
+                    mesubjectname: {
+                        [Op.in]: subjectList
+                    },
+                    metype: examtype
+                }
+            },
+            attributes: ['mesubjectname', 'mesubjectid']
+
+        })
+
+
+
         res.status(200).json({
-            subjects: subjectListName
+            subjects: mainExamSubjectData
         })
 
 
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 2232 ~ exports.getStudentSubjectData=async ~ error", error)
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
 
     }
 
+}
+
+
+
+exports.getNonAcademicProfileData = async (req, res, next) => {
+    try {
+
+        const nonAcademicId = req.params.id;
+
+        const profileData = await NonAcademic.findByPk(nonAcademicId);
+
+        if (profileData === null) {
+            throw new Error("User Can Not Find")
+        }
+
+        res.status(200).json({
+
+            surname: profileData.surname,
+            firstname: profileData.firstname,
+            lastname: profileData.lastname,
+            email: profileData.email,
+            imagepath: profileData.imagepath,
+            age: profileData.age,
+            role: profileData.role,
+            qualifications: profileData.qualifications,
+            description: profileData.description,
+
+        })
+
+
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
+    }
 }

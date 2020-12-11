@@ -12,7 +12,7 @@ const Leave = sequelize.define('leaverequest', {
 
     },
     leavedate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     description: {
