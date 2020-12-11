@@ -2285,13 +2285,26 @@ exports.getClassRegisteredSubjects = async (req,res,next) =>{
 
 exports.getGetStudentListForRegistration = async (req, res, next) => {
 
-
     try {
+        var arr=[];
+
+        const classList = await Class.findAll({
+            where:{
+                grade:{
+                    [Op.like]: '11%'
+                }
+            },
+            attributes: ['classid']
+        });
+
+        classList.forEach((grade)=>{
+            arr.push(grade.classid)
+        });
 
         const studentListOrdinaryLevel = await Student.findAll({
             where: {
                 classClassid: {
-                    [Op.in]: [26, 27, 28, 29, 30]
+                    [Op.in]: arr 
                 }
             },
             attributes: ['_id', 'firstname', 'lastname'],
@@ -2311,14 +2324,26 @@ exports.getGetStudentListForRegistration = async (req, res, next) => {
 }
 
 exports.getGetStudentListForRegistrationAdvanceLvel = async (req, res, next) => {
-
-
     try {
+        var arr=[];
+
+        const classList = await Class.findAll({
+            where:{
+                grade:{
+                    [Op.like]: '13%'
+                }
+            },
+            attributes: ['classid']
+        });
+
+        classList.forEach((grade)=>{
+            arr.push(grade.classid)
+        });
 
         const studentListOrdinaryLevel = await Student.findAll({
             where: {
                 classClassid: {
-                    [Op.in]: [36, 37, 38, 39, 40]
+                    [Op.in]: arr
                 }
             },
             attributes: ['_id', 'firstname', 'lastname'],
