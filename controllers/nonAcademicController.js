@@ -768,57 +768,71 @@ exports.postRegistratinMainExam = async (req, res, next) => {
             throw new Error('User Not Found....')
         }
 
-
-        if (!type) {
-            registration = await MainExamDetails.create({
-                indexnumber: indexnumber,
-                studentid: studentid,
+        const exits= await MainExamDetails.findOne({
+            where:{
                 meyear: year,
-                metype: false,
-                shy: shy,
-                class: studentclass
-            })
-
-
-        }
-        if (type) {
-            registration = await MainExamDetails.create({
-                indexnumber: indexnumber,
-                studentid: studentid,
-                meyear: year,
-                metype: true,
-                shy: shy,
-                stream: stream
-
-            })
-
-        }
-
-        if (registration === null) {
-            throw new Error('Registration Fail....');
-        }
-
-        const mainExamSubjectId = await MainExamSubject.findAll({
-            where: {
-                mesubjectname: {
-                    [Op.in]: subjectsList
-                }
-            },
-
+                studentid: studentid
+            }
         })
 
-        const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
-
-        if (registerSubject.length === 0) {
-            throw new Error('Some Probolem Occur In the Registration....');
+        if(exits!=null){
+            res.status(200).json(
+                false
+            );
         }
-
-
-        res.status(200).json({
-            registration: true,
-            subjectRegister: true,
-        })
-
+        else{
+            if (!type) {
+                registration = await MainExamDetails.create({
+                    indexnumber: indexnumber,
+                    studentid: studentid,
+                    meyear: year,
+                    metype: false,
+                    shy: shy,
+                    class: studentclass
+                })
+    
+    
+            }
+            if (type) {
+                registration = await MainExamDetails.create({
+                    indexnumber: indexnumber,
+                    studentid: studentid,
+                    meyear: year,
+                    metype: true,
+                    shy: shy,
+                    stream: stream,
+                    class: studentclass
+                })
+    
+            }
+    
+            if (registration === null) {
+                throw new Error('Registration Fail....');
+            }
+    
+            const mainExamSubjectId = await MainExamSubject.findAll({
+                where: {
+                    mesubjectname: {
+                        [Op.in]: subjectsList
+                    }
+                },
+    
+            })
+    
+            const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
+    
+            if (registerSubject.length === 0) {
+                throw new Error('Some Probolem Occur In the Registration....');
+            }
+    
+    
+            res.status(200).json({
+                registration: true,
+                subjectRegister: true,
+            })
+    
+        }
+   
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
