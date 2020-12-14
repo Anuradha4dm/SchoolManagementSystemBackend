@@ -1972,7 +1972,7 @@ exports.postUpdateNotification = async (req, res, next) => {
 
         if (req.files.attachment != undefined) {
             if (notificationData.attachmentpath != null) {
-                console.log("data")
+
                 fs.unlink(notificationData.attachmentpath, error => {
                     if (error) {
                         throw error;

@@ -62,7 +62,7 @@ exports.getTest = (req, res, next) => {
 }
 
 
-exports.postNewStudentProfile = (req, res, next) => {
+exports.postNewStudentProfile = async (req, res, next) => {
     const errorArr = validationResult(req);
 
     if (!errorArr.isEmpty()) {
@@ -73,12 +73,23 @@ exports.postNewStudentProfile = (req, res, next) => {
         throw error;
     }
 
-    if (!req.file) {
-        var error = new Error("Validation Fail");
+
+    if (!req.files.imageData[0]) {
+        var error = new Error("No Image Is Added....");
         error.statusCode = 415;
 
         throw error;
     }
+
+
+
+    const classid = await Class.findOne({
+        where: {
+            grade: req.body.grade
+        },
+        attributes: ['classid']
+    })
+
 
 
     bcrypt.hash(req.body.password, 12)
@@ -93,7 +104,7 @@ exports.postNewStudentProfile = (req, res, next) => {
                 email: req.body.email,
                 age: parseInt(req.body.age),
                 startyear: parseInt(req.body.startyear),
-                imagepath: req.file.path,
+                imagepath: req.files.imageData[0].path.replace('\\', '/'),
                 birthdate: req.body.birthdate,
                 gender: req.body.gender,
                 addressline1: req.body.addressline1,
@@ -101,6 +112,7 @@ exports.postNewStudentProfile = (req, res, next) => {
                 addressline3: req.body.addressline3,
                 city: req.body.city,
                 mobile: req.body.mobile,
+                classClassid: classid.classid
             })
 
         })
@@ -125,21 +137,24 @@ exports.postNewStudentProfile = (req, res, next) => {
                 })
 
             })
-            res.status(200).json({
-                storeData: true,
-                postData: result
-            })
+
 
             return transporter.sendMail({
-                to: "ulmadushan96@gmail.com",
+                to: req.body.email,
                 from: "damithanuradha44@gmail.com",
                 subject: "Welcome To ABC School",
-                html: "<h1></h1>"
+                html: `<h1>Welcome To ABC School, Glad To See You Here</h1>
+                    <h3>This message is from school management system and make sure you receive this email first time you encounter the system</h3></br>
+                    <h3>Pleace make sure to update your profile by log in to the system and use following credintials for the login</h3></br>
+                    <h3>username:${req.body.userid}</h3></br>
+                    <h3>password:${req.body.password}</h3></br>
+                    <h3>Pleace make sure to change the password in the fist login</h3></br>
+                `
             })
 
         })
         .then(sendMail => {
-            console.log('mail send ');
+            res.status(200).json({ newstudent: true })
         })
         .catch(error => {
             if (error.statusCode) {
@@ -161,13 +176,17 @@ exports.getStudentNewId = (req, res, next) => {
         })
 
     }).catch(error => {
-        console.log(error)
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     })
 }
 
 
-exports.getAllCounts = async (req,res,next) => {
-    try{
+exports.getAllCounts = async (req, res, next) => {
+    try {
         const teacherCount = await Teacher.count();
         const studentCount = await Student.count();
         const nonCount = await NonAcademic.count();
@@ -180,14 +199,14 @@ exports.getAllCounts = async (req,res,next) => {
             classCount: classCount
         });
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-exports.postAddNewTeacher = async (req,res,next) => {
-    try{
-        const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
+exports.postAddNewTeacher = async (req, res, next) => {
+    try {
+        const hpassword = await bcrypt.hash(req.body.teacherid + 'pwd', 12);
 
         await Teacher.create({
             teacherid: req.body.teacherid,
@@ -215,15 +234,15 @@ exports.postAddNewTeacher = async (req,res,next) => {
             true
         );
 
-     }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-exports.postCreateNewClass = async (req,res,next) =>{
-    try{
-        const className=req.body.className;
-        const year=new Date().getFullYear();
+exports.postCreateNewClass = async (req, res, next) => {
+    try {
+        const className = req.body.className;
+        const year = new Date().getFullYear();
 
         await Class.create({
             year: year,
@@ -236,7 +255,7 @@ exports.postCreateNewClass = async (req,res,next) =>{
             true
         )
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }

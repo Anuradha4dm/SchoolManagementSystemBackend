@@ -77,6 +77,7 @@ const storageLocation = multer.diskStorage({
             callback(null, 'timetable')
         }
         if (file.fieldname === "imageData") {
+            console.log(file)
             callback(null, 'image');
         }
         if (file.fieldname === "attachment") {
@@ -110,7 +111,7 @@ app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name
 
 //include the body parser 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded())
+app.use(bodyParser.urlencoded());
 
 //notifiacatin remove 
 
@@ -134,7 +135,7 @@ app.use((error, req, res, next) => {
     res.status(statusCode).json({
         message: message
     })
-})
+});
 
 //these are the associations
 
@@ -144,14 +145,14 @@ Student.belongsToMany(Subject, {
     foreignKey: 'studentid',
     otherKey: 'subjectid'
 
-})
+});
 
 Subject.belongsToMany(Student, {
     through: 'subjectwrapper',
     otherKey: 'studentid',
     foreignKey: 'subjectid'
 
-})
+});
 
 Student.belongsToMany(Sports, {
     through: 'sportswrapper',
@@ -176,7 +177,7 @@ MainExamSubject.belongsToMany(Student, {
     through: 'mainexamsubjectwrapper',
     otherKey: 'studentid',
     foreignKey: 'mesubjectid'
-})
+});
 
 
 //1:1 
