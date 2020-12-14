@@ -295,6 +295,8 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
 
 //need to completed
 exports.postUpdateTeacherProfile = async (req, res, next) => {
+
+
     try {
         const teacherid = req.params.id;
         const firstname = req.body.firstname;
@@ -313,7 +315,8 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         const description = req.body.bescription;
         var imagepath;
 
-        if (req.files.imageData != undefined) {
+
+        if (req.files.imageData) {
 
             imagepath = req.files.imageData[0].path.replace('\\', '/');
 
@@ -497,13 +500,13 @@ exports.postGetAvarageDataForTheClass = async (req, res, next) => {
 
 }
 
-exports.sendTeacherNotifications = async (req,res,next) => {
-    try{
+exports.sendTeacherNotifications = async (req, res, next) => {
+    try {
         const data = req.body.data;
-        const notifications=[];
+        const notifications = [];
         const list = req.body.list;
 
-        if(data.type==5){
+        if (data.type == 5) {
             const notification = {
                 type: data.type,
                 from: req.body.teacherid,
@@ -512,12 +515,12 @@ exports.sendTeacherNotifications = async (req,res,next) => {
                 to: req.body.list,
                 title: data.title,
             }
-            
+
             await Notification.create(notification);
         }
-        else{
-           
-            list.forEach((element)=>{
+        else {
+
+            list.forEach((element) => {
                 notifications.push({
                     type: data.type,
                     from: req.body.teacherid,
@@ -527,18 +530,18 @@ exports.sendTeacherNotifications = async (req,res,next) => {
                     studentId: element,
                     title: data.title,
                 });
-             })
+            })
 
             await Notification.bulkCreate(notifications);
         }
-      
+
 
 
         res.status(200).json(
             true
         );
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }

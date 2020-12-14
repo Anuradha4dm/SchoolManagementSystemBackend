@@ -205,7 +205,16 @@ exports.getAllCounts = async (req, res, next) => {
 }
 
 exports.postAddNewTeacher = async (req, res, next) => {
+
     try {
+
+        if (!req.files.imageData[0]) {
+            var error = new Error("No Image Is Added....");
+            error.statusCode = 415;
+
+            throw error;
+        }
+
         const hpassword = await bcrypt.hash(req.body.teacherid + 'pwd', 12);
 
         await Teacher.create({
@@ -228,6 +237,7 @@ exports.postAddNewTeacher = async (req, res, next) => {
             mobile: req.body.mobile,
             numberofleaves: req.body.nbrofleaves,
             birthdate: req.body.birthdate,
+            imagepath: req.files.imageData[0].path.replace('\\', '/')
         });
 
         res.status(200).json(
