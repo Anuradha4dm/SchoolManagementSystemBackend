@@ -97,6 +97,17 @@ router.get('/get-advance-level-stream-register', nonacademicController.getAllPen
 //POST /nonacademic/respose-advance-levl-registration           =>this route is used to respond to advance level registration
 router.post('/respose-advance-levl-registration', nonacademicController.postHandleAdvanceLevelRequest);
 
+//used to change the class teacher
+router.post('/change-class-teacher',nonacademicController.changeClassTeacher);
+
+//used to get teacher by subjectname
+router.post('/get-teacher-by-subject',nonacademicController.getTeacherBySubject);
+
+//add teacher subject to database related to class
+router.post('/add-teacher-subject',nonacademicController.addTeacherSubject);
+
+//return subject list that register to the teachers classwise
+router.post('/get-class-registered-subjects',nonacademicController.getClassRegisteredSubjects)
 //GET /nonacademic/get-ol-student-list-for-registration   =>this route is used to get the infomation of the student for the registration
 router.get('/get-ol-student-list-for-registration', nonacademicController.getGetStudentListForRegistration);
 

@@ -179,8 +179,6 @@ exports.postEditStudentProfile = async (req, res, next) => {
 
 }
 
-
-
 async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream) {
 
 

@@ -22,6 +22,9 @@ const Subject = sequelize.define('subject', {
     mandatory: {
         type: DataTypes.BOOLEAN,
         allowNnull: false
+    },
+    teacherTeacherid: {
+        type: DataTypes.STRING
     }
 
 

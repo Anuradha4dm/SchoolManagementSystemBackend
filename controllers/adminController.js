@@ -184,9 +184,9 @@ exports.getStudentNewId = (req, res, next) => {
     })
 }
 
-
-exports.getAllCounts = async (req, res, next) => {
-    try {
+//return all count of students,teachers,non and classes
+exports.getAllCounts = async (req,res,next) => {
+    try{
         const teacherCount = await Teacher.count();
         const studentCount = await Student.count();
         const nonCount = await NonAcademic.count();
@@ -204,18 +204,16 @@ exports.getAllCounts = async (req, res, next) => {
     }
 }
 
-exports.postAddNewTeacher = async (req, res, next) => {
+//add new teacher details to the system
+exports.postAddNewTeacher = async (req,res,next) => {
+    try{
+        const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
+        var imagePath=null;
 
-    try {
+        if (req.files.imageData != undefined)
+            imagePath = req.files.imageData[0].path.replace('\\', '/');
 
-        if (!req.files.imageData[0]) {
-            var error = new Error("No Image Is Added....");
-            error.statusCode = 415;
 
-            throw error;
-        }
-
-        const hpassword = await bcrypt.hash(req.body.teacherid + 'pwd', 12);
 
         await Teacher.create({
             teacherid: req.body.teacherid,
@@ -237,7 +235,8 @@ exports.postAddNewTeacher = async (req, res, next) => {
             mobile: req.body.mobile,
             numberofleaves: req.body.nbrofleaves,
             birthdate: req.body.birthdate,
-            imagepath: req.files.imageData[0].path.replace('\\', '/')
+            subjects: req.body.subjectlist,
+            imagepath: imagePath
         });
 
         res.status(200).json(
@@ -249,23 +248,56 @@ exports.postAddNewTeacher = async (req, res, next) => {
     }
 }
 
-exports.postCreateNewClass = async (req, res, next) => {
-    try {
-        const className = req.body.className;
-        const year = new Date().getFullYear();
+//add new class details to the system
+exports.postCreateNewClass = async (req,res,next) =>{
+    try{
+        const className=req.body.className;
+        const year=new Date().getFullYear();
 
-        await Class.create({
-            year: year,
-            grade: className,
-            numofstudents: 0,
-            timetable: ''
+        const exist=await Class.findOne({
+            where:{
+                grade: className
+            }
+        });
+
+        if(exist){
+            res.status(200).json(
+                false
+            )
+        }
+        else{
+            await Class.create({
+                year: year,
+                grade: className,
+                numofstudents: 0,
+            });
+    
+            res.status(200).json(
+                true
+            );
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+//return all class list
+exports.getClassList = async (req,res,next) => {
+    try{
+        const classList=await Class.findAll({
+            attributes: ['classid','grade'],
+            include: {
+                model: Teacher,
+                attributes: ['teacherid','firstname','lastname']
+            }
         });
 
         res.status(200).json(
-            true
-        )
-    }
-    catch (error) {
+            classList
+        );
+
+    }catch(error){
         console.log(error);
     }
 }

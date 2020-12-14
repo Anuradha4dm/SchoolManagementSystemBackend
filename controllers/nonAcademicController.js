@@ -377,7 +377,6 @@ exports.postAddNotification = async (req, res, next) => {
 
 }
 
-
 exports.getGetClassTeacherData = async (req, res, next) => {
 
     const classname = req.params.class;
@@ -518,7 +517,7 @@ exports.postUpdateClassHandler = async (req, res, next) => {
         }
 
 
-
+/*
         if (req.files) {
             const getClass = await Class.findOne({
                 where: {
@@ -534,7 +533,7 @@ exports.postUpdateClassHandler = async (req, res, next) => {
 
 
         }
-
+*/
 
 
 
@@ -820,57 +819,71 @@ exports.postRegistratinMainExam = async (req, res, next) => {
             throw new Error('User Not Found....')
         }
 
-
-        if (!type) {
-            registration = await MainExamDetails.create({
-                indexnumber: indexnumber,
-                studentid: studentid,
+        const exits= await MainExamDetails.findOne({
+            where:{
                 meyear: year,
-                metype: false,
-                shy: shy,
-                class: studentclass
-            })
-
-
-        }
-        if (type) {
-            registration = await MainExamDetails.create({
-                indexnumber: indexnumber,
-                studentid: studentid,
-                meyear: year,
-                metype: true,
-                shy: shy,
-                stream: stream
-
-            })
-
-        }
-
-        if (registration === null) {
-            throw new Error('Registration Fail....');
-        }
-
-        const mainExamSubjectId = await MainExamSubject.findAll({
-            where: {
-                mesubjectname: {
-                    [Op.in]: subjectsList
-                }
-            },
-
+                studentid: studentid
+            }
         })
 
-        const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
-
-        if (registerSubject.length === 0) {
-            throw new Error('Some Probolem Occur In the Registration....');
+        if(exits!=null){
+            res.status(200).json(
+                false
+            );
         }
-
-
-        res.status(200).json({
-            registration: true,
-            subjectRegister: true,
-        })
-
+        else{
+            if (!type) {
+                registration = await MainExamDetails.create({
+                    indexnumber: indexnumber,
+                    studentid: studentid,
+                    meyear: year,
+                    metype: false,
+                    shy: shy,
+                    class: studentclass
+                })
+    
+    
+            }
+            if (type) {
+                registration = await MainExamDetails.create({
+                    indexnumber: indexnumber,
+                    studentid: studentid,
+                    meyear: year,
+                    metype: true,
+                    shy: shy,
+                    stream: stream,
+                    class: studentclass
+                })
+    
+            }
+    
+            if (registration === null) {
+                throw new Error('Registration Fail....');
+            }
+    
+            const mainExamSubjectId = await MainExamSubject.findAll({
+                where: {
+                    mesubjectname: {
+                        [Op.in]: subjectsList
+                    }
+                },
+    
+            })
+    
+            const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
+    
+            if (registerSubject.length === 0) {
+                throw new Error('Some Probolem Occur In the Registration....');
+            }
+    
+    
+            res.status(200).json({
+                registration: true,
+                subjectRegister: true,
+            })
+    
+        }
+   
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
@@ -1758,7 +1771,7 @@ exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
                 group: ['meyear']
             })
         }
-        if (result.toUpperCase() === "c") {
+        if (result.toUpperCase() === "C") {
             responseData = await MainExamDetails.count({
                 where: {
                     metype: true,
@@ -1886,7 +1899,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "B") {
@@ -1898,7 +1911,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "C") {
@@ -1910,7 +1923,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "S") {
@@ -1922,7 +1935,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
         if (result.toUpperCase() === "W") {
@@ -1934,7 +1947,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
             })
         }
 
@@ -2220,16 +2233,143 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
     }
 }
 
+exports.changeClassTeacher = async (req,res,next) => {
+    try{
+        const newTeacherID=req.body.newTeacherID;
+        const classID=req.body.classID;
+
+        const currentTeacher= await Teacher.findOne({
+            where:{
+                classClassid: classID
+            }
+        });
+        
+        if(currentTeacher){
+            currentTeacher.classClassid=null
+            await currentTeacher.save();
+        }
+
+        const newTeacher=await Teacher.findOne({
+            where:{
+                teacherid: newTeacherID
+            }
+        });
+
+        if(newTeacher){
+            newTeacher.classClassid=classID
+            await newTeacher.save()
+        }
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.getTeacherBySubject = async (req,res,next) =>{
+    try{
+        const subjectName=req.body.subjectName;
+
+        const teacherList=await Teacher.findAll({
+            where:{
+                subjects: {
+                    [Op.like]: '%'+subjectName+'%'
+                }
+            },
+            attributes:['teacherid']
+        })
+        console.log(subjectName)
+        res.status(200).json(
+            teacherList
+        )
+
+    }catch(error){
+        console.log(data);
+    }
+}
+
+exports.addTeacherSubject = async (req,res,next) =>{
+    try{
+        const teacherid=req.body.teacherid;
+        const subjectname=req.body.subjectname;
+        const grade=req.body.grade;
+        const info="This is the best "+subjectname;
+
+        const currentTeacher=await Subject.findOne({
+            where:{
+                grade:grade,
+                subjectname: subjectname
+            }
+        });
+
+        if(currentTeacher){
+            currentTeacher.teacherTeacherid=teacherid;
+            await currentTeacher.save();
+        }
+        else{
+            await Subject.create({
+                subjectname: subjectname,
+                grade: grade,
+                subjectinfo: info,
+                teacherTeacherid: teacherid
+            });
+        }
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error)
+    }
+}
+
+//return subject list that register to the teachers classwise
+exports.getClassRegisteredSubjects = async (req,res,next) =>{
+    try{
+        const grade= req.body.class;
+
+        const List=await Subject.findAll({
+            where:{
+                grade: grade
+            },
+            attributes: ['subjectname','teacherTeacherid']
+        });
+
+        res.status(200).json({
+            List
+        });
+
+    }catch(error){
+        console.log(error);
+    }
+}
 
 exports.getGetStudentListForRegistration = async (req, res, next) => {
 
-
     try {
+        var arr=[];
+
+        const classList = await Class.findAll({
+            where:{
+                grade:{
+                    [Op.like]: '11%'
+                }
+            },
+            attributes: ['classid']
+        });
+
+        classList.forEach((grade)=>{
+            arr.push(grade.classid)
+        });
 
         const studentListOrdinaryLevel = await Student.findAll({
             where: {
                 classClassid: {
-                    [Op.in]: [26, 27, 28, 29, 30]
+                    [Op.in]: arr 
                 }
             },
             attributes: ['_id', 'firstname', 'lastname'],
@@ -2249,14 +2389,26 @@ exports.getGetStudentListForRegistration = async (req, res, next) => {
 }
 
 exports.getGetStudentListForRegistrationAdvanceLvel = async (req, res, next) => {
-
-
     try {
+        var arr=[];
+
+        const classList = await Class.findAll({
+            where:{
+                grade:{
+                    [Op.like]: '13%'
+                }
+            },
+            attributes: ['classid']
+        });
+
+        classList.forEach((grade)=>{
+            arr.push(grade.classid)
+        });
 
         const studentListOrdinaryLevel = await Student.findAll({
             where: {
                 classClassid: {
-                    [Op.in]: [36, 37, 38, 39, 40]
+                    [Op.in]: arr
                 }
             },
             attributes: ['_id', 'firstname', 'lastname'],
