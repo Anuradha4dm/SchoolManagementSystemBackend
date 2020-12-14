@@ -309,6 +309,57 @@ exports.postAddNotification = async (req, res, next) => {
 
         }
 
+        if (parseInt(type) === 5) {
+
+            const classArray = req.body.classarray.split(',');
+
+            console.log(classArray)
+
+
+            const classid = await Class.findAll({
+                where: {
+                    grade: {
+                        [Op.in]: classArray
+                    }
+                },
+                attributes: ['classid']
+            });
+
+            const re_arrange_class = classid.map(classData => {
+                return classData.classid;
+            })
+
+            const studentlist = await Student.findAll({
+                where: {
+                    classClassid: {
+                        [Op.in]: re_arrange_class
+                    }
+                }
+            })
+
+
+            Promise.all(
+
+                studentlist.map(student => {
+                    return Notification.create({
+                        type: type,
+                        from: from,
+                        title: title,
+                        message: message,
+                        expire: expire,
+                        attachmentpath: path,
+                        publisher: nonacademicid,
+                        to: student._id,
+                        studentId: student._id
+
+                    })
+                })
+
+            )
+
+        }
+
+
         res.status(200).json({
             notification: true,
         })
