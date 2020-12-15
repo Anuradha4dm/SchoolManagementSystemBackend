@@ -1991,8 +1991,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                 where: {
                     meyear: year,
                     metype: true,
-                    addresultdone: false
-
+                    //addresultdone: false
                 },
                 attributes: ['indexnumber', 'studentid', 'stream', 'class'],
 
@@ -2008,7 +2007,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                 where: {
                     meyear: year,
                     metype: false,
-                    addresultdone: false
+                    //addresultdone: false
                 },
                 attributes: ['indexnumber', 'studentid', 'class'],
 
@@ -2324,7 +2323,6 @@ exports.addTeacherSubject = async (req,res,next) =>{
         mandatorySubjects.forEach((sub)=>{
             if(subjectname==sub){
                 value=1;
-                exit;
             }
         });
 
