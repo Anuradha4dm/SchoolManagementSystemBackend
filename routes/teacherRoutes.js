@@ -38,8 +38,11 @@ router.post("/add-qrcode-data", teacherController.postAddQRcodeRecode);
 //GET /teacher/mark-teacher-attendence   =>this route is used to mark the teacher attendence
 router.get("/mark-teacher-attendence", teacherController.getMarkTeacherAttendence)
 
-
 router.post('/update-teacher-profile/:id', teacherController.postUpdateTeacherProfile);
 
+//used when print reports
+router.post('/print-report',teacherController.printReport);
+
+router.post('/send-report',teacherController.sendEreport);
 
 module.exports = router;

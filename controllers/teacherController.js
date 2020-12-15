@@ -6,6 +6,7 @@ const StudentAttendence = require('../models/studentAttendaceModule');
 const QRdata = require('../models/QRdataModel');
 const Student = require("../models/studentModel");
 const Notification = require("../models/notification");
+const nodemailer = require('nodemailer');
 
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
@@ -646,7 +647,85 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
 
 }
 
+//this is used to print report of students term by term
+exports.printReport = async (req,res,next) => {
+    try{
+        const studentid=req.body.id;
+        const grade=req.body.grade;
+        const place=req.body.place;
 
+        var message="This is your Average.";
+
+        if(place<4){
+            message+="Great work,Keep going"
+        }
+        else if(place<25){
+            message+="Good,You can try to first places"
+        }
+        else{
+            message+="You have to work harder"
+        }
+
+        const student= await ResultSummary.findOne({
+            where:{
+                grade: grade,
+                _id: studentid
+            }
+        });
+
+        if(student.place!=null){
+            res.status(200).json(
+                false
+            );
+
+        }else{
+            student.place=place;
+            student.message=message;
+            await student.save();
+
+            res.status(200).json(
+                true
+            );
+        }
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.sendEreport = async (req,res,next) =>{
+    try{
+        var filename = req.files.report[0].path.replace('\\','/');
+
+        var transporter = nodemailer.createTransport({
+            service:'gmail',
+            auth:{
+                user:'ulmadushan96@gmail.com',
+                pass:''
+            }
+        });
+    
+        var mailOptions={
+            from:'ulmadushan96@gmail.com',
+            to:'fernando10290@usci.ruh.ac.lk',
+            subject:"To Inform Term Test Results",
+            text:"Here attached your this term results and details"
+           /* attachments:[
+                {path: filename}
+            ]*/
+        };
+
+        transporter.sendMail(mailOptions,(err,info)=>{
+            if(err)
+                console.log(err);
+        });
+
+      
+
+    }catch(error){
+        console.log(error);
+    }
+}
 
 
 

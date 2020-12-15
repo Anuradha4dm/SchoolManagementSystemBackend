@@ -739,7 +739,6 @@ exports.getGetSubjectListOfTheTeahcer = async (req, res, next) => {
     }
 }
 
-
 exports.postUpdateTeacherSubjectList = async (req, res, next) => {
 
 
@@ -892,6 +891,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
         next(error);
     }
 }
+
 exports.getGetPendingLeaveRequests = async (req, res, next) => {
 
     //0-half day
@@ -1578,12 +1578,21 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
 
     try {
         const year = parseInt(req.query.year);
-        const subjectid = parseInt(req.query.subjectid);
+        const subjectname = req.query.subjectname;
+        
+        const subjectid = await MainExamSubject.findOne({
+            where:{
+                mesubjectname: subjectname,
+                metype: false
+            },
+            attributes: ['mesubjectid']
+        });
+
 
         const Acount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "A"
             },
@@ -1726,7 +1735,8 @@ exports.getMainExamResults = async (req, res, next) => {
         const mainResults = await MainExamDetails.findAll({
             where: {
                 meyear: year,
-                metype: type
+                metype: type,
+                addresultdone: true
             },
             attributes: ['indexnumber', 'stream', 'zscore', 'districtrank', 'islandrank', 'shy', 'class', 'studentid', 'acount', 'bcount', 'ccount', 'scount', 'wcount']
         })
@@ -1818,12 +1828,20 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
 
     try {
         const year = parseInt(req.body.year);
-        const subjectid = parseInt(req.body.subjectid);
+        const subjectname = req.body.subjectname;
+
+        const subjectid = await MainExamSubject.findOne({
+            where:{
+                mesubjectname: subjectname,
+                metype: true
+            },
+            attributes: ['mesubjectid']
+        });
 
         const Acount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "A"
             },
@@ -2297,6 +2315,18 @@ exports.addTeacherSubject = async (req,res,next) =>{
         const subjectname=req.body.subjectname;
         const grade=req.body.grade;
         const info="This is the best "+subjectname;
+        var value=0;
+        
+        const mandatorySubjects=[
+            'mathematics','sinhala','science','history','english','religion',
+        ];
+
+        mandatorySubjects.forEach((sub)=>{
+            if(subjectname==sub){
+                value=1;
+                exit;
+            }
+        });
 
         const currentTeacher=await Subject.findOne({
             where:{
@@ -2314,7 +2344,8 @@ exports.addTeacherSubject = async (req,res,next) =>{
                 subjectname: subjectname,
                 grade: grade,
                 subjectinfo: info,
-                teacherTeacherid: teacherid
+                teacherTeacherid: teacherid,
+                mandatory: value
             });
         }
 
@@ -2432,7 +2463,7 @@ exports.getStudentSubjectData = async (req, res, next) => {
     try {
 
         const studentid = req.params.id;
-        const examtype = req.query.examtype == 0 ? 0 : 1;
+        const examtype = req.query.examtype == "ol" ? 0 : 1;
 
 
 
