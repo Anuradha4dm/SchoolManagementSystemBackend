@@ -3,17 +3,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const crypto = require('crypto')
+const nodemailer = require('nodemailer');
+const sendGridTransport = require('nodemailer-sendgrid-transport');
 
 //database models
 const Student = require('../models/studentModel');
 const Teacher = require('../models/teacherModel');
 const Admin = require('../models/adminModel');
 const NonAcademic = require('../models/nonAcademicModel');
-
-const nodemailer = require('nodemailer');
-const sendGridTransport = require('nodemailer-sendgrid-transport');
-const { nextTick } = require('process');
-
 
 const transporter = nodemailer.createTransport(sendGridTransport({
     auth: {
@@ -39,7 +36,6 @@ const transporter = nodemailer.createTransport(sendGridTransport({
 
 exports.postAuthentication = (req, res, next) => {
 
-    console.log(req.body);
     const _id = req.body._id;
     const password = req.body.password;
     var userid;
@@ -93,7 +89,6 @@ exports.postAuthentication = (req, res, next) => {
             .catch(error => {
                 if (!error.statusCode) {
                     error.statusCode = 401;
-
                 }
 
                 next(error);
@@ -147,9 +142,7 @@ exports.postAuthentication = (req, res, next) => {
             .catch(error => {
                 if (!error.statusCode) {
                     error.statusCode = 401;
-
                 }
-
                 next(error);
             })
 
@@ -315,8 +308,16 @@ exports.postResetPassword = async (req, res, next) => {
                         <p>Click  link <a href="http://localhost:4200/home" >Link</a></p>
                 
                 `
+            }, (error, info) => {
+                if (error) {
+                    if (error.statusCode) {
+                        error.statusCode = 500;
+                    }
+
+                    next(error);
+                }
             })
-            console.log(re)
+
 
         }
 

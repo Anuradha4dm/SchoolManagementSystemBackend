@@ -158,7 +158,11 @@ exports.postGetPreviousLeavesData = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 
 
@@ -318,15 +322,17 @@ exports.getGetNotifications = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 
 }
 
 
 exports.sendEmail = async (req, res, next) => {
-
-    console.log("data");
 
     const receiver = req.body.receiver;
     const sender = req.body.sender;
