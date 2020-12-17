@@ -66,6 +66,7 @@ app.use((req, res, next) => {
 app.use('/image', express.static(path.join(__dirname, 'image')));
 app.use('/timetable', express.static(path.join(__dirname, 'timetable')));
 app.use('/attachment', express.static(path.join(__dirname, 'attachment')));
+app.use('/report', express.static(path.join(__dirname, 'report')));
 
 //get the files 
 
@@ -84,8 +85,16 @@ const storageLocation = multer.diskStorage({
 
             callback(null, 'attachment')
         }
+
+        if (file.fieldname === "report") {
+
+            callback(null, 'report')
+        }
     },
     filename: (req, file, callback) => {
+
+
+
         callback(null, file.originalname);
     }
 
@@ -107,7 +116,7 @@ const filters = (req, file, callback) => {
 //this is for user profile
 // app.use(multer({ fileFilter: filters, storage: storageLocation }).single('imageData'));
 // app.use(multer().single('timetable'));
-app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name: 'timetable', maxCount: 1 }, { name: 'imageData', maxCount: 1 }, { name: "attachment", maxCount: 1 }]));
+app.use(multer({ fileFilter: filters, storage: storageLocation }).fields([{ name: 'timetable', maxCount: 1 }, { name: 'imageData', maxCount: 1 }, { name: "attachment", maxCount: 1 }, { name: 'report', maxCount: 1 }]));
 
 //include the body parser 
 app.use(bodyParser.json());
