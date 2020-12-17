@@ -269,6 +269,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             imagepath: teacherData.imagepath,
             startyear: teacherData.startyear,
             age: teacherData.age,
+            gender: teacherData.gender,
             role: teacherData.role,
             subjects: subjectData,
             timatable: teacherData.timetablepath,
@@ -276,7 +277,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             description: teacherData.description,
             mobile: teacherData.mobile,
             numberofleaves: teacherData.numberofleaves,
-            class: (teacherData.class === null) ? "No Class..." : teacherData.class.grade,
+            class: (teacherData.class === null) ? null : teacherData.class.grade,
             addressline1: teacherData.addressline1,
             addressline2: teacherData.addressline2,
             addressline3: teacherData.addressline3,
@@ -307,12 +308,13 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         const email = req.body.email;
         const mobile = req.body.mobile;
         const age = req.body.age;
+        const gender = req.body.gender;
         const addressline1 = req.body.addressline1;
         const addressline2 = req.body.addressline2;
         const addressline3 = req.body.addressline3;
         const city = req.body.city;
         const role = req.body.role;
-        const qualifications = req.body.qualifications;  //this is not array it need a string each qualification is separadte with comma
+        const qualifications = req.body.qualifications;
         const description = req.body.description;
         var imagepath;
 
@@ -339,6 +341,7 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         teacherData.email = email;
         teacherData.mobile = mobile;
         teacherData.age = age;
+        teacherData.gender = gender;
         teacherData.addressline1 = addressline1;
         teacherData.addressline2 = addressline2;
         teacherData.addressline3 = addressline3;

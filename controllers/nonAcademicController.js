@@ -2530,12 +2530,18 @@ exports.getNonAcademicProfileData = async (req, res, next) => {
             firstname: profileData.firstname,
             lastname: profileData.lastname,
             email: profileData.email,
+            mobile: profileData.mobile,
             imagepath: profileData.imagepath,
             age: profileData.age,
             role: profileData.role,
             qualifications: profileData.qualifications,
             description: profileData.description,
-
+            username: profileData.username,
+            gender: profileData.gender,
+            addressline1: profileData.addressline1,
+            addressline2: profileData.addressline2,
+            addressline3: profileData.addressline3,
+            city: profileData.city,
         })
 
 
@@ -2546,5 +2552,56 @@ exports.getNonAcademicProfileData = async (req, res, next) => {
         }
 
         next(error);
+    }
+}
+
+exports.updateNonAcademicProfile = async (req,res,next) => {
+    try{
+        const id = req.body.id;
+        var imagepath;
+
+        if (req.files.imageData) {
+
+            imagepath = req.files.imageData[0].path.replace('\\', '/');
+
+        } else {
+            imagepath = req.body.imagepath;
+        }
+
+        const nonAcademicData = await NonAcademic.findOne({
+            where:{
+                nonacademicid: id
+            }
+        });
+
+        if (!nonAcademicData) {
+            throw new Error("Cannot Found User....");
+        }
+
+        nonAcademicData.firstname = req.body.firstname;
+        nonAcademicData.lastname = req.body.lastname;
+        nonAcademicData.surname = req.body.surname;
+        nonAcademicData.username = req.body.username;
+        nonAcademicData.mobile = req.body.mobile;
+        nonAcademicData.email = req.body.email;
+        nonAcademicData.age = req.body.age;
+        nonAcademicData.gender = req.body.gender;
+        nonAcademicData.addressline1 = req.body.addressline1;
+        nonAcademicData.addressline2 = req.body.addressline2;
+        nonAcademicData.addressline3 = req.body.addressline3;
+        nonAcademicData.city = req.body.city;
+        nonAcademicData.role = req.body.role;
+        nonAcademicData.qualifications = req.body.qualifications;
+        nonAcademicData.description = req.body.description;
+        nonAcademicData.imagepath = req.body.imagepath;
+
+        await nonAcademicData.save();
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
     }
 }

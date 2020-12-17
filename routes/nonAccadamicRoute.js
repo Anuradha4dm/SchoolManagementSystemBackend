@@ -120,6 +120,7 @@ router.get('/get-student-registered-subjects/:id', nonacademicController.getStud
 //GET /nonacadecmic/profile-data        //profile data of the nonacademic staff
 router.get('/profile-data/:id', authenticationValidator.authUserChecking, nonacademicController.getNonAcademicProfileData);
 
-
+//used to update non academic profile
+router.post('/update-profile',nonacademicController.updateNonAcademicProfile);
 
 module.exports = router;
