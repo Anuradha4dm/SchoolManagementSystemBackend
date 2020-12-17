@@ -702,9 +702,13 @@ exports.printReport = async (req, res, next) => {
 
 exports.sendEreport = async (req, res, next) => {
     try {
+
         var filename = req.files.report[0].path.replace('\\', '/');
 
         var setURL = "http://localhost:3000/" + filename;
+
+        console.log()
+
         var mailOptions = {
             from: 'damithanuradha44@gmail.com',
             to: 'anuradhaaws44@gmail.com',
@@ -722,6 +726,10 @@ exports.sendEreport = async (req, res, next) => {
                 throw new Error('Internal Server Error...');
 
             }
+
+            res.status(200).json({
+                sendReport: true
+            })
 
         });
 
