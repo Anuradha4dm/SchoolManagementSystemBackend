@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendGridTransport = require('nodemailer-sendgrid-transport');
 
 
 const Student = require('../models/studentModel');
@@ -7,10 +9,8 @@ const DataModel = require("../models/dataModule");
 const Teacher = require('../models/teacherModel');
 const NonAcademic = require('../models/nonAcademicModel');
 const Class = require('../models/classModel');
-
-const nodemailer = require('nodemailer');
-const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Subject = require('../models/subjectModel');
+
 
 
 const transporter = nodemailer.createTransport(sendGridTransport({
@@ -185,8 +185,8 @@ exports.getStudentNewId = (req, res, next) => {
 }
 
 //return all count of students,teachers,non and classes
-exports.getAllCounts = async (req,res,next) => {
-    try{
+exports.getAllCounts = async (req, res, next) => {
+    try {
         const teacherCount = await Teacher.count();
         const studentCount = await Student.count();
         const nonCount = await NonAcademic.count();
@@ -200,15 +200,19 @@ exports.getAllCounts = async (req,res,next) => {
         });
 
     } catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 }
 
 //add new teacher details to the system
-exports.postAddNewTeacher = async (req,res,next) => {
-    try{
-        const hpassword=await bcrypt.hash(req.body.teacherid+'pwd',12);
-        var imagePath=null;
+exports.postAddNewTeacher = async (req, res, next) => {
+    try {
+        const hpassword = await bcrypt.hash(req.body.teacherid + 'pwd', 12);
+        var imagePath = null;
 
         if (req.files.imageData != undefined)
             imagePath = req.files.imageData[0].path.replace('\\', '/');
@@ -244,52 +248,60 @@ exports.postAddNewTeacher = async (req,res,next) => {
         );
 
     } catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 }
 
 //add new class details to the system
-exports.postCreateNewClass = async (req,res,next) =>{
-    try{
-        const className=req.body.className;
-        const year=new Date().getFullYear();
+exports.postCreateNewClass = async (req, res, next) => {
+    try {
+        const className = req.body.className;
+        const year = new Date().getFullYear();
 
-        const exist=await Class.findOne({
-            where:{
+        const exist = await Class.findOne({
+            where: {
                 grade: className
             }
         });
 
-        if(exist){
+        if (exist) {
             res.status(200).json(
                 false
             )
         }
-        else{
+        else {
             await Class.create({
                 year: year,
                 grade: className,
                 numofstudents: 0,
             });
-    
+
             res.status(200).json(
                 true
             );
         }
     }
     catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 }
 
 //return all class list
-exports.getClassList = async (req,res,next) => {
-    try{
-        const classList=await Class.findAll({
-            attributes: ['classid','grade'],
+exports.getClassList = async (req, res, next) => {
+    try {
+        const classList = await Class.findAll({
+            attributes: ['classid', 'grade'],
             include: {
                 model: Teacher,
-                attributes: ['teacherid','firstname','lastname']
+                attributes: ['teacherid', 'firstname', 'lastname']
             }
         });
 
@@ -297,7 +309,11 @@ exports.getClassList = async (req,res,next) => {
             classList
         );
 
-    }catch(error){
-        console.log(error);
+    } catch (error) {
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 }
