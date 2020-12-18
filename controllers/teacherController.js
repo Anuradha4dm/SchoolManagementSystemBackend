@@ -6,24 +6,17 @@ const StudentAttendence = require('../models/studentAttendaceModule');
 const QRdata = require('../models/QRdataModel');
 const Student = require("../models/studentModel");
 const Notification = require("../models/notification");
+const nodemailer = require('nodemailer');
 
 const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
 const QRData = require("../models/QRdataModel");
 
-const nodemailer = require('nodemailer');
-const sendGridTransport = require('nodemailer-sendgrid-transport');
-
 const { Op } = require("sequelize");
 const TeacherAttendence = require("../models/teacherAttendenceModel");
 
 
-const transporter = nodemailer.createTransport(sendGridTransport({
-    auth: {
 
-        api_key: process.env.API_KEY,
-    }
-}))
 
 exports.postAddStudentResults = async (req, res, next) => {
 
@@ -276,6 +269,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             imagepath: teacherData.imagepath,
             startyear: teacherData.startyear,
             age: teacherData.age,
+            gender: teacherData.gender,
             role: teacherData.role,
             subjects: subjectData,
             timatable: teacherData.timetablepath,
@@ -283,7 +277,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
             description: teacherData.description,
             mobile: teacherData.mobile,
             numberofleaves: teacherData.numberofleaves,
-            class: (teacherData.class === null) ? "No Class..." : teacherData.class.grade,
+            class: (teacherData.class === null) ? null : teacherData.class.grade,
             addressline1: teacherData.addressline1,
             addressline2: teacherData.addressline2,
             addressline3: teacherData.addressline3,
@@ -314,12 +308,13 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         const email = req.body.email;
         const mobile = req.body.mobile;
         const age = req.body.age;
+        const gender = req.body.gender;
         const addressline1 = req.body.addressline1;
         const addressline2 = req.body.addressline2;
         const addressline3 = req.body.addressline3;
         const city = req.body.city;
         const role = req.body.role;
-        const qualifications = req.body.qualifications;  //this is not array it need a string each qualification is separadte with comma
+        const qualifications = req.body.qualifications;
         const description = req.body.description;
         var imagepath;
 
@@ -346,6 +341,7 @@ exports.postUpdateTeacherProfile = async (req, res, next) => {
         teacherData.email = email;
         teacherData.mobile = mobile;
         teacherData.age = age;
+        teacherData.gender = gender;
         teacherData.addressline1 = addressline1;
         teacherData.addressline2 = addressline2;
         teacherData.addressline3 = addressline3;
@@ -511,7 +507,7 @@ exports.sendTeacherNotifications = async (req, res, next) => {
         const notifications = [];
         const list = req.body.list;
 
-        list.forEach((element) => {
+        list.forEach((element)=>{
             notifications.push({
                 type: 4,
                 from: req.body.teacherid,
@@ -524,7 +520,7 @@ exports.sendTeacherNotifications = async (req, res, next) => {
         });
 
         await Notification.bulkCreate(notifications);
-
+        
         res.status(200).json(
             true
         );
@@ -655,39 +651,39 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
 }
 
 //this is used to print report of students term by term
-exports.printReport = async (req, res, next) => {
-    try {
-        const studentid = req.body.id;
-        const grade = req.body.grade;
-        const place = req.body.place;
+exports.printReport = async (req,res,next) => {
+    try{
+        const studentid=req.body.id;
+        const grade=req.body.grade;
+        const place=req.body.place;
 
-        var message = "This is your Average.";
+        var message="This is your Average.";
 
-        if (place < 4) {
-            message += "Great work,Keep going"
+        if(place<4){
+            message+="Great work,Keep going"
         }
-        else if (place < 25) {
-            message += "Good,You can try to first places"
+        else if(place<25){
+            message+="Good,You can try to first places"
         }
-        else {
-            message += "You have to work harder"
+        else{
+            message+="You have to work harder"
         }
 
-        const student = await ResultSummary.findOne({
-            where: {
+        const student= await ResultSummary.findOne({
+            where:{
                 grade: grade,
                 _id: studentid
             }
         });
 
-        if (student.place != null) {
+        if(student.place!=null){
             res.status(200).json(
                 false
             );
 
-        } else {
-            student.place = place;
-            student.message = message;
+        }else{
+            student.place=place;
+            student.message=message;
             await student.save();
 
             res.status(200).json(
@@ -695,51 +691,42 @@ exports.printReport = async (req, res, next) => {
             );
         }
 
-    } catch (error) {
+    }catch(error){
         console.log(error);
     }
 }
 
-exports.sendEreport = async (req, res, next) => {
-    try {
+exports.sendEreport = async (req,res,next) =>{
+    try{
+        var filename = req.files.report[0].path.replace('\\','/');
 
-        var filename = req.files.report[0].path.replace('\\', '/');
-
-        var setURL = "http://localhost:3000/" + filename;
-
-        console.log()
-
-        var mailOptions = {
-            from: 'damithanuradha44@gmail.com',
-            to: 'anuradhaaws44@gmail.com',
-            subject: "To Inform Term Test Results",
-
-            html: `
-                <h3>Click The Link To View Report</h3>
-                <a href='${setURL}' >View Report</a>
-            `
-
+        var transporter = nodemailer.createTransport({
+            service:'gmail',
+            auth:{
+                user:'ulmadushan96@gmail.com',
+                pass:'ulmadushan96'
+            }
+        });
+    
+        var mailOptions={
+            from:'ulmadushan96@gmail.com',
+            to:'fernando10290@usci.ruh.ac.lk',
+            subject:"To Inform Term Test Results",
+            text:"Here attached your this term results and details",
+            attachments:[
+                {path: filename}
+            ]
         };
 
-        transporter.sendMail(mailOptions, (err, info) => {
-            if (err) {
-                throw new Error('Internal Server Error...');
-
-            }
-
-            res.status(200).json({
-                sendReport: true
-            })
-
+        transporter.sendMail(mailOptions,(err,info)=>{
+            if(err)
+                console.log(err);
         });
 
+      
 
-
-    } catch (error) {
-        if (error.statusCode) {
-            error.statusCode = 500;
-        }
-        next(error);
+    }catch(error){
+        console.log(error);
     }
 }
 
