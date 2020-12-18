@@ -1,7 +1,7 @@
-
 const fs = require('fs');
-
 const { Op } = require('sequelize');
+const nodemailer = require('nodemailer');
+const sendGridTransport = require('nodemailer-sendgrid-transport');
 
 const Class = require('../models/classModel');
 const Leave = require('../models/leaveRequest');
@@ -16,7 +16,13 @@ const Student = require('../models/studentModel');
 const Subject = require('../models/subjectModel');
 const SubjectWrapper = require('../models/subjectWrapper');
 const Teacher = require('../models/teacherModel');
-const { resetPasswordChecking } = require('../validators/authenticationValidation');
+
+const transporter = nodemailer.createTransport(sendGridTransport({
+    auth: {
+
+        api_key: process.env.API_KEY,
+    }
+}))
 
 //Use to get pending leave data
 exports.getGetPengingRequestList = async (req, res, next) => {
@@ -66,7 +72,11 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 
 
@@ -87,6 +97,18 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             //this should modify to send email including this.message 
             //send notification that the requese is cansel
             //retur from here
+
+            transporter.sendMail({
+                to: "ulmadushan96@gmail.com",
+                from: "damithanuradha44@gmail.com",
+                subject: "Welcome To ABC School",
+                html: "<h1></h1>"
+            }).then(re => {
+                console.log("message send success")
+            })
+                .catch(err => {
+                    throw new Error("Email Sending Error...")
+                })
         }
 
         const leave = await Leave.findOne({
@@ -517,23 +539,23 @@ exports.postUpdateClassHandler = async (req, res, next) => {
         }
 
 
-/*
-        if (req.files) {
-            const getClass = await Class.findOne({
-                where: {
-                    grade: classname,
+        /*
+                if (req.files) {
+                    const getClass = await Class.findOne({
+                        where: {
+                            grade: classname,
+                        }
+                    });
+        
+                    var setFilePath = req.files.timetable[0].path;
+        
+                    getClass.timetable = setFilePath.replace('\\', '/');
+        
+                    await getClass.save();
+        
+        
                 }
-            });
-
-            var setFilePath = req.files.timetable[0].path;
-
-            getClass.timetable = setFilePath.replace('\\', '/');
-
-            await getClass.save();
-
-
-        }
-*/
+        */
 
 
 
@@ -818,19 +840,19 @@ exports.postRegistratinMainExam = async (req, res, next) => {
             throw new Error('User Not Found....')
         }
 
-        const exits= await MainExamDetails.findOne({
-            where:{
+        const exits = await MainExamDetails.findOne({
+            where: {
                 meyear: year,
                 studentid: studentid
             }
         })
 
-        if(exits!=null){
+        if (exits != null) {
             res.status(200).json(
                 false
             );
         }
-        else{
+        else {
             if (!type) {
                 registration = await MainExamDetails.create({
                     indexnumber: indexnumber,
@@ -840,8 +862,8 @@ exports.postRegistratinMainExam = async (req, res, next) => {
                     shy: shy,
                     class: studentclass
                 })
-    
-    
+
+
             }
             if (type) {
                 registration = await MainExamDetails.create({
@@ -853,36 +875,36 @@ exports.postRegistratinMainExam = async (req, res, next) => {
                     stream: stream,
                     class: studentclass
                 })
-    
+
             }
-    
+
             if (registration === null) {
                 throw new Error('Registration Fail....');
             }
-    
+
             const mainExamSubjectId = await MainExamSubject.findAll({
                 where: {
                     mesubjectname: {
                         [Op.in]: subjectsList
                     }
                 },
-    
+
             })
-    
+
             const registerSubject = await studentData.addMainexamsubjects(mainExamSubjectId, { through: { year: year, metype: type } });
-    
+
             if (registerSubject.length === 0) {
                 throw new Error('Some Probolem Occur In the Registration....');
             }
-    
-    
+
+
             res.status(200).json({
                 registration: true,
                 subjectRegister: true,
             })
-    
+
         }
-   
+
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
@@ -1579,9 +1601,9 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
     try {
         const year = parseInt(req.query.year);
         const subjectname = req.query.subjectname;
-        
+
         const subjectid = await MainExamSubject.findOne({
-            where:{
+            where: {
                 mesubjectname: subjectname,
                 metype: false
             },
@@ -1831,7 +1853,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const subjectname = req.body.subjectname;
 
         const subjectid = await MainExamSubject.findOne({
-            where:{
+            where: {
                 mesubjectname: subjectname,
                 metype: true
             },
@@ -1917,7 +1939,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank', 'zscore']
             })
         }
         if (result.toUpperCase() === "B") {
@@ -1929,7 +1951,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank', 'zscore']
             })
         }
         if (result.toUpperCase() === "C") {
@@ -1941,7 +1963,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank', 'zscore']
             })
         }
         if (result.toUpperCase() === "S") {
@@ -1953,7 +1975,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank', 'zscore']
             })
         }
         if (result.toUpperCase() === "W") {
@@ -1965,7 +1987,7 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
                     stream: stream,
 
                 },
-                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank','zscore']
+                attributes: ['indexnumber', 'class', 'studentid', 'islandrank', 'districtrank', 'zscore']
             })
         }
 
@@ -2250,30 +2272,30 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
     }
 }
 
-exports.changeClassTeacher = async (req,res,next) => {
-    try{
-        const newTeacherID=req.body.newTeacherID;
-        const classID=req.body.classID;
+exports.changeClassTeacher = async (req, res, next) => {
+    try {
+        const newTeacherID = req.body.newTeacherID;
+        const classID = req.body.classID;
 
-        const currentTeacher= await Teacher.findOne({
-            where:{
+        const currentTeacher = await Teacher.findOne({
+            where: {
                 classClassid: classID
             }
         });
-        
-        if(currentTeacher){
-            currentTeacher.classClassid=null
+
+        if (currentTeacher) {
+            currentTeacher.classClassid = null
             await currentTeacher.save();
         }
 
-        const newTeacher=await Teacher.findOne({
-            where:{
+        const newTeacher = await Teacher.findOne({
+            where: {
                 teacherid: newTeacherID
             }
         });
 
-        if(newTeacher){
-            newTeacher.classClassid=classID
+        if (newTeacher) {
+            newTeacher.classClassid = classID
             await newTeacher.save()
         }
 
@@ -2281,63 +2303,63 @@ exports.changeClassTeacher = async (req,res,next) => {
             true
         );
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-exports.getTeacherBySubject = async (req,res,next) =>{
-    try{
-        const subjectName=req.body.subjectName;
+exports.getTeacherBySubject = async (req, res, next) => {
+    try {
+        const subjectName = req.body.subjectName;
 
-        const teacherList=await Teacher.findAll({
-            where:{
+        const teacherList = await Teacher.findAll({
+            where: {
                 subjects: {
-                    [Op.like]: '%'+subjectName+'%'
+                    [Op.like]: '%' + subjectName + '%'
                 }
             },
-            attributes:['teacherid']
+            attributes: ['teacherid']
         })
         console.log(subjectName)
         res.status(200).json(
             teacherList
         )
 
-    }catch(error){
+    } catch (error) {
         console.log(data);
     }
 }
 
-exports.addTeacherSubject = async (req,res,next) =>{
-    try{
-        const teacherid=req.body.teacherid;
-        const subjectname=req.body.subjectname;
-        const grade=req.body.grade;
-        const info="This is the best "+subjectname;
-        var value=0;
-        
-        const mandatorySubjects=[
-            'mathematics','sinhala','science','history','english','religion',
+exports.addTeacherSubject = async (req, res, next) => {
+    try {
+        const teacherid = req.body.teacherid;
+        const subjectname = req.body.subjectname;
+        const grade = req.body.grade;
+        const info = "This is the best " + subjectname;
+        var value = 0;
+
+        const mandatorySubjects = [
+            'mathematics', 'sinhala', 'science', 'history', 'english', 'religion',
         ];
 
-        mandatorySubjects.forEach((sub)=>{
-            if(subjectname==sub){
-                value=1;
+        mandatorySubjects.forEach((sub) => {
+            if (subjectname == sub) {
+                value = 1;
             }
         });
 
-        const currentTeacher=await Subject.findOne({
-            where:{
-                grade:grade,
+        const currentTeacher = await Subject.findOne({
+            where: {
+                grade: grade,
                 subjectname: subjectname
             }
         });
 
-        if(currentTeacher){
-            currentTeacher.teacherTeacherid=teacherid;
+        if (currentTeacher) {
+            currentTeacher.teacherTeacherid = teacherid;
             await currentTeacher.save();
         }
-        else{
+        else {
             await Subject.create({
                 subjectname: subjectname,
                 grade: grade,
@@ -2351,28 +2373,28 @@ exports.addTeacherSubject = async (req,res,next) =>{
             true
         );
 
-    }catch(error){
+    } catch (error) {
         console.log(error)
     }
 }
 
 //return subject list that register to the teachers classwise
-exports.getClassRegisteredSubjects = async (req,res,next) =>{
-    try{
-        const grade= req.body.class;
+exports.getClassRegisteredSubjects = async (req, res, next) => {
+    try {
+        const grade = req.body.class;
 
-        const List=await Subject.findAll({
-            where:{
+        const List = await Subject.findAll({
+            where: {
                 grade: grade
             },
-            attributes: ['subjectname','teacherTeacherid']
+            attributes: ['subjectname', 'teacherTeacherid']
         });
 
         res.status(200).json({
             List
         });
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
@@ -2380,25 +2402,25 @@ exports.getClassRegisteredSubjects = async (req,res,next) =>{
 exports.getGetStudentListForRegistration = async (req, res, next) => {
 
     try {
-        var arr=[];
+        var arr = [];
 
         const classList = await Class.findAll({
-            where:{
-                grade:{
+            where: {
+                grade: {
                     [Op.like]: '11%'
                 }
             },
             attributes: ['classid']
         });
 
-        classList.forEach((grade)=>{
+        classList.forEach((grade) => {
             arr.push(grade.classid)
         });
 
         const studentListOrdinaryLevel = await Student.findAll({
             where: {
                 classClassid: {
-                    [Op.in]: arr 
+                    [Op.in]: arr
                 }
             },
             attributes: ['_id', 'firstname', 'lastname'],
@@ -2419,18 +2441,18 @@ exports.getGetStudentListForRegistration = async (req, res, next) => {
 
 exports.getGetStudentListForRegistrationAdvanceLvel = async (req, res, next) => {
     try {
-        var arr=[];
+        var arr = [];
 
         const classList = await Class.findAll({
-            where:{
-                grade:{
+            where: {
+                grade: {
                     [Op.like]: '13%'
                 }
             },
             attributes: ['classid']
         });
 
-        classList.forEach((grade)=>{
+        classList.forEach((grade) => {
             arr.push(grade.classid)
         });
 

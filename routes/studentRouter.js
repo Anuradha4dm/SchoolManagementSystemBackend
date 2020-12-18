@@ -51,6 +51,8 @@ router.post('/add-sports', studentController.postAddSportsToStudent);
 //GET /student/get-sports
 router.get('/get-sports/:id', studentController.getGetStudentSports);
 
+router.get('/get-report', studentController.getViewReport)
+
 module.exports = router;
 
 

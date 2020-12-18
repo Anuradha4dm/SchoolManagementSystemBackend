@@ -704,7 +704,7 @@ exports.sendEreport = async (req,res,next) =>{
             service:'gmail',
             auth:{
                 user:'ulmadushan96@gmail.com',
-                pass:''
+                pass:'ulmadushan96'
             }
         });
     
@@ -712,10 +712,10 @@ exports.sendEreport = async (req,res,next) =>{
             from:'ulmadushan96@gmail.com',
             to:'fernando10290@usci.ruh.ac.lk',
             subject:"To Inform Term Test Results",
-            text:"Here attached your this term results and details"
-           /* attachments:[
+            text:"Here attached your this term results and details",
+            attachments:[
                 {path: filename}
-            ]*/
+            ]
         };
 
         transporter.sendMail(mailOptions,(err,info)=>{

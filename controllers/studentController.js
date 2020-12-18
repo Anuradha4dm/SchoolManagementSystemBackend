@@ -1,4 +1,5 @@
 const Student = require('../models/studentModel');
+const jwt = require('jsonwebtoken');
 const { Op, } = require("sequelize");
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
@@ -903,6 +904,14 @@ exports.getGetStudentSports = async (req, res, next) => {
 
         console.log(error)
     }
+
+
+}
+
+exports.getViewReport = async (req, res, next) => {
+
+
+    //later
 
 
 }
