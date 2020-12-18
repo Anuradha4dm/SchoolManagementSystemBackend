@@ -712,7 +712,7 @@ exports.sendEreport = async (req,res,next) =>{
             from:'ulmadushan96@gmail.com',
             to:'fernando10290@usci.ruh.ac.lk',
             subject:"To Inform Term Test Results",
-            text:"Here attached your this term results and details",
+            text:"Here attached your report of this term",
             attachments:[
                 {path: filename}
             ]
