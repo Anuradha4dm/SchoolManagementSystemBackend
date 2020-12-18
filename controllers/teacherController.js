@@ -698,19 +698,27 @@ exports.printReport = async (req,res,next) => {
 
 exports.sendEreport = async (req,res,next) =>{
     try{
-        var filename = req.files.report[0].path.replace('\\','/');
-
         var transporter = nodemailer.createTransport({
             service:'gmail',
             auth:{
-                user:'ulmadushan96@gmail.com',
-                pass:'ulmadushan96'
+                user:'newschoolmanagement20@gmail.com',
+                pass:'Madmax@123'
             }
+        });
+        
+        var filename = req.files.report[0].path.replace('\\','/');
+        const id=req.body.id;
+
+        const student = await Student.findOne({
+            where:{
+                _id: id
+            },
+            attributes: ['email']
         });
     
         var mailOptions={
-            from:'ulmadushan96@gmail.com',
-            to:'fernando10290@usci.ruh.ac.lk',
+            from:'newschoolmanagement20@gmail.com',
+            to: student.email,
             subject:"To Inform Term Test Results",
             text:"Here attached your report of this term",
             attachments:[
@@ -721,9 +729,12 @@ exports.sendEreport = async (req,res,next) =>{
         transporter.sendMail(mailOptions,(err,info)=>{
             if(err)
                 console.log(err);
+            else{
+                res.status(200).json(
+                    true
+                );
+            }
         });
-
-      
 
     }catch(error){
         console.log(error);
