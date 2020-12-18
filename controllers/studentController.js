@@ -106,7 +106,7 @@ exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
 
-    if (req.userId != _id) {
+    if (req.userId != id) {
         throw new Error('You Are Not Allow To Access....')
 
     }
@@ -291,8 +291,6 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
     var opSubjectname = req.body.optional1;  //in primary case there is only one option to take the subject id we get subject name
     var grade = req.body.grade;
 
-
-
     try {
         const student = await Student.findOne({                             //find the student there check is already submit the registration
             where: {
@@ -302,7 +300,7 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
             }
         });
         if (!student) {
-            var error = new Error("User Can Not Find OR Have already Registered");
+            var error = new Error("You Have already Registered");
             error.statusCode = 501;
             throw error;
         }
@@ -315,6 +313,7 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
                 ]
             }
         });
+
 
         if (addSubjectArr.length == 0) {
             var error = new Error("Subjects are not foundable");
@@ -343,6 +342,9 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
+        }
+        if (!error.message) {
+            error.message = "Internal Server Error....";
         }
 
         next(error);
@@ -827,12 +829,12 @@ exports.postGetAttendenceMainChartData = async (req, res, next) => {
 
 }
 
+//this is used to add sports to student ++++++checked
 exports.postAddSportsToStudent = async (req, res, next) => {
 
     const studentid = req.body.studentid;
     const category = req.body.category;
     const sports = req.body.sports;
-
 
     try {
         const student = await Student.findOne({
@@ -847,21 +849,27 @@ exports.postAddSportsToStudent = async (req, res, next) => {
 
         const sportsList = await Sports.findAll({
             where: {
-                sportname: [sports]
+                sportname: {
+                    [Op.in]: [sports]
+                }
             }
         })
 
-        sportsList.forEach(async sport => {
+        await Promise.all(
 
-            await sport.addStudent(student, {
-                through: {
-                    allow: false,
-                    category: category
-                }
+            sportsList.map(async sport => {
+
+                await sport.addStudent(student, {
+                    through: {
+                        allow: false,
+                        category: category
+                    }
+                })
+
+
             })
 
-
-        });
+        )
 
 
         res.status(200).json({
@@ -869,7 +877,14 @@ exports.postAddSportsToStudent = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log(error);
+        if (error.statusCode) {
+            error.statusCode = 500;
+        }
+        if (error.message) {
+            error.message = 500;
+        }
+
+        next(error);
     }
 
 }
