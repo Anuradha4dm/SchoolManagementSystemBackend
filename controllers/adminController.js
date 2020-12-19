@@ -299,7 +299,7 @@ exports.postCreateNewClass = async (req, res, next) => {
 exports.getClassList = async (req, res, next) => {
     try {
         const classList = await Class.findAll({
-            attributes: ['classid', 'grade'],
+            attributes: ['classid', 'grade','timetable'],
             include: {
                 model: Teacher,
                 attributes: ['teacherid', 'firstname', 'lastname']

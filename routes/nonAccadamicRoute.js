@@ -123,4 +123,7 @@ router.get('/profile-data/:id', authenticationValidator.authUserChecking, nonaca
 //used to update non academic profile
 router.post('/update-profile',nonacademicController.updateNonAcademicProfile);
 
+//used to add timetables for teachers and classes
+router.post('/add-timetable',nonacademicController.addTimetable);
+
 module.exports = router;

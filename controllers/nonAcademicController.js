@@ -2318,7 +2318,7 @@ exports.getTeacherBySubject = async (req, res, next) => {
                     [Op.like]: '%' + subjectName + '%'
                 }
             },
-            attributes: ['teacherid']
+            attributes: ['teacherid','firstname','lastname','surname','timetablepath']
         })
         console.log(subjectName)
         res.status(200).json(
@@ -2627,3 +2627,45 @@ exports.updateNonAcademicProfile = async (req,res,next) => {
         console.log(error);
     }
 }
+
+exports.addTimetable = async (req,res,next) => {
+    try{
+        const type=req.body.type;
+        const identity=req.body.id;
+
+        if(req.files.timetable){
+            var filename=req.files.timetable[0].path.replace('\\','/');
+        }
+        
+        if(type=="class"){
+            const grade=await Class.findOne({
+                where:{
+                    grade: identity
+                }
+            });
+
+            grade.timetable=filename;
+
+            await grade.save();
+        }
+        
+        if(type=="teacher"){
+            const teacher=await Teacher.findOne({
+                where:{
+                    teacherid: identity
+                }
+            });
+
+            teacher.timetablepath=filename;
+
+            await teacher.save();
+        }
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
+    }
+} 

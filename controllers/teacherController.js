@@ -295,9 +295,7 @@ exports.getGetTeacherDataForProfile = async (req, res, next) => {
     }
 }
 
-//need to completed
 exports.postUpdateTeacherProfile = async (req, res, next) => {
-
 
     try {
         const teacherid = req.params.id;
