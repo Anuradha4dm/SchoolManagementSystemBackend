@@ -1,5 +1,7 @@
 const stripe = require('stripe');
 const { Op } = require('sequelize');
+const sendGridTransport = require('nodemailer-sendgrid-transport');
+const nodemailer = require('nodemailer');
 
 
 const Teacher = require('../models/teacherModel');
@@ -7,11 +9,6 @@ const NonAcademic = require('../models/nonAcademicModel');
 const LeaveRequest = require('../models/leaveRequest');
 const Notification = require('../models/notification');
 
-
-
-
-const nodemailer = require('nodemailer');
-const sendGridTransport = require('nodemailer-sendgrid-transport');
 const Student = require('../models/studentModel');
 
 
@@ -149,7 +146,7 @@ exports.postGetPreviousLeavesData = async (req, res, next) => {
         // responseData.email = leaveData.teacher.email;
         // responseData.mobile = leaveData.teacher.mobile;
 
-        console.log(leaveData.teacher)
+
 
         res.status(200).json({
             leaveData: responseData
@@ -254,10 +251,6 @@ exports.postNewLeaveRequest = async (req, res, next) => {
         next(error);
     }
 
-
-
-
-
 }
 
 
@@ -290,8 +283,6 @@ exports.getGetNotifications = async (req, res, next) => {
                     },
                 },
                 order: [['createdAt', 'ASC']]
-
-
             })
 
 
@@ -309,7 +300,6 @@ exports.getGetNotifications = async (req, res, next) => {
                     },
                 },
                 order: [['createdAt', 'ASC']]
-
 
             })
 
