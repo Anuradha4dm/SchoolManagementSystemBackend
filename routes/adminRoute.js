@@ -21,9 +21,12 @@ router.post('/add-new-teacher',adminController.postAddNewTeacher);
 router.get('/get-all-count',adminController.getAllCounts);
 
 //to create new class
-router.post('/create-new-class',adminController.postCreateNewClass)
+router.post('/create-new-class',adminController.postCreateNewClass);
 
 //return class list and data
-router.get('/get-class-list',adminController.getClassList)
+router.get('/get-class-list',adminController.getClassList);
+
+//used to create new non academic
+router.post('/create-non-academic',adminController.createNonAcademic);
 
 module.exports = router;

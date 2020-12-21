@@ -19,7 +19,13 @@ const NonAcademic = sequelize.define("nonacademic", {
     lastname: {
         type: DataTypes.STRING
     },
+    username: {
+        type: DataTypes.STRING
+    },
     email: {
+        type: DataTypes.STRING
+    },
+    mobile: {
         type: DataTypes.STRING
     },
     password: {
@@ -33,6 +39,26 @@ const NonAcademic = sequelize.define("nonacademic", {
     },
     role: {
         type: DataTypes.STRING
+    },
+    gender: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    addressline1: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    addressline2: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    addressline3: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     qualifications: {
         type: DataTypes.STRING

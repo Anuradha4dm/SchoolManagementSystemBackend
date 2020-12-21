@@ -230,6 +230,7 @@ exports.postAddNewTeacher = async (req, res, next) => {
             startyear: req.body.startyear,
             age: req.body.age,
             description: "I am the best Teacher",
+            qualifications: "Qualifications are not specified",
             gender: req.body.gender,
             addressline1: req.body.addressline1,
             addressline2: req.body.addressline2,
@@ -298,7 +299,7 @@ exports.postCreateNewClass = async (req, res, next) => {
 exports.getClassList = async (req, res, next) => {
     try {
         const classList = await Class.findAll({
-            attributes: ['classid', 'grade'],
+            attributes: ['classid', 'grade','timetable'],
             include: {
                 model: Teacher,
                 attributes: ['teacherid', 'firstname', 'lastname']
@@ -315,5 +316,43 @@ exports.getClassList = async (req, res, next) => {
         }
 
         next(error);
+    }
+}
+
+exports.createNonAcademic = async (req,res,next) => {
+    try{
+        const hpassword=await bcrypt.hash(req.body.id+'pwd',12);
+        var imagepath=null;
+        
+        if (req.files.imageData != undefined)
+            imagepath = req.files.imageData[0].path.replace('\\', '/');
+
+        await NonAcademic.create({
+            nonacademicid: req.body.id,
+            surname: req.body.surname,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            username: req.body.username,
+            email: req.body.email,
+            mobile: req.body.mobile,
+            age: req.body.age,
+            description: "I am the best non-Academic",
+            qualifications: "Qualifications are not specified",
+            password: hpassword,
+            imagepath: imagepath,
+            role: req.body.role,
+            gender: req.body.gender,
+            addressline1: req.body.addressline1,
+            addressline2: req.body.addressline2,
+            addressline3: req.body.addressline3,
+            city: req.body.city,
+        });
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
     }
 }
