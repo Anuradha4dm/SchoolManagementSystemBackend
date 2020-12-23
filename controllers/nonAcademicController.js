@@ -72,8 +72,11 @@ exports.getGetPengingRequestList = async (req, res, next) => {
 
 
     } catch (error) {
-        if (error.statusCode) {
+        if (!error.statusCode) {
             error.statusCode = 500;
+        }
+        if (!error.message) {
+            error.message = "Internal Server Error..."
         }
 
         next(error);
@@ -102,7 +105,9 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
                 to: "ulmadushan96@gmail.com",
                 from: "damithanuradha44@gmail.com",
                 subject: "Welcome To ABC School",
-                html: "<h1></h1>"
+                html: `<h1>Requsest Is Reject</h1>
+                        <h2>At the time your requset can not made because ${message}</h2>
+                `
             }).then(re => {
                 console.log("message send success")
             })
@@ -230,7 +235,6 @@ exports.postAddNotification = async (req, res, next) => {
 
     try {
 
-
         if (parseInt(type) === 0 || parseInt(type) === 1 || parseInt(type) === 3) {
             const newNotification = await Notification.create({
                 type: type,
@@ -243,9 +247,6 @@ exports.postAddNotification = async (req, res, next) => {
                 to: to
 
             });
-
-
-
         }
 
         if (parseInt(type) === 2) {
@@ -266,6 +267,7 @@ exports.postAddNotification = async (req, res, next) => {
                     error.statusCode = 500;
                     throw error;
                 }
+
                 await Notification.create({
                     type: type,
                     from: from,
@@ -480,8 +482,6 @@ exports.postUpdateClassHandler = async (req, res, next) => {
                 },
 
             })
-            console.log(pastClassTeacher)
-
             const classid = pastClassTeacher.classClassid;
 
             pastClassTeacher.classClassid = null;
@@ -547,24 +547,27 @@ exports.postUpdateClassHandler = async (req, res, next) => {
         */
 
 
+        res.status(200).json({
+            success: true
+        })
 
     } catch (error) {
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 
 
 
-    res.status(200).json({
-        success: true
-    })
 
 }
 
 exports.getGetClassOfAStudent = async (req, res, next) => {
 
     const studentid = req.params.id;
-
-
 
     try {
 
@@ -576,8 +579,6 @@ exports.getGetClassOfAStudent = async (req, res, next) => {
 
         })
 
-
-
         res.status(200).json({
             grade: classData.class.dataValues.grade,
             gradeid: classData.class.dataValues.classid,
@@ -585,7 +586,12 @@ exports.getGetClassOfAStudent = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 
 }
@@ -645,7 +651,6 @@ exports.postUpdateStudentClass = async (req, res, next) => {
 exports.getResetStudentSubjects = async (req, res, next) => {
 
     const studentid = req.params.id;
-
 
     try {
 
@@ -826,7 +831,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
         });
 
         if (studentData === null) {
-            throw new Error('User Not Found....')
+            throw new Error('User Not Found....');
         }
 
         const exits = await MainExamDetails.findOne({
@@ -959,7 +964,12 @@ exports.getGetPendingLeaveRequests = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 
 }
@@ -1003,10 +1013,6 @@ exports.postAddOrdinaryLevelStudentResult = async (req, res, next) => {
 
             return { index: indexnumber, meyear: year, metype: false, subjectid: result.mesubjectid, result: result.meresult.toUpperCase() }
         });
-
-
-
-
 
         const meDetailsOfStudent = await MainExamDetails.findOne({
             where: {
@@ -1103,9 +1109,6 @@ exports.postAddAdvanceLevelExamResult = async (req, res, next) => {
         mainExamRegistrationData.wcount = resultcounts.wcount;
         mainExamRegistrationData.addresultdone = true;
 
-
-
-
         const updateProfileDataInRegistration = await mainExamRegistrationData.save();
         const addedResultData = await MainExamResult.bulkCreate(storeResultArray);
 
@@ -1134,8 +1137,6 @@ exports.getGetStudentRegisteredSubjectsForResultAdditiion = async (req, res, nex
 
         const studentid = req.params.id;
         const year = parseInt(req.query.year);
-
-
 
         const studentData = await Student.findOne({
             where: {
@@ -1188,17 +1189,19 @@ exports.getGetAllNotificaions = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log("error", error)
 
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error);
     }
 }
 
 exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
     try {
-
         const switchingTypeMode = req.body.type;
-
 
         if (switchingTypeMode === "random") {
 
@@ -1265,8 +1268,6 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
             );
 
-
-
             var newGradeArray = [];
 
             for (let i = 0; i < 4; i++) {
@@ -1282,9 +1283,7 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
                         return null;
 
                     })
-
                 }
-
             }
 
             var incrementClassid = 6;
@@ -1292,7 +1291,6 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
             for (let i = 0; i < 4; i++) {
 
                 for (let k = 0; k < 5; k++) {
-
 
                     await Promise.all(
                         newGradeArray[i][k].map(async (student) => {
@@ -1379,7 +1377,6 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
                 gradeCount += 5;
             }
 
-
             var studentSummationOfAveragesWithStudentid = [];
 
 
@@ -1431,9 +1428,7 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
                 for (let k = 0; k < 5; k++) {
                     newClassArray[i][k] = studentSummationOfAveragesWithStudentid[i].splice(startIndex, numberOfStudentsInClass)
-
                 }
-
             }
 
 
@@ -1443,21 +1438,16 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
                 for (let k = 0; k < 5; k++) {
 
-
                     await Promise.all(
                         newClassArray[i][k].map(async ({ ...studentdata }) => {
                             studentdata.studentdata.classClassid = incrementClassid;
 
                             if (i === 3) {
                                 studentdata.studentdata.subjectRegistrationDone = false;
-
                             }
-
-
                             await studentdata.studentdata.save()
 
                         })
-
 
                     )
                     incrementClassid++;
@@ -1477,7 +1467,13 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log("error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -1578,7 +1574,13 @@ exports.postGetOrdinalyLevelChartOneData = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1374 ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -1655,7 +1657,13 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1449 ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -1732,7 +1740,13 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
         res.status(200).json(studentDataSet)
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -1740,7 +1754,7 @@ exports.getGetOrdinaryLevelChartThree = async (req, res, next) => {
 
 exports.getMainExamResults = async (req, res, next) => {
     try {
-        const year = req.body.year;
+        const year = parseInt(req.body.year);
         const type = req.body.type;
 
         const mainResults = await MainExamDetails.findAll({
@@ -1830,7 +1844,13 @@ exports.postGetAdvanceLevelChartOne = async (req, res, next) => {
         res.status(200).json(responseData);
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1595 ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 }
@@ -1904,8 +1924,13 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1449 ~ error", error)
 
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 }
 
@@ -1984,7 +2009,13 @@ exports.postGetAdvanceLevelChartThree = async (req, res, next) => {
         res.status(200).json(studentDataSet)
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1518 ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 }
@@ -2027,12 +2058,14 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
             res.status(200).json(studentlist)
         }
 
-
-
-
-
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1821 ~ exports.getGetStudentListForMainExam= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -2081,7 +2114,13 @@ exports.postUpdateNotification = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 1918 ~ exports.postUpdateNotification= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -2161,7 +2200,13 @@ exports.getAllPendingAdvanceLevelRegistration = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 2007 ~ exports.getAllPendingAdvanceLevelRegistration= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 }
@@ -2256,7 +2301,13 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 2047 ~ exports.postHandleAdvanceLevelRequest= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 }
@@ -2293,7 +2344,13 @@ exports.changeClassTeacher = async (req, res, next) => {
         );
 
     } catch (error) {
-        console.log(error);
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 }
 
@@ -2363,7 +2420,13 @@ exports.addTeacherSubject = async (req, res, next) => {
         );
 
     } catch (error) {
-        console.log(error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
     }
 }
 
@@ -2422,7 +2485,13 @@ exports.getGetStudentListForRegistration = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 2179 ~ exports.getGetStudentListForRegistration= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
@@ -2461,7 +2530,13 @@ exports.getGetStudentListForRegistrationAdvanceLvel = async (req, res, next) => 
         })
 
     } catch (error) {
-        console.log("🚀 ~ file: nonAcademicController.js ~ line 2179 ~ exports.getGetStudentListForRegistration= ~ error", error)
+
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+
+        next(error);
 
     }
 
