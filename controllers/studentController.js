@@ -15,6 +15,7 @@ const webSocket = require('../webSocket');
 const MainExamDetails = require('../models/mainExamDetails');
 const MainExamResult = require('../models/mainExamResult');
 const PermissionAvanceLevel = require('../models/permissionAdvanceLavel');
+const SubjectWrapper = require('../models/subjectWrapper');
 
 
 
@@ -321,6 +322,12 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
             throw error;
         }
 
+        await SubjectWrapper.destroy({
+            where: {
+                studentid: studentid
+            }
+        });
+
         const re = await addSubjectArr.forEach(element => {
             element.addStudent(student);
         });
@@ -518,7 +525,12 @@ exports.postAddSubjectAdvanceLevel = async (req, res, next) => {
             }
         })
 
-        console.log(subjectList)
+        await SubjectWrapper.destroy({
+            where: {
+                studentid: studentid
+            }
+        });
+
 
         subjectList.forEach(async (subject) => {
 

@@ -98,11 +98,13 @@ exports.postAddStudentResults = async (req, res, next) => {
 exports.postMarkStudentAttendence = async (req, res, next) => {
 
     try {
-        const date = new Date();
+        const date = new Date(req.body.date);
         const attendencelist = req.body.submitdata;
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
+
+
 
         var studentAttendenceData = [];
 
@@ -505,7 +507,7 @@ exports.sendTeacherNotifications = async (req, res, next) => {
         const notifications = [];
         const list = req.body.list;
 
-        list.forEach((element)=>{
+        list.forEach((element) => {
             notifications.push({
                 type: 4,
                 from: req.body.teacherid,
@@ -518,7 +520,7 @@ exports.sendTeacherNotifications = async (req, res, next) => {
         });
 
         await Notification.bulkCreate(notifications);
-        
+
         res.status(200).json(
             true
         );
@@ -649,39 +651,39 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
 }
 
 //this is used to print report of students term by term
-exports.printReport = async (req,res,next) => {
-    try{
-        const studentid=req.body.id;
-        const grade=req.body.grade;
-        const place=req.body.place;
+exports.printReport = async (req, res, next) => {
+    try {
+        const studentid = req.body.id;
+        const grade = req.body.grade;
+        const place = req.body.place;
 
-        var message="This is your Average.";
+        var message = "This is your Average.";
 
-        if(place<4){
-            message+="Great work,Keep going"
+        if (place < 4) {
+            message += "Great work,Keep going"
         }
-        else if(place<25){
-            message+="Good,You can try to first places"
+        else if (place < 25) {
+            message += "Good,You can try to first places"
         }
-        else{
-            message+="You have to work harder"
+        else {
+            message += "You have to work harder"
         }
 
-        const student= await ResultSummary.findOne({
-            where:{
+        const student = await ResultSummary.findOne({
+            where: {
                 grade: grade,
                 _id: studentid
             }
         });
 
-        if(student.place!=null){
+        if (student.place != null) {
             res.status(200).json(
                 false
             );
 
-        }else{
-            student.place=place;
-            student.message=message;
+        } else {
+            student.place = place;
+            student.message = message;
             await student.save();
 
             res.status(200).json(
@@ -689,52 +691,52 @@ exports.printReport = async (req,res,next) => {
             );
         }
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-exports.sendEreport = async (req,res,next) =>{
-    try{
+exports.sendEreport = async (req, res, next) => {
+    try {
         var transporter = nodemailer.createTransport({
-            service:'gmail',
-            auth:{
-                user:'newschoolmanagement20@gmail.com',
-                pass:'Madmax@123'
+            service: 'gmail',
+            auth: {
+                user: 'newschoolmanagement20@gmail.com',
+                pass: 'Madmax@123'
             }
         });
-        
-        var filename = req.files.report[0].path.replace('\\','/');
-        const id=req.body.id;
+
+        var filename = req.files.report[0].path.replace('\\', '/');
+        const id = req.body.id;
 
         const student = await Student.findOne({
-            where:{
+            where: {
                 _id: id
             },
             attributes: ['email']
         });
-    
-        var mailOptions={
-            from:'newschoolmanagement20@gmail.com',
+
+        var mailOptions = {
+            from: 'newschoolmanagement20@gmail.com',
             to: student.email,
-            subject:"To Inform Term Test Results",
-            text:"Here attached your report of this term",
-            attachments:[
-                {path: filename}
+            subject: "To Inform Term Test Results",
+            text: "Here attached your report of this term",
+            attachments: [
+                { path: filename }
             ]
         };
 
-        transporter.sendMail(mailOptions,(err,info)=>{
-            if(err)
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err)
                 console.log(err);
-            else{
+            else {
                 res.status(200).json(
                     true
                 );
             }
         });
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
