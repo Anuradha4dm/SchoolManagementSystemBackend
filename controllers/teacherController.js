@@ -570,10 +570,9 @@ exports.postAddQRcodeRecode = async (req, res, next) => {
 exports.getMarkTeacherAttendence = async (req, res, next) => {
 
     try {
-        const teacherid = req.query.teacherid;
-        const sequreid = req.query.sequreid;
-        const macaddress = req.query.macid;
-
+        const teacherid = req.body.teacherid;
+        const sequreid = req.body.sequreid;
+        const macaddress = req.body.macid;
         const date = new Date();
 
         //default
@@ -656,6 +655,7 @@ exports.printReport = async (req, res, next) => {
         const studentid = req.body.id;
         const grade = req.body.grade;
         const place = req.body.place;
+        const term = req.body.term;
 
         var message = "This is your Average.";
 
@@ -672,7 +672,8 @@ exports.printReport = async (req, res, next) => {
         const student = await ResultSummary.findOne({
             where: {
                 grade: grade,
-                _id: studentid
+                _id: studentid,
+                term: term
             }
         });
 
@@ -740,8 +741,6 @@ exports.sendEreport = async (req, res, next) => {
         console.log(error);
     }
 }
-
-
 
 
 function getWeek(year, month, day) {

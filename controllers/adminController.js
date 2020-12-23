@@ -241,7 +241,8 @@ exports.postAddNewTeacher = async (req, res, next) => {
             numberofleaves: req.body.nbrofleaves,
             birthdate: req.body.birthdate,
             subjects: req.body.subjectlist,
-            imagepath: imagePath
+            imagepath: imagePath,
+            macaddress: req.body.mac,
         });
 
         res.status(200).json(
