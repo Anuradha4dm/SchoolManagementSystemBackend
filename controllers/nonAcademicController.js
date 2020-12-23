@@ -118,17 +118,6 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
-        //you can remove this not nesssary
-        if (leave === null) {
-            throw new Error("No Leave Is Found...Check Again....")
-        }
-
-        if (leave.allow) {
-            res.status(200).json({
-                update: true,
-                messsge: "Already Leave Is Accepted"
-            })
-        }
         if (answer) {
 
             leave.allow = true;
