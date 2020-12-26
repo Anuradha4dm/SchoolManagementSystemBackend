@@ -12,7 +12,7 @@ const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
 const QRData = require("../models/QRdataModel");
 
-const { Op } = require("sequelize");
+const { Op, NOW } = require("sequelize");
 const TeacherAttendence = require("../models/teacherAttendenceModel");
 
 
@@ -738,6 +738,28 @@ exports.sendEreport = async (req, res, next) => {
         });
 
     } catch (error) {
+        console.log(error);
+    }
+}
+
+exports.getTeacherAttendance = async (req,res,next) => {
+    try{
+        const id=req.body.teacherid;
+        const month=new Date().getMonth()+1;
+
+        const dates=await TeacherAttendence.findAll({
+            where:{
+                teacherTeacherid: id,
+                month: month
+            },
+            attributes: ['present','date']
+        });
+
+        res.status(200).json(
+            dates
+        );
+
+    }catch(error){
         console.log(error);
     }
 }

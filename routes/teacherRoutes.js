@@ -43,6 +43,10 @@ router.post('/update-teacher-profile/:id', teacherController.postUpdateTeacherPr
 //used when print reports
 router.post('/print-report',teacherController.printReport);
 
+//used when send Ereports
 router.post('/send-report',teacherController.sendEreport);
+
+//used to get teacher attendance
+router.post('/get-teacher-attendance',teacherController.getTeacherAttendance);
 
 module.exports = router;
