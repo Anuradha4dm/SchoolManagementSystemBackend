@@ -692,6 +692,8 @@ exports.getResetStudentSubjects = async (req, res, next) => {
             throw error;
         }
 
+        await studentData.save();
+
         const notification = await studentData.createNotification({
             type: 4,
             from: "ADMIN",
@@ -1309,10 +1311,14 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
                             student.classClassid = incrementClassid;
 
-                            if (i === 3) {
+                            if (i != 3) {
                                 student.subjectRegistrationDone = false;
-
                             }
+                            await SubjectWrapper.destroy({
+                                where: {
+                                    studentid: student._id
+                                }
+                            })
 
                             await student.save();
 
@@ -1322,12 +1328,6 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
                     )
 
 
-                    // await Promise.all(newGradeArray[i][k].forEach(async student => {
-                    //     student.subjectRegistrationDone = false;
-                    //     student.classClassid = incrementClassid;
-
-                    //     await student.save();
-                    // }))
 
                     incrementClassid++;
 
@@ -1357,8 +1357,13 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
 
                     student.classClassid += 5;
 
-                    if (student.classClassid >= 21 && student.classClassid <= 25) {
+                    if (student.classClassid <= 35) {
                         student.subjectRegistrationDone = false;
+                        await SubjectWrapper.destroy({
+                            where: {
+                                studentid: student._id
+                            }
+                        })
                     }
 
                     await student.save();
@@ -1454,9 +1459,14 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
                         newClassArray[i][k].map(async ({ ...studentdata }) => {
                             studentdata.studentdata.classClassid = incrementClassid;
 
-                            if (i === 3) {
-                                studentdata.studentdata.subjectRegistrationDone = false;
-                            }
+
+                            studentdata.studentdata.subjectRegistrationDone = false;
+                            await SubjectWrapper.destroy({
+                                where: {
+                                    studentid: studentdata.studentdata._id
+                                }
+                            })
+
                             await studentdata.studentdata.save()
 
                         })
@@ -2376,7 +2386,7 @@ exports.getTeacherBySubject = async (req, res, next) => {
                     [Op.like]: '%' + subjectName + '%'
                 }
             },
-            attributes: ['teacherid','firstname','lastname','surname','timetablepath']
+            attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
         })
         console.log(subjectName)
         res.status(200).json(
@@ -2653,8 +2663,8 @@ exports.getNonAcademicProfileData = async (req, res, next) => {
     }
 }
 
-exports.updateNonAcademicProfile = async (req,res,next) => {
-    try{
+exports.updateNonAcademicProfile = async (req, res, next) => {
+    try {
         const id = req.body.id;
         var imagepath;
 
@@ -2667,7 +2677,7 @@ exports.updateNonAcademicProfile = async (req,res,next) => {
         }
 
         const nonAcademicData = await NonAcademic.findOne({
-            where:{
+            where: {
                 nonacademicid: id
             }
         });
@@ -2699,40 +2709,40 @@ exports.updateNonAcademicProfile = async (req,res,next) => {
             true
         );
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-exports.addTimetable = async (req,res,next) => {
-    try{
-        const type=req.body.type;
-        const identity=req.body.id;
+exports.addTimetable = async (req, res, next) => {
+    try {
+        const type = req.body.type;
+        const identity = req.body.id;
 
-        if(req.files.timetable){
-            var filename=req.files.timetable[0].path.replace('\\','/');
+        if (req.files.timetable) {
+            var filename = req.files.timetable[0].path.replace('\\', '/');
         }
-        
-        if(type=="class"){
-            const grade=await Class.findOne({
-                where:{
+
+        if (type == "class") {
+            const grade = await Class.findOne({
+                where: {
                     grade: identity
                 }
             });
 
-            grade.timetable=filename;
+            grade.timetable = filename;
 
             await grade.save();
         }
-        
-        if(type=="teacher"){
-            const teacher=await Teacher.findOne({
-                where:{
+
+        if (type == "teacher") {
+            const teacher = await Teacher.findOne({
+                where: {
                     teacherid: identity
                 }
             });
 
-            teacher.timetablepath=filename;
+            teacher.timetablepath = filename;
 
             await teacher.save();
         }
@@ -2741,7 +2751,7 @@ exports.addTimetable = async (req,res,next) => {
             true
         );
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 } 
