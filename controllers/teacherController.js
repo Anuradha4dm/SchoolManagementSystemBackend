@@ -752,7 +752,7 @@ exports.getTeacherAttendance = async (req,res,next) => {
                 teacherTeacherid: id,
                 month: month
             },
-            attributes: ['present','date']
+            attributes: ['present','year','day','month']
         });
 
         res.status(200).json(
