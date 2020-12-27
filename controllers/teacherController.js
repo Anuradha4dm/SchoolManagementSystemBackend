@@ -104,8 +104,6 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
         const month = date.getMonth() + 1;
         const day = date.getDate();
 
-
-
         var studentAttendenceData = [];
 
 

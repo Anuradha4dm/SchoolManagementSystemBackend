@@ -321,6 +321,74 @@ exports.postResetPassword = async (req, res, next) => {
 
         }
 
+        if (user === "AC") {
+            const teacherData = await Teacher.findOne({
+                where: {
+                    teacherid: userid
+                }
+            });
+
+
+            teacherData.resetToken = token;
+            teacherData.resetTokenExpire = expire;
+
+            await teacherData.save();
+
+            const re = await transporter.sendMail({
+                to: email,
+                from: "damithanuradha44@gmail.com",
+                subject: "Reset Password",
+                html: `<p>Password Reset</p>
+                        <p>Click  link <a href="http://localhost:4200/home" >Link</a></p>
+                
+                `
+            }, (error, info) => {
+                if (error) {
+                    if (error.statusCode) {
+                        error.statusCode = 500;
+                    }
+
+                    next(error);
+                }
+            })
+
+
+        }
+
+        if (user === "NAC") {
+            const nonacademicData = await NonAcademic.findOne({
+                where: {
+                    teacherid: userid
+                }
+            });
+
+
+            nonacademicData.resetToken = token;
+            nonacademicData.resetTokenExpire = expire;
+
+            await nonacademicData.save();
+
+            const re = await transporter.sendMail({
+                to: email,
+                from: "damithanuradha44@gmail.com",
+                subject: "Reset Password",
+                html: `<p>Password Reset</p>
+                        <p>Click  link <a href="http://localhost:4200/home" >Link</a></p>
+                
+                `
+            }, (error, info) => {
+                if (error) {
+                    if (error.statusCode) {
+                        error.statusCode = 500;
+                    }
+
+                    next(error);
+                }
+            })
+
+
+        }
+
 
 
     } catch (error) {
