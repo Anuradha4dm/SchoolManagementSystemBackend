@@ -2367,19 +2367,33 @@ exports.changeClassTeacher = async (req, res, next) => {
 exports.getTeacherBySubject = async (req, res, next) => {
     try {
         const subjectName = req.body.subjectName;
+        var teacherList;
 
-        const teacherList = await Teacher.findAll({
-            where: {
-                subjects: {
-                    [Op.or]:[
-                        {[Op.like]: subjectName},
-                        {[Op.like]: subjectName+',%'},
-                        {[Op.like]: '%,'+subjectName}
-                    ]
-                }
-            },
-            attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
-        })
+        if(subjectName==""){
+            teacherList = await Teacher.findAll({
+                where: {
+                    subjects: {
+                        [Op.like]: "%"+subjectName+"%",
+                    }
+                },
+                attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
+            }); 
+        }
+        else{
+            teacherList = await Teacher.findAll({
+                where: {
+                    subjects: {
+                        [Op.or]:[
+                            {[Op.like]: subjectName},
+                            {[Op.like]: subjectName+',%'},
+                            {[Op.like]: '%,'+subjectName}
+                        ]
+                    }
+                },
+                attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
+            });
+        }
+        
 
         res.status(200).json(
             teacherList
