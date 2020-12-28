@@ -2045,7 +2045,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: true,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'stream', 'class'],
+                attributes: ['indexnumber', 'studentid', 'stream', 'class','addresultdone'],
 
             });
 
@@ -2061,7 +2061,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: false,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'class'],
+                attributes: ['indexnumber', 'studentid', 'class','addresultdone'],
 
             });
 
