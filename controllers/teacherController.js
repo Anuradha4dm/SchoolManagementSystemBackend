@@ -103,7 +103,7 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
-
+        
         var studentAttendenceData = [];
 
 
@@ -127,7 +127,7 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
                     throw error;
                 }
 
-                studentAttendenceData.push({ studentId: key, year: year, present: attendencelist[key], month: month, week: getWeek(year, month, day), day: day, date: new Date() })
+                studentAttendenceData.push({ studentId: key, year: year, present: attendencelist[key], month: month, week: getWeek(year, month, day), day: day, date: date })
             }
         }
 
@@ -149,6 +149,70 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
 
 }
 
+exports.attendanceReSubmit = async (req,res,next) => {
+    try{
+        const date = new Date(req.body.date);
+        const attendencelist = req.body.submitdata;
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        const markedList = await StudentAttendence.findAll({
+            where: {
+                year: year,
+                day: day,
+                month: month,
+            }
+        });
+
+        for(const key in attendencelist){
+            for(const student of markedList){
+                if(student.studentId==key){
+                    student.present=attendencelist[key];
+                    await student.save();
+                }
+            }
+        }
+
+        res.status(200).json(
+            true
+        )
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.checkAttendanceStatus = async (req,res,next) =>{
+    try{
+        const date = new Date(req.body.date);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        const markedList = await StudentAttendence.findOne({
+            where: {
+                year: year,
+                day: day,
+                month: month,
+            }
+        });
+
+        if(markedList){
+            res.status(200).json({
+                mark:true
+            })
+        }
+        else{
+            res.status(200).json({
+                mark:false
+            })
+        }
+
+    }catch(error){
+        console.log(error)
+    }
+}
 
 exports.getStudentListForSpecificTeacher = async (req, res, next) => {
 
