@@ -2371,7 +2371,12 @@ exports.getTeacherBySubject = async (req, res, next) => {
         const teacherList = await Teacher.findAll({
             where: {
                 subjects: {
-                    [Op.like]: '%' + subjectName + '%'
+                    [Op.or]:[
+                        {[Op.like]: subjectName},
+                        {[Op.like]: subjectName+','},
+                        {[Op.like]: ','+subjectName}
+                    ]
+                    //[Op.like]: '%' + subjectName + '%'
                 }
             },
             attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
