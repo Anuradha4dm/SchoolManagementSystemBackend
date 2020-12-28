@@ -29,4 +29,7 @@ router.get('/get-class-list',adminController.getClassList);
 //used to create new non academic
 router.post('/create-non-academic',adminController.createNonAcademic);
 
+//used to create new student
+router.post('/create-student',adminController.createStudent);
+
 module.exports = router;

@@ -357,3 +357,43 @@ exports.createNonAcademic = async (req,res,next) => {
         console.log(error);
     }
 }
+
+
+exports.createStudent = async (req,res,next) => {
+    try{
+
+        const hpassword=await bcrypt.hash(req.body.userid+'pwd',12);
+        var imagepath=null;
+        
+        if (req.files.imageData != undefined)
+            imagepath = req.files.imageData[0].path.replace('\\', '/');
+
+        await Student.create({
+            _id: req.body.userid,
+            surname: req.body.surname,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            username: req.body.username,
+            password: hpassword,
+            email: req.body.email,
+            age: parseInt(req.body.age),
+            startyear: parseInt(req.body.startyear),
+            imagepath: imagepath,
+            birthdate: req.body.birthdate,
+            gender: req.body.gender,
+            addressline1: req.body.addressline1,
+            addressline2: req.body.addressline2,
+            addressline3: req.body.addressline3,
+            city: req.body.city,
+            mobile: req.body.mobile,
+            classClassid: req.body.grade
+        });
+
+        res.status(200).json(
+            true
+        );
+
+    }catch(error){
+        console.log(error);
+    }
+}
