@@ -310,7 +310,7 @@ exports.postAddSubjectPrimary = async (req, res, next) => {
             where: {
                 [Op.or]: [
                     { grade: grade, mandatory: true },
-                    { subjectname: opSubjectname, mandatory: false }                 //later change this one without check
+                    { subjectname: opSubjectname, mandatory: false, grade: grade }                 //later change this one without check
                 ]
             }
         });

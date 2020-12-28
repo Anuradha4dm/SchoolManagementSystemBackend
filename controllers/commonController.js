@@ -294,7 +294,7 @@ exports.getGetNotifications = async (req, res, next) => {
                     [Op.or]: {
                         type: [0, 3],
                         [Op.and]: {
-                            type: [4],
+                            type: [4, 5],
                             to: id
                         }
                     },
