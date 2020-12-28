@@ -2373,8 +2373,8 @@ exports.getTeacherBySubject = async (req, res, next) => {
                 subjects: {
                     [Op.or]:[
                         {[Op.like]: subjectName},
-                        {[Op.like]: subjectName+','},
-                        {[Op.like]: ','+subjectName}
+                        {[Op.like]: subjectName+',%'},
+                        {[Op.like]: '%,'+subjectName}
                     ]
                 }
             },
