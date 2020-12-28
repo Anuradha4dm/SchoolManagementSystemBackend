@@ -107,76 +107,83 @@ exports.postEditStudentProfile = async (req, res, next) => {
     const id = req.params.id;
     var updatedImagePath;
 
-    if (req.userId != id) {
-        throw new Error('You Are Not Allow To Access....')
+    try {
 
-    }
+        if (req.userId != id) {
+            throw new Error('You Are Not Allow To Access....')
 
-
-    if (req.body.imagepath && !req.file) {
-        updatedImagePath = req.body.imagepath
-    } else {
-        updatedImagePath = req.file.path;
-    }
-
-    const classData = await Class.findOne({
-        where: {
-            grade: req.body.grade
         }
-    })
 
-    var classClassid = classData.classid;
+        if (req.body.imagepath && !req.file) {
+            updatedImagePath = req.body.imagepath
+        } else {
+            updatedImagePath = req.file.path;
+        }
 
-    if ((req.body.gradeRequest === "true")) {
-
-        const ordinaryLevelData = await MainExamDetails.findOne({
+        const classData = await Class.findOne({
             where: {
-                studentid: id,
-                metype: false
+                grade: req.body.grade
             }
         })
 
-        if (ordinaryLevelData === null) {
-            throw new Error("Ordinary Level Result Is Not Still Available")
+        var classClassid = classData.classid;
+
+        if ((req.body.gradeRequest === "true")) {
+
+            const ordinaryLevelData = await MainExamDetails.findOne({
+                where: {
+                    studentid: id,
+                    metype: false
+                }
+            })
+
+            if (!ordinaryLevelData) {
+                throw new Error("Ordinary Level Result Is Not Still Available");
+            }
+
+            await addRecodeToPermissionAdvanceLevel(ordinaryLevelData, id, classClassid);
+            classClassid = 0;
         }
 
+        Student.findByPk(id).then(student => {
 
-        await addRecodeToPermissionAdvanceLevel(ordinaryLevelData, id, classClassid);
-        classClassid = 0;
-    }
+            student.surname = req.body.surname;
+            student.firstName = req.body.firstname;
+            student.lastName = req.body.lastname;
+            student.email = req.body.email;
+            student.username = req.body.username;
+            student.age = req.body.age;
+            student.imagePath = updatedImagePath;
+            student.gender = req.body.gender;
+            student.startYear = req.body.startyear;
+            student.birthDate = req.body.birthdate;
+            student.addressLine1 = req.body.addressline1;
+            student.addressLine2 = req.body.addressline2;
+            student.addressLine3 = req.body.addressline3;
+            student.city = req.body.city;
+            student.mobile = req.body.mobile;
+            student.classClassid = classClassid;
+            student.graderegistration = new Date().getFullYear()
 
-    Student.findByPk(id).then(student => {
-
-        student.surname = req.body.surname;
-        student.firstName = req.body.firstname;
-        student.lastName = req.body.lastname;
-        student.email = req.body.email;
-        student.username = req.body.username;
-        student.age = req.body.age;
-        student.imagePath = updatedImagePath;
-        student.gender = req.body.gender;
-        student.startYear = req.body.startyear;
-        student.birthDate = req.body.birthdate;
-        student.addressLine1 = req.body.addressline1;
-        student.addressLine2 = req.body.addressline2;
-        student.addressLine3 = req.body.addressline3;
-        student.city = req.body.city;
-        student.mobile = req.body.mobile;
-        student.classClassid = classClassid;
-        student.graderegistration = new Date().getFullYear()
-
-        return student.save();
-    })
-        .then(result => {
-            res.status(200).json({
-                update: true,
-                data: result
+            return student.save();
+        })
+            .then(result => {
+                res.status(200).json({
+                    update: true,
+                    data: result
+                })
             })
-        })
-        .catch(error => {
-            error.statusCode = 503;
-            throw error;
-        })
+            .catch(error => {
+                error.statusCode = 503;
+                throw error;
+            })
+
+    } catch (error) {
+
+        error.statusCode = 500;
+
+        next(error)
+    }
 
 
 }
@@ -235,7 +242,7 @@ async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream)
 
     } catch (error) {
 
-        console.log(error)
+        next(error)
     }
 
 }
