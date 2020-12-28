@@ -2376,12 +2376,11 @@ exports.getTeacherBySubject = async (req, res, next) => {
                         {[Op.like]: subjectName+','},
                         {[Op.like]: ','+subjectName}
                     ]
-                    //[Op.like]: '%' + subjectName + '%'
                 }
             },
             attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
         })
-        console.log(subjectName)
+
         res.status(200).json(
             teacherList
         )
