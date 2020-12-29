@@ -817,7 +817,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
     try {
         const studentid = req.body.studentid;
         const indexnumber = req.body.indexnumber;
-        const year = req.body.year;
+        const year = 2018;
         const shy = req.body.shy;
         const type = req.body.type;
         const subjectsList = req.body.subjectnames;
@@ -1893,7 +1893,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Bcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "B"
             },
@@ -1902,7 +1902,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Ccount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "C"
             },
@@ -1911,7 +1911,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Scount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "S"
             },
@@ -1920,8 +1920,8 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Wcount = await MainExamResult.count({
             where: {
                 meyear: year,
+                subjectid: subjectid.mesubjectid,
                 subjectid: subjectid,
-                metype: true,
                 result: "W"
             },
 
@@ -1931,7 +1931,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
             acount: Acount,
             bcount: Bcount,
             ccount: Ccount,
-            Scount: Scount,
+            scount: Scount,
             wcount: Wcount
         })
 
