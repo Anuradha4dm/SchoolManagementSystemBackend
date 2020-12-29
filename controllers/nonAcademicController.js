@@ -862,6 +862,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
         }
         else {
             if (!type) {
+
                 registration = await MainExamDetails.create({
                     indexnumber: indexnumber,
                     studentid: studentid,
@@ -2586,6 +2587,8 @@ exports.getStudentSubjectData = async (req, res, next) => {
 
         const subjectList = subjectListName.map(subjectData => { return subjectData.subjectname });
 
+
+
         const mainExamSubjectData = await MainExamSubject.findAll({
 
             where: {
@@ -2752,6 +2755,10 @@ exports.addTimetable = async (req, res, next) => {
         );
 
     } catch (error) {
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
     }
 } 
