@@ -882,7 +882,8 @@ exports.postRegistratinMainExam = async (req, res, next) => {
                 where: {
                     mesubjectname: {
                         [Op.in]: subjectsList
-                    }
+                    },
+                    metype: type
                 },
 
             })
@@ -1624,7 +1625,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Bcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "B"
             },
@@ -1633,7 +1634,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Ccount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "C"
             },
@@ -1642,7 +1643,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Scount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "S"
             },
@@ -1651,7 +1652,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Wcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "W"
             },
@@ -1662,7 +1663,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
             acount: Acount,
             bcount: Bcount,
             ccount: Ccount,
-            Scount: Scount,
+            scount: Scount,
             wcount: Wcount
         })
 

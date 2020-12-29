@@ -189,12 +189,14 @@ exports.checkAttendanceStatus = async (req,res,next) =>{
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
+        const id = req.body.id;
 
         const markedList = await StudentAttendence.findOne({
             where: {
                 year: year,
                 day: day,
                 month: month,
+                studentId: id
             }
         });
 
