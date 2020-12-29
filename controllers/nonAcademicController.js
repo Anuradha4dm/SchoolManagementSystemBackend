@@ -2047,7 +2047,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: true,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'stream', 'class','addresultdone'],
+                attributes: ['indexnumber', 'studentid', 'stream', 'class', 'addresultdone'],
 
             });
 
@@ -2063,7 +2063,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: false,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'class','addresultdone'],
+                attributes: ['indexnumber', 'studentid', 'class', 'addresultdone'],
 
             });
 
@@ -2283,6 +2283,13 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
 
             const studentData = await Student.findByPk(studentid);
 
+            studentData.subjectRegistrationDone = false;
+            await SubjectWrapper.destroy({
+                where: {
+                    studentid: studentid
+                }
+            })
+
             if (studentData === null) {
                 throw new Error("Student Can Not Found...");
             }
@@ -2371,31 +2378,31 @@ exports.getTeacherBySubject = async (req, res, next) => {
         const subjectName = req.body.subjectName;
         var teacherList;
 
-        if(subjectName==""){
+        if (subjectName == "") {
             teacherList = await Teacher.findAll({
                 where: {
                     subjects: {
-                        [Op.like]: "%"+subjectName+"%",
+                        [Op.like]: "%" + subjectName + "%",
                     }
                 },
                 attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
-            }); 
+            });
         }
-        else{
+        else {
             teacherList = await Teacher.findAll({
                 where: {
                     subjects: {
-                        [Op.or]:[
-                            {[Op.like]: subjectName},
-                            {[Op.like]: subjectName+',%'},
-                            {[Op.like]: '%,'+subjectName}
+                        [Op.or]: [
+                            { [Op.like]: subjectName },
+                            { [Op.like]: subjectName + ',%' },
+                            { [Op.like]: '%,' + subjectName }
                         ]
                     }
                 },
                 attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
             });
         }
-        
+
 
         res.status(200).json(
             teacherList
