@@ -328,9 +328,6 @@ exports.sendEmail = async (req, res, next) => {
     const sender = req.body.sender;
     const subject = req.body.subject;
     const message = req.body.message;
-    console.log(receiver, sender, subject, message)
-
-
 
     transporter.sendMail({
         to: receiver,
