@@ -12,7 +12,7 @@ const Teacher = require("../models/teacherModel");
 const Subject = require("../models/subjectModel");
 const QRData = require("../models/QRdataModel");
 
-const { Op } = require("sequelize");
+const { Op, NOW } = require("sequelize");
 const TeacherAttendence = require("../models/teacherAttendenceModel");
 
 
@@ -103,7 +103,7 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
-
+        
         var studentAttendenceData = [];
 
 
@@ -127,7 +127,7 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
                     throw error;
                 }
 
-                studentAttendenceData.push({ studentId: key, year: year, present: attendencelist[key], month: month, week: getWeek(year, month, day), day: day, date: new Date() })
+                studentAttendenceData.push({ studentId: key, year: year, present: attendencelist[key], month: month, week: getWeek(year, month, day), day: day, date: date })
             }
         }
 
@@ -149,6 +149,72 @@ exports.postMarkStudentAttendence = async (req, res, next) => {
 
 }
 
+exports.attendanceReSubmit = async (req,res,next) => {
+    try{
+        const date = new Date(req.body.date);
+        const attendencelist = req.body.submitdata;
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        const markedList = await StudentAttendence.findAll({
+            where: {
+                year: year,
+                day: day,
+                month: month,
+            }
+        });
+
+        for(const key in attendencelist){
+            for(const student of markedList){
+                if(student.studentId==key){
+                    student.present=attendencelist[key];
+                    await student.save();
+                }
+            }
+        }
+
+        res.status(200).json(
+            true
+        )
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+exports.checkAttendanceStatus = async (req,res,next) =>{
+    try{
+        const date = new Date(req.body.date);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const id = req.body.id;
+
+        const markedList = await StudentAttendence.findOne({
+            where: {
+                year: year,
+                day: day,
+                month: month,
+                studentId: id
+            }
+        });
+
+        if(markedList){
+            res.status(200).json({
+                mark:true
+            })
+        }
+        else{
+            res.status(200).json({
+                mark:false
+            })
+        }
+
+    }catch(error){
+        console.log(error)
+    }
+}
 
 exports.getStudentListForSpecificTeacher = async (req, res, next) => {
 
@@ -736,6 +802,28 @@ exports.sendEreport = async (req, res, next) => {
         });
 
     } catch (error) {
+        console.log(error);
+    }
+}
+
+exports.getTeacherAttendance = async (req,res,next) => {
+    try{
+        const id=req.body.teacherid;
+        const month=new Date().getMonth()+1;
+
+        const dates=await TeacherAttendence.findAll({
+            where:{
+                teacherTeacherid: id,
+                month: month
+            },
+            attributes: ['present','year','day','month']
+        });
+
+        res.status(200).json(
+            dates
+        );
+
+    }catch(error){
         console.log(error);
     }
 }

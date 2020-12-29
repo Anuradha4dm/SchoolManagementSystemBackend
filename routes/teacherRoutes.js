@@ -11,6 +11,12 @@ router.post('/add-student-result', teacherController.postAddStudentResults);
 //POST /teacher/mark-attendence                  =>teacher will submit the student attendence and then the are store in the database
 router.post('/mark-attendence', teacherController.postMarkStudentAttendence);
 
+//used to resubmit student attendance
+router.post('/attendence-resubmit', teacherController.attendanceReSubmit);
+
+//used to check whether the attendance is marked or not
+router.post('/check-attendance-status',teacherController.checkAttendanceStatus);
+
 //POST     //teacher//class-student-list/:id    
 router.get('/class-student-list/:id', teacherController.getStudentListForSpecificTeacher);
 
@@ -43,6 +49,10 @@ router.post('/update-teacher-profile/:id', teacherController.postUpdateTeacherPr
 //used when print reports
 router.post('/print-report',teacherController.printReport);
 
+//used when send Ereports
 router.post('/send-report',teacherController.sendEreport);
+
+//used to get teacher attendance
+router.post('/get-teacher-attendance',teacherController.getTeacherAttendance);
 
 module.exports = router;

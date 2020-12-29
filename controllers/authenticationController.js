@@ -203,8 +203,10 @@ exports.postAuthentication = (req, res, next) => {
     }
     if (roll == "NAC") {
 
+        var nonacademicRole;
+
         NonAcademic.findAll({
-            attributes: ['password', 'nonacademicid', 'email'],
+            attributes: ['password', 'nonacademicid', 'email', 'role'],
             where: { nonacademicid: _id }
         })
             .then(result => {
@@ -218,7 +220,7 @@ exports.postAuthentication = (req, res, next) => {
 
                 userid = result[0].dataValues.nonacademicid;
                 useremail = result[0].dataValues.email;
-
+                nonacademicRole = result[0].dataValues.role;
                 return bcrypt.compare(password, result[0].dataValues.password);
 
 
@@ -230,7 +232,7 @@ exports.postAuthentication = (req, res, next) => {
                     throw error;
                 }
 
-                console.log("data")
+
                 const token = jwt.sign({
                     _id: userid,
                     email: useremail
@@ -241,7 +243,7 @@ exports.postAuthentication = (req, res, next) => {
                     authentication: true,
                     token: token,
                     _id: userid,
-                    logInAs: "nonacademic",
+                    logInAs: nonacademicRole,
                     expirationdata: new Date().getTime() + 3600 * 1000
                 })
             })

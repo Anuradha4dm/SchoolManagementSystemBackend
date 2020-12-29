@@ -123,18 +123,6 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
             include: Teacher
         });
 
-        //you can remove this not nesssary
-        if (leave === null) {
-            throw new Error("No Leave Is Found...Check Again....")
-        }
-
-        //* this will be some time error after send message and other response
-        if (leave.allow) {
-            res.status(200).json({
-                update: true,
-                messsge: "Already Leave Is Accepted"
-            })
-        }
         if (answer) {
 
             leave.allow = true;
@@ -862,6 +850,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
         }
         else {
             if (!type) {
+
                 registration = await MainExamDetails.create({
                     indexnumber: indexnumber,
                     studentid: studentid,
@@ -894,7 +883,8 @@ exports.postRegistratinMainExam = async (req, res, next) => {
                 where: {
                     mesubjectname: {
                         [Op.in]: subjectsList
-                    }
+                    },
+                    metype: type
                 },
 
             })
@@ -1636,7 +1626,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Bcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "B"
             },
@@ -1645,7 +1635,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Ccount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "C"
             },
@@ -1654,7 +1644,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Scount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "S"
             },
@@ -1663,7 +1653,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
         const Wcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: false,
                 result: "W"
             },
@@ -1674,7 +1664,7 @@ exports.getGetOrdinaryLevelChartTwo = async (req, res, next) => {
             acount: Acount,
             bcount: Bcount,
             ccount: Ccount,
-            Scount: Scount,
+            scount: Scount,
             wcount: Wcount
         })
 
@@ -2057,7 +2047,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: true,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'stream', 'class'],
+                attributes: ['indexnumber', 'studentid', 'stream', 'class', 'addresultdone'],
 
             });
 
@@ -2073,7 +2063,7 @@ exports.postGetStudentListInMainExam = async (req, res, next) => {
                     metype: false,
                     //addresultdone: false
                 },
-                attributes: ['indexnumber', 'studentid', 'class'],
+                attributes: ['indexnumber', 'studentid', 'class', 'addresultdone'],
 
             });
 
@@ -2293,6 +2283,13 @@ exports.postHandleAdvanceLevelRequest = async (req, res, next) => {
 
             const studentData = await Student.findByPk(studentid);
 
+            studentData.subjectRegistrationDone = false;
+            await SubjectWrapper.destroy({
+                where: {
+                    studentid: studentid
+                }
+            })
+
             if (studentData === null) {
                 throw new Error("Student Can Not Found...");
             }
@@ -2379,16 +2376,34 @@ exports.changeClassTeacher = async (req, res, next) => {
 exports.getTeacherBySubject = async (req, res, next) => {
     try {
         const subjectName = req.body.subjectName;
+        var teacherList;
 
-        const teacherList = await Teacher.findAll({
-            where: {
-                subjects: {
-                    [Op.like]: '%' + subjectName + '%'
-                }
-            },
-            attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
-        })
-        console.log(subjectName)
+        if (subjectName == "") {
+            teacherList = await Teacher.findAll({
+                where: {
+                    subjects: {
+                        [Op.like]: "%" + subjectName + "%",
+                    }
+                },
+                attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
+            });
+        }
+        else {
+            teacherList = await Teacher.findAll({
+                where: {
+                    subjects: {
+                        [Op.or]: [
+                            { [Op.like]: subjectName },
+                            { [Op.like]: subjectName + ',%' },
+                            { [Op.like]: '%,' + subjectName }
+                        ]
+                    }
+                },
+                attributes: ['teacherid', 'firstname', 'lastname', 'surname', 'timetablepath']
+            });
+        }
+
+
         res.status(200).json(
             teacherList
         )
@@ -2586,6 +2601,8 @@ exports.getStudentSubjectData = async (req, res, next) => {
 
         const subjectList = subjectListName.map(subjectData => { return subjectData.subjectname });
 
+
+
         const mainExamSubjectData = await MainExamSubject.findAll({
 
             where: {
@@ -2752,6 +2769,10 @@ exports.addTimetable = async (req, res, next) => {
         );
 
     } catch (error) {
-        console.log(error);
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+
+        next(error)
     }
 } 
