@@ -1921,7 +1921,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
             where: {
                 meyear: year,
                 subjectid: subjectid.mesubjectid,
-                subjectid: subjectid,
+                metype: true,
                 result: "W"
             },
 
