@@ -1468,6 +1468,27 @@ exports.postSwitchStudentsClassForTheYear = async (req, res, next) => {
             }
 
 
+            const advanceLevelStudentSet = await Student.findAll({
+                where: {
+                    classClassid: {
+                        [Op.in]: [31, 32, 33, 34, 35]
+                    }
+                }
+            });
+
+
+            Promise.all(
+
+
+                advanceLevelStudentSet.map(async student => {
+                    student.classClassid += 5;
+                    await student.save();
+                })
+
+            )
+
+
+
             res.status(200).json({
                 gradeUpdate: true
             })

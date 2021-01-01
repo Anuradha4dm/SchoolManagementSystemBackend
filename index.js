@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
-require('dotenv').config()
+require('dotenv').config();
 // const upload = require('express-fileupload')
 //include the body to the parse
 const app = express();
@@ -78,7 +78,7 @@ const storageLocation = multer.diskStorage({
             callback(null, 'timetable')
         }
         if (file.fieldname === "imageData") {
-            console.log(file)
+
             callback(null, 'image');
         }
         if (file.fieldname === "attachment") {
