@@ -720,6 +720,7 @@ exports.printReport = async (req, res, next) => {
         const grade = req.body.grade;
         const place = req.body.place;
         const term = req.body.term;
+        const year = req.body.year;
 
         var message = "This is your Average.";
 
@@ -737,7 +738,8 @@ exports.printReport = async (req, res, next) => {
             where: {
                 grade: grade,
                 _id: studentid,
-                term: term
+                term: term,
+                year: year
             }
         });
 

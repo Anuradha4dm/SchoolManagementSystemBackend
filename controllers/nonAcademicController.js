@@ -817,7 +817,7 @@ exports.postRegistratinMainExam = async (req, res, next) => {
     try {
         const studentid = req.body.studentid;
         const indexnumber = req.body.indexnumber;
-        const year = 2018;
+        const year = req.body.year;
         const shy = req.body.shy;
         const type = req.body.type;
         const subjectsList = req.body.subjectnames;
@@ -2476,7 +2476,7 @@ exports.getClassRegisteredSubjects = async (req, res, next) => {
             where: {
                 grade: grade
             },
-            attributes: ['subjectname', 'teacherTeacherid']
+            attributes: ['subjectid','subjectname', 'teacherTeacherid']
         });
 
         res.status(200).json({
