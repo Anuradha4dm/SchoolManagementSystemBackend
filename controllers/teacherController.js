@@ -638,7 +638,6 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
         const sequreid = req.body.sequreid;
         const macaddress = req.body.macid;
         const date = new Date();
-
         //default
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
@@ -655,7 +654,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
 
         const QRrecode = await QRData.findOne({
             where: {
-                teacherTeacherid: teacherData.teacherid,
+                teacherTeacherid: teacherid,
                 randomcode: sequreid,
                 expiredtime: {
                     [Op.gte]: Date.now()
@@ -671,7 +670,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             where: {
                 teacherTeacherid: teacherid,
                 year: year,
-                date: date,
+                day: day,
                 month: month
             }
         })
