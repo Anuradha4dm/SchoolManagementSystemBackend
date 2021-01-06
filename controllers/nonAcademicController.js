@@ -52,6 +52,17 @@ exports.getGetPengingRequestList = async (req, res, next) => {
                 element.leavetype = "Full Day"
             }
 
+            if (element.leavetype === 3) {
+                element.leavetype = "Medical Leave"
+            }
+
+            if (element.leavetype === 4) {
+                element.leavetype = "Educational Leave"
+            }
+
+            if (element.leavetype === 5) {
+                element.leavetype = "No Pay"
+            }
 
             return {
                 leaveid: element.leaveid,
@@ -126,9 +137,9 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
         if (answer) {
 
             leave.allow = true;
-            if (leave.leavetype != 2) {
+            if (leave.leavetype ==0 || leave.leavetype==1) {
                 leave.teacher.numberofleaves -= 0.5
-            } else {
+            }else if(leave.leavetype==2){
                 leave.teacher.numberofleaves -= 1;
             }
 
