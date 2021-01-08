@@ -52,6 +52,17 @@ exports.getGetPengingRequestList = async (req, res, next) => {
                 element.leavetype = "Full Day"
             }
 
+            if (element.leavetype === 3) {
+                element.leavetype = "Medical Leave"
+            }
+
+            if (element.leavetype === 4) {
+                element.leavetype = "Educational Leave"
+            }
+
+            if (element.leavetype === 5) {
+                element.leavetype = "No Pay"
+            }
 
             return {
                 leaveid: element.leaveid,
@@ -126,9 +137,9 @@ exports.postAnswerLeaveRequest = async (req, res, next) => {
         if (answer) {
 
             leave.allow = true;
-            if (leave.leavetype != 2) {
+            if (leave.leavetype ==0 || leave.leavetype==1) {
                 leave.teacher.numberofleaves -= 0.5
-            } else {
+            }else if(leave.leavetype==2){
                 leave.teacher.numberofleaves -= 1;
             }
 
@@ -1914,7 +1925,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Bcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "B"
             },
@@ -1923,7 +1934,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Ccount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "C"
             },
@@ -1932,7 +1943,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Scount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "S"
             },
@@ -1941,7 +1952,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
         const Wcount = await MainExamResult.count({
             where: {
                 meyear: year,
-                subjectid: subjectid,
+                subjectid: subjectid.mesubjectid,
                 metype: true,
                 result: "W"
             },
@@ -1952,7 +1963,7 @@ exports.postGetAdvanceLevelChartTwo = async (req, res, next) => {
             acount: Acount,
             bcount: Bcount,
             ccount: Ccount,
-            Scount: Scount,
+            scount: Scount,
             wcount: Wcount
         })
 
@@ -2497,7 +2508,7 @@ exports.getClassRegisteredSubjects = async (req, res, next) => {
             where: {
                 grade: grade
             },
-            attributes: ['subjectname', 'teacherTeacherid']
+            attributes: ['subjectid','subjectname', 'teacherTeacherid']
         });
 
         res.status(200).json({

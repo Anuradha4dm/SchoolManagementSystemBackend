@@ -638,7 +638,6 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
         const sequreid = req.body.sequreid;
         const macaddress = req.body.macid;
         const date = new Date();
-
         //default
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
@@ -655,7 +654,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
 
         const QRrecode = await QRData.findOne({
             where: {
-                teacherTeacherid: teacherData.teacherid,
+                teacherTeacherid: teacherid,
                 randomcode: sequreid,
                 expiredtime: {
                     [Op.gte]: Date.now()
@@ -671,7 +670,7 @@ exports.getMarkTeacherAttendence = async (req, res, next) => {
             where: {
                 teacherTeacherid: teacherid,
                 year: year,
-                date: date,
+                day: day,
                 month: month
             }
         })
@@ -720,6 +719,7 @@ exports.printReport = async (req, res, next) => {
         const grade = req.body.grade;
         const place = req.body.place;
         const term = req.body.term;
+        const year = req.body.year;
 
         var message = "This is your Average.";
 
@@ -737,7 +737,8 @@ exports.printReport = async (req, res, next) => {
             where: {
                 grade: grade,
                 _id: studentid,
-                term: term
+                term: term,
+                year: year
             }
         });
 
