@@ -145,6 +145,8 @@ exports.postEditStudentProfile = async (req, res, next) => {
             classClassid = 0;
         }
 
+
+
         Student.findByPk(id).then(student => {
 
             student.surname = req.body.surname;
@@ -168,6 +170,7 @@ exports.postEditStudentProfile = async (req, res, next) => {
             return student.save();
         })
             .then(result => {
+
                 res.status(200).json({
                     update: true,
                     data: result
@@ -189,9 +192,6 @@ exports.postEditStudentProfile = async (req, res, next) => {
 }
 
 async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream) {
-
-
-
 
     try {
         var mathResult;
@@ -241,7 +241,7 @@ async function addRecodeToPermissionAdvanceLevel(studentData, studentid, stream)
         });
 
     } catch (error) {
-
+        console.log(error)
         next(error)
     }
 
@@ -576,6 +576,8 @@ exports.getGetResultOfSpecificStudent = async (req, res, next) => {
 
     var resultArray = []
 
+
+
     try {
 
         const resultList = await Result.findAll({
@@ -796,7 +798,7 @@ exports.postGetAttendenceMainChartData = async (req, res, next) => {
                     studentId: studentid,
                     present: true,
                     month: i,
-                    year: 2020
+                    year: new Date().getFullYear()
 
                 }
             })
@@ -809,7 +811,7 @@ exports.postGetAttendenceMainChartData = async (req, res, next) => {
             where: {
                 studentId: studentid,
                 present: false,
-                year: 2020,
+                year: new Date().getFullYear(),
 
             },
             attributes: ['date']
@@ -819,7 +821,7 @@ exports.postGetAttendenceMainChartData = async (req, res, next) => {
         const totalDaysSchooluntillNow = await StudentAttendence.count({
             where: {
                 studentid: studentid,
-                year: 2020
+                year: new Date().getFullYear()
             }
         })
 

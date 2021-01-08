@@ -41,6 +41,7 @@ exports.getClass = async (data) => {
 
     try {
 
+
         const getClass = await Result.findOne({
             where: {
                 StudentId: studentid,
@@ -49,9 +50,6 @@ exports.getClass = async (data) => {
             },
             attributes: ['grade']
         })
-
-
-
 
         io.getIo().emit('popClass', getClass.grade)
 
