@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+    school-database:
+        image: mysql
+        environment: 
+            MYSQL_ROOT_PASSWORD: damith123
+            MYSQL_DATABASE: schoolmanagementsystembd
+        volumes: 
+            - ./school-management-database:/docker-entrypoint-initdb.d
+        restart: always
+    node-app:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        ports: 
+            - "3000:3000"
+        volumes: 
+            - ${pwd}:/usr/app
+            - /usr/app/node_modules
+        depends_on: 
+            - "school-database"
+        restart: on-failure
+        environment: 
+           - CHOKIDAR_USEPOLLING=true
+
+
+
+        
